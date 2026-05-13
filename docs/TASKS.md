@@ -395,7 +395,7 @@
 
 ## Phase 8: Database
 
-### 7.1 Migration: Core Tables
+### 8.1 Migration: Core Tables
 
 - [ ] Create `users` table migration (id, email, password_hash, first_name, last_name, phone, role, email_verified_at, last_login_at, timestamps, soft_deletes)
 - [ ] Create `locations` table migration (id, name, slug, address, city, postal_code, phone, email, google_maps_url, notes, is_active, timestamps, soft_deletes)
@@ -416,7 +416,7 @@
 - [ ] Add indexes on foreign keys, status columns, and date columns
 - [ ] Add unique constraints where appropriate
 
-### 7.2 Seed Script
+### 8.2 Seed Script
 
 - [ ] Create `DatabaseSeeder` orchestrator
 - [ ] Create `UserSeeder`: fetch `https://jsonplaceholder.typicode.com/users`, map to users table, promote first entry to admin
