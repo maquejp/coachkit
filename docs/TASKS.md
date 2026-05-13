@@ -296,15 +296,15 @@
 
 ## Phase 6: Frontend — Admin Panel
 
-### 6.1 Admin Dashboard
+### 6.1 Admin Dashboard [x]
 
-- [ ] Build admin layout (sidebar + header + content)
-- [ ] Build KPI cards (active subscriptions, occupancy rate, revenue, new signups)
-- [ ] Build revenue chart (monthly/weekly)
-- [ ] Build occupancy chart per class type
-- [ ] Build new signups trend chart
-- [ ] Build upcoming classes widget
-- [ ] Write tests for admin dashboard
+- [x] Build admin layout (sidebar + header + content)
+- [x] Build KPI cards (active subscriptions, occupancy rate, revenue, new signups)
+- [x] Build revenue chart (monthly/weekly)
+- [x] Build occupancy chart per class type
+- [x] Build new signups trend chart
+- [x] Build upcoming classes widget
+- [x] Write tests for admin dashboard
 
 ### 6.2 Schedule Management
 

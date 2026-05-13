@@ -102,7 +102,7 @@ describe('AdminDashboardPage', () => {
     renderPage();
     await waitFor(() => {
       expect(screen.getByText('Revenue by Month')).toBeInTheDocument();
-      expect(screen.getByText((c) => c.includes('$1,500'))).toBeInTheDocument();
+      expect(screen.getByText('$1500')).toBeInTheDocument();
     });
   });
 
@@ -130,5 +130,14 @@ describe('AdminDashboardPage', () => {
       expect(screen.getByText('Occupancy by Class')).toBeInTheDocument();
       expect(screen.getByText((c) => c.includes('Peak day'))).toBeInTheDocument();
     });
+  });
+
+  it('renders daily bookings trend chart', async () => {
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByText('Daily Bookings Trend')).toBeInTheDocument();
+    });
+    expect(screen.getByText('4')).toBeInTheDocument();
+    expect(screen.getByText('3')).toBeInTheDocument();
   });
 });

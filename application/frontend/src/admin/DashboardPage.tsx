@@ -46,6 +46,7 @@ export default function AdminDashboardPage() {
 
   const maxRevenue = charts ? Math.max(...charts.revenueByMonth.map((r) => r.amountCents), 1) : 1;
   const maxPopularity = charts ? Math.max(...charts.classPopularity.map((c) => c.bookings), 1) : 1;
+  const maxBookingsByDay = charts ? Math.max(...charts.bookingsByDay.map((d) => d.count), 1) : 1;
 
   return (
     <>
@@ -197,6 +198,32 @@ export default function AdminDashboardPage() {
           )}
         </Card>
       </div>
+
+      {charts && charts.bookingsByDay.length > 0 && (
+        <Card
+          className="mt-6"
+          header={<span className="font-semibold text-gray-900">Daily Bookings Trend</span>}
+        >
+          <div className="space-y-2">
+            {charts.bookingsByDay.map((d) => (
+              <div key={d.date} className="flex items-center gap-3">
+                <span className="w-24 text-xs text-gray-500">
+                  {new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </span>
+                <div className="flex-1">
+                  <div className="h-5 w-full rounded bg-gray-100">
+                    <div
+                      className="h-full rounded bg-teal-500"
+                      style={{ width: `${(d.count / maxBookingsByDay) * 100}%` }}
+                    />
+                  </div>
+                </div>
+                <span className="w-6 text-right text-xs font-medium text-gray-700">{d.count}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
     </>
   );
 }
