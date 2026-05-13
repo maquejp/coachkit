@@ -38,51 +38,53 @@
 
 ## Phase 1: Frontend — Design System
 
-### 1.1 Design Tokens & Theme
+### 1.1 Design Tokens & Theme [x]
 
-- [ ] Configure Tailwind theme: colors (sky primary, rose accent, amber warm, teal secondary), fonts (Plus Jakarta Sans), border radius, shadows
-- [ ] Create CSS custom properties file for design tokens
-- [ ] Set up global styles (body, headings, links, transitions)
+- [x] Configure Tailwind theme: colors (sky primary, rose accent, amber warm, teal secondary), fonts (Plus Jakarta Sans), border radius, shadows
+- [x] Create CSS custom properties file for design tokens
+- [x] Set up global styles (body, headings, links, transitions)
 
-### 1.2 Base Components
+### 1.2 Base Components [x]
 
-- [ ] `Button` — variants (primary, secondary, outline, ghost), sizes, loading state, disabled, icon support
-- [ ] `Input` — text, email, password, number variants; error state, label, helper text
-- [ ] `Select` — native select with custom styling, error state
-- [ ] `Textarea` — with resize control, error state
-- [ ] `Card` — with optional header, footer, hover shadow, variants
-- [ ] `Modal` — overlay, close button, body scroll lock, animation, sizes
-- [ ] `Badge` — color variants, dot indicator
-- [ ] `Avatar` — image fallback to initials, sizes
-- [ ] `Spinner` — size variants, centered container
-- [ ] `Skeleton` — loading placeholder, text/avatar/card variants
-- [ ] `Toast` — success/error/info/warning, auto-dismiss, stackable
-- [ ] `Pagination` — page numbers, prev/next, ellipsis
-- [ ] `Tabs` — horizontal tab bar with content panel
-- [ ] `Table` — sortable headers, striped rows, empty state, loading state
-- [ ] `Dropdown Menu` — click trigger, positioned menu, item variants
-- [ ] `Form Field` — wrapper with label, error, help text, required indicator
+- [x] `Button` — variants (primary, secondary, outline, ghost), sizes, loading state, disabled, icon support
+- [x] `Input` — text, email, password, number variants; error state, label, helper text
+- [x] `Select` — native select with custom styling, error state
+- [x] `Textarea` — with resize control, error state
+- [x] `Card` — with optional header, footer, hover shadow, variants
+- [x] `Modal` — overlay, close button, body scroll lock, animation, sizes
+- [x] `Badge` — color variants, dot indicator
+- [x] `Avatar` — image fallback to initials, sizes
+- [x] `Spinner` — size variants, centered container
+- [x] `Skeleton` — loading placeholder, text/avatar/card variants
+- [x] `Toast` — success/error/info/warning, auto-dismiss, stackable
+- [x] `Pagination` — page numbers, prev/next, ellipsis
+- [x] `Tabs` — horizontal tab bar with content panel
+- [x] `Table` — sortable headers, striped rows, empty state, loading state
+- [x] `Dropdown Menu` — click trigger, positioned menu, item variants
+- [x] `Form Field` — wrapper with label, error, help text, required indicator
 
-### 1.3 Navigation Components
+### 1.3 Navigation Components [x]
 
-- [ ] `Header` — logo, nav links, mobile hamburger menu, CTA button
-- [ ] `Footer` — columns for links, social icons, copyright, legal links
-- [ ] `Sidebar` — admin sidebar, collapsible, active state, nested items
-- [ ] `Breadcrumbs` — auto-generated from route, with home link
-- [ ] `Mobile Nav` — drawer-style navigation for mobile
+- [x] `Header` — logo, nav links, mobile hamburger menu, CTA button
+- [x] `Footer` — columns for links, social icons, copyright, legal links
+- [x] `Sidebar` — admin sidebar, collapsible, active state, nested items
+- [x] `Breadcrumbs` — auto-generated from route, with home link
+- [x] `Mobile Nav` — drawer-style navigation for mobile
+- [x] `Logo` — SVG brand logo (fitness-themed icon + wordmark), used in Header, Footer, and favicon
 
-### 1.4 Section/Page Components
+### 1.4 Section/Page Components [x]
 
-- [ ] `Hero Section` — heading, subtext, CTA button, background
-- [ ] `Feature Card` — icon, title, description, optional link
-- [ ] `Review Card` — quote, author, rating stars, avatar
-- [ ] `Instructor Card` — photo, name, bio, social links
-- [ ] `Class Card` — image, name, duration, intensity badge, CTA
-- [ ] `Pricing Card` — plan name, price, features list, CTA, featured variant
-- [ ] `Contact Form` — name, email, phone, message fields, submit
-- [ ] `Gallery Grid` — image grid with lightbox
-- [ ] `Google Reviews Carousel` — auto-rotating review cards
-- [ ] `Schedule Preview` — week view, day columns, class blocks
+- [x] `Hero Section` — heading, subtext, CTA button, background
+- [x] `Feature Card` — icon, title, description, optional link
+- [x] `Review Card` — quote, author, rating stars, avatar
+- [x] `Instructor Card` — photo, name, bio, social links
+- [x] `Class Card` — image, name, duration, intensity badge, CTA
+- [x] `Pricing Card` — plan name, price, features list, CTA, featured variant
+- [x] `Contact Form` — name, email, phone, message fields, submit
+- [x] `Gallery Grid` — image grid with lightbox
+- [x] `Google Reviews Carousel` — auto-rotating review cards
+- [x] `Schedule Preview` — week view, day columns, class blocks
+- [x] Wire design system components into route pages for visual preview
 
 ---
 
