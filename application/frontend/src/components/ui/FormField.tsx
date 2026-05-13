@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, cloneElement, isValidElement } from 'react';
 
 interface FormFieldProps {
   label?: string;
@@ -20,7 +20,9 @@ export function FormField({ label, error, helpText, required, children }: FormFi
         </label>
       )}
 
-      {children}
+      {label && isValidElement(children)
+        ? cloneElement(children, { id } as Record<string, string>)
+        : children}
 
       {helpText && !error && <p className="text-xs text-gray-500">{helpText}</p>}
 

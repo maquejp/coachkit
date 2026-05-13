@@ -306,14 +306,14 @@
 - [x] Build upcoming classes widget
 - [x] Write tests for admin dashboard
 
-### 6.2 Schedule Management
+### 6.2 Schedule Management [x]
 
-- [ ] Build weekly timetable editor (day columns, time rows, location filter)
-- [ ] Build drag-to-create slot
-- [ ] Build edit slot modal (class type, coach, location, capacity, time)
-- [ ] Build delete slot confirmation
-- [ ] Build exception dates manager (holidays, closures, per location)
-- [ ] Write tests for schedule management
+- [x] Build weekly timetable editor (day columns, time rows, location filter)
+- [x] Build drag-to-create slot
+- [x] Build edit slot modal (class type, coach, location, capacity, time)
+- [x] Build delete slot confirmation
+- [x] Build exception dates manager (holidays, closures, per location)
+- [x] Write tests for schedule management
 
 ### 6.3 Class Management
 
