@@ -4,16 +4,22 @@
   "scripts": {
     "lint:markdown": "markdownlint-cli2 docs/**/*.md",
     "lint:markdown:fix": "markdownlint-cli2 --fix docs/**/*.md",
+    "format": "prettier --write \"application/**/*.{js,jsx,ts,tsx,json,css,php}\"",
+    "format:check": "prettier --check \"application/**/*.{js,jsx,ts,tsx,json,css,php}\"",
     "prepare": "husky"
   },
   "lint-staged": {
     "docs/**/*.md": [
       "markdownlint-cli2 --fix"
+    ],
+    "*.{js,jsx,ts,tsx,json,css,md}": [
+      "prettier --write"
     ]
   },
   "devDependencies": {
     "husky": "^9.1.7",
-    "lint-staged": "^17.0.4",
-    "markdownlint-cli2": "^0.22.1"
+    "lint-staged": "^15.5.1",
+    "markdownlint-cli2": "^0.22.1",
+    "prettier": "^3.5.3"
   }
 }
