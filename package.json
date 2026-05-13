@@ -3,9 +3,17 @@
   "private": true,
   "scripts": {
     "lint:markdown": "markdownlint-cli2 docs/**/*.md",
-    "lint:markdown:fix": "markdownlint-cli2 --fix docs/**/*.md"
+    "lint:markdown:fix": "markdownlint-cli2 --fix docs/**/*.md",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "docs/**/*.md": [
+      "markdownlint-cli2 --fix"
+    ]
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.4",
     "markdownlint-cli2": "^0.22.1"
   }
 }
