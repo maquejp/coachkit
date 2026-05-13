@@ -88,7 +88,7 @@
 
 ---
 
-## Phase 2: Frontend — Mock Data Layer [/]
+## Phase 2: Frontend — Mock Data Layer [x]
 
 ### 2.1 Type Definitions [x]
 
@@ -124,24 +124,24 @@
 - [x] Create mock waitlist entries
 - [x] Create mock payment transactions
 
-### 2.3 MSW Handlers
+### 2.3 MSW Handlers [x]
 
-- [ ] Locations handlers: list, get, create, update, delete
-- [ ] Auth handlers: login, register, me, logout
-- [ ] Users/coaches handlers: list, get, create, update, delete
-- [ ] Class types handlers: list, get, create, update, delete
-- [ ] Weekly schedule handlers: list by day/week, get, create, update, delete
-- [ ] Schedule exceptions handlers: list, create, update, delete
-- [ ] Subscription plans handlers: list, get
-- [ ] Customer subscriptions handlers: list mine, list all (admin), create, cancel
-- [ ] Point card plans handlers: list, get
-- [ ] Point card purchases handlers: list mine, create
-- [ ] Single session pricing handlers: list by class type
-- [ ] Bookings handlers: list mine, list all (admin), create, cancel, check-in
-- [ ] Attendance handlers: list, create, report
-- [ ] Waitlist handlers: list, join, leave, promote
-- [ ] Payment handlers: create intent, webhook mock
-- [ ] Dashboard analytics handlers: KPIs, charts, occupancy
+- [x] Locations handlers: list, get, create, update, delete
+- [x] Auth handlers: login, register, me, logout
+- [x] Users/coaches handlers: list, get, create, update, delete
+- [x] Class types handlers: list, get, create, update, delete
+- [x] Weekly schedule handlers: list by day/week, get, create, update, delete
+- [x] Schedule exceptions handlers: list, create, update, delete
+- [x] Subscription plans handlers: list, get
+- [x] Customer subscriptions handlers: list mine, list all (admin), create, cancel
+- [x] Point card plans handlers: list, get
+- [x] Point card purchases handlers: list mine, create
+- [x] Single session pricing handlers: list by class type
+- [x] Bookings handlers: list mine, list all (admin), create, cancel, check-in
+- [x] Attendance handlers: list, create, report
+- [x] Waitlist handlers: list, join, leave, promote
+- [x] Payment handlers: create intent, webhook mock
+- [x] Dashboard analytics handlers: KPIs, charts, occupancy
 
 ---
 

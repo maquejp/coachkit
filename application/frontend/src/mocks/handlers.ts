@@ -1,7 +1,25 @@
-import { http, HttpResponse } from 'msw';
+import { locationHandlers } from './handlers/locations';
+import { authHandlers } from './handlers/auth';
+import { coachHandlers } from './handlers/coaches';
+import { classTypeHandlers } from './handlers/classTypes';
+import { scheduleHandlers } from './handlers/schedule';
+import { subscriptionHandlers } from './handlers/subscriptions';
+import { bookingHandlers } from './handlers/bookings';
+import { attendanceHandlers } from './handlers/attendance';
+import { waitlistHandlers } from './handlers/waitlist';
+import { paymentHandlers } from './handlers/payments';
+import { dashboardHandlers } from './handlers/dashboard';
 
 export const handlers = [
-  http.get('/api/health', () => {
-    return HttpResponse.json({ status: 'ok' });
-  }),
+  ...locationHandlers,
+  ...authHandlers,
+  ...coachHandlers,
+  ...classTypeHandlers,
+  ...scheduleHandlers,
+  ...subscriptionHandlers,
+  ...bookingHandlers,
+  ...attendanceHandlers,
+  ...waitlistHandlers,
+  ...paymentHandlers,
+  ...dashboardHandlers,
 ];
