@@ -69,3 +69,15 @@ docker-compose.yml
 - **Testing** — Write tests for critical logic and components, but don't aim for 100% coverage. Focus on meaningful tests that validate behavior, not implementation details.
 - **Documentation** — Keep code well-commented where necessary, and maintain clear documentation in this `AGENTS.md` file for architecture decisions, conventions, and development guidelines. Update it as the project evolves.
 - **Formatting & Linting** — All code must pass Prettier and markdownlint before commit. A pre-commit hook (Husky + lint-staged) auto-fixes staged files: `markdownlint-cli2 --fix` on `.md` files, `prettier --write` on JS/TS/JSON/CSS/PHP files. To run manually: `npm run format` (Prettier all), `npm run lint:markdown` (markdownlint check), `npm run lint:markdown:fix` (markdownlint fix).
+- **No direct commits to `main`** — All changes go through feature branches merged via PR after CI passes.
+
+## Task Tracking
+
+Tasks in `docs/TASKS.md` use the following markers:
+
+- `[ ]` not started
+- `[/]` in progress
+- `[x]` completed
+- `[~]` delayed — blocked or deferred
+
+As work progresses, update the relevant checkbox in `TASKS.md` and mark the commit with the appropriate conventional commit prefix.
