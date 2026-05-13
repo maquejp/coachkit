@@ -100,7 +100,11 @@ Rules:
 - **YAGNI** — You aren't gonna need it. Don't build features or abstractions until there's a clear requirement for them.
 - **Testing** — Write tests for critical logic and components, but don't aim for 100% coverage. Focus on meaningful tests that validate behavior, not implementation details.
 - **Documentation** — Keep code well-commented where necessary, and maintain clear documentation in this `AGENTS.md` file for architecture decisions, conventions, and development guidelines. Update it as the project evolves.
-- **Formatting & Linting** — All code must pass Prettier and markdownlint before commit. A pre-commit hook (Husky + lint-staged) auto-fixes staged files: `markdownlint-cli2 --fix` on `.md` files, `prettier --write` on JS/TS/JSON/CSS/PHP files. To run manually: `npm run format` (Prettier all), `npm run lint:markdown` (markdownlint check), `npm run lint:markdown:fix` (markdownlint fix).
+- **Formatting & Linting** — All code must pass ESLint + Prettier + markdownlint before commit. A pre-commit hook (Husky + lint-staged) auto-fixes staged files:
+  - `eslint --fix` + `prettier --write` on JS/TS/TSX
+  - `prettier --write` on JSON/CSS/PHP
+  - `markdownlint-cli2 --fix` on `.md` files
+  To run manually: `npm run lint` (ESLint), `npm run format` (Prettier), `npm run lint:markdown` (markdownlint).
 - **No direct commits to `main`** — All changes go through feature branches merged via PR after CI passes.
 
 ## Task Tracking
