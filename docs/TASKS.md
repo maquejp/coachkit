@@ -38,11 +38,11 @@
 
 ## Phase 1: Frontend — Design System
 
-### 1.1 Design Tokens & Theme
+### 1.1 Design Tokens & Theme [x]
 
-- [ ] Configure Tailwind theme: colors (sky primary, rose accent, amber warm, teal secondary), fonts (Plus Jakarta Sans), border radius, shadows
-- [ ] Create CSS custom properties file for design tokens
-- [ ] Set up global styles (body, headings, links, transitions)
+- [x] Configure Tailwind theme: colors (sky primary, rose accent, amber warm, teal secondary), fonts (Plus Jakarta Sans), border radius, shadows
+- [x] Create CSS custom properties file for design tokens
+- [x] Set up global styles (body, headings, links, transitions)
 
 ### 1.2 Base Components
 
