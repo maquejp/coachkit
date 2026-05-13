@@ -796,6 +796,7 @@ main                    # Always deployable. Feature-flagged if incomplete.
 ```
 
 Key rules:
+
 - No `develop` branch. `main` is the only long-lived branch.
 - One branch per logical deliverable, not per checkbox. Group related tasks.
 - Feature branches live at most 1-2 days. If a feature takes longer, use feature flags to merge early.
