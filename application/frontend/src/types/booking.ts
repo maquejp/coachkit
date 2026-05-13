@@ -12,6 +12,15 @@ export interface Booking {
   updatedAt: string;
 }
 
+export interface FreeSessionClaim {
+  id: string;
+  email: string;
+  userId: string | null;
+  bookingId: string;
+  claimedAt: string;
+  activatedAt: string | null;
+}
+
 export interface Attendance {
   id: string;
   bookingId: string;

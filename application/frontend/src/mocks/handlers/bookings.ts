@@ -40,4 +40,13 @@ export const bookingHandlers = [
     store[idx] = { ...store[idx], status: 'attended', updatedAt: new Date().toISOString() };
     return HttpResponse.json({ success: true, data: store[idx] });
   }),
+
+  http.post('/api/bookings/:id/reschedule', async ({ params, request }) => {
+    const idx = store.findIndex((b) => b.id === params.id);
+    if (idx === -1)
+      return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });
+    const body = (await request.json()) as { date: string };
+    store[idx] = { ...store[idx], date: body.date, updatedAt: new Date().toISOString() };
+    return HttpResponse.json({ success: true, data: store[idx] });
+  }),
 ];

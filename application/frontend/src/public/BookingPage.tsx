@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -10,6 +10,8 @@ import { FormField } from '@/components/ui/FormField';
 import { classTypes, weeklySchedule, coaches, locations, bookings } from '@/mocks/fixtures';
 import type { ClassType, WeeklySchedule } from '@/types';
 import { trackEvent } from '@/lib/analytics';
+import { guestCheckClaimApi, guestCreateClaimApi, guestRegisterApi } from '@/api/guest';
+import { useAuthStore } from '@/stores/auth';
 
 type Step = 'class' | 'day' | 'time' | 'info' | 'confirm' | 'success' | 'error';
 
@@ -39,6 +41,10 @@ function classTypeToIntensity(ct: ClassType): 'beginner' | 'intermediate' | 'adv
 }
 
 export default function BookingPage() {
+  const navigate = useNavigate();
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const token = useAuthStore((s) => s.token);
+
   const [step, setStep] = useState<Step>('class');
   const [selectedClass, setSelectedClass] = useState<ClassType | null>(null);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
@@ -51,7 +57,14 @@ export default function BookingPage() {
     guestEmail: '',
   });
   const [bookingId, setBookingId] = useState('');
+  const [claimId, setClaimId] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [checkingClaim, setCheckingClaim] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [activating, setActivating] = useState(false);
+  const [activationPassword, setActivationPassword] = useState('');
+  const [activationPasswordConfirm, setActivationPasswordConfirm] = useState('');
+  const [activationError, setActivationError] = useState('');
 
   const activeTypes = classTypes.filter((ct) => ct.isActive);
   const activeSchedule = weeklySchedule.filter((s) => s.isActive);
@@ -61,6 +74,7 @@ export default function BookingPage() {
     setSelectedDay(null);
     setSelectedSlot(null);
     setFormData((prev) => ({ ...prev, classTypeId: ct.id, dayOfWeek: 0, timeSlotId: '' }));
+    setErrorMsg('');
     setStep('day');
   }
 
@@ -76,6 +90,7 @@ export default function BookingPage() {
     setSelectedDay(day);
     setSelectedSlot(null);
     setFormData((prev) => ({ ...prev, dayOfWeek: day, timeSlotId: '' }));
+    setErrorMsg('');
     setStep('time');
   }
 
@@ -89,24 +104,95 @@ export default function BookingPage() {
   function selectTimeSlot(slot: WeeklySchedule) {
     setSelectedSlot(slot);
     setFormData((prev) => ({ ...prev, timeSlotId: slot.id }));
+    setErrorMsg('');
     setStep('info');
   }
 
-  function handleInfoSubmit(e: React.FormEvent) {
+  async function handleInfoSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!formData.guestName.trim() || !formData.guestEmail.trim()) return;
-    setStep('confirm');
+
+    setCheckingClaim(true);
+    setErrorMsg('');
+    try {
+      const res = await guestCheckClaimApi(formData.guestEmail);
+      if (res.data.claimed) {
+        setErrorMsg(
+          'This email has already used a free session. Please log in to book additional classes.',
+        );
+        return;
+      }
+      setStep('confirm');
+    } catch {
+      setErrorMsg('Unable to verify email. Please try again.');
+    } finally {
+      setCheckingClaim(false);
+    }
   }
 
-  function confirmBooking() {
-    const newId = `bkg-${String(bookings.length + 1).padStart(3, '0')}`;
-    setBookingId(newId);
-    trackEvent('booking_confirmed', {
-      classTypeId: selectedClass?.id ?? '',
-      dayOfWeek: selectedDay ?? 0,
-      slotId: selectedSlot?.id ?? '',
-    });
-    setStep('success');
+  async function confirmBooking() {
+    setConfirming(true);
+    setErrorMsg('');
+    try {
+      const bookingPayload = {
+        userId: null,
+        guestEmail: formData.guestEmail,
+        classTypeId: selectedClass?.id ?? '',
+        scheduleId: selectedSlot?.id ?? '',
+        date: new Date().toISOString().split('T')[0],
+      };
+      const { default: client } = await import('@/api/client');
+      const bookingRes = await client.post('/bookings', bookingPayload);
+      const newBooking = bookingRes.data.data;
+      setBookingId(newBooking.id);
+
+      const claimRes = await guestCreateClaimApi({
+        email: formData.guestEmail,
+        bookingId: newBooking.id,
+      });
+      setClaimId(claimRes.data.id);
+
+      trackEvent('booking_confirmed', {
+        classTypeId: selectedClass?.id ?? '',
+        dayOfWeek: selectedDay ?? 0,
+        slotId: selectedSlot?.id ?? '',
+      });
+      setStep('success');
+    } catch {
+      setErrorMsg('We could not complete your booking. Please try again.');
+      setStep('error');
+    } finally {
+      setConfirming(false);
+    }
+  }
+
+  async function handleActivationSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setActivationError('');
+    if (activationPassword.length < 6) {
+      setActivationError('Password must be at least 6 characters.');
+      return;
+    }
+    if (activationPassword !== activationPasswordConfirm) {
+      setActivationError('Passwords do not match.');
+      return;
+    }
+    setActivating(true);
+    try {
+      const res = await guestRegisterApi({
+        email: formData.guestEmail,
+        password: activationPassword,
+        firstName: formData.guestName.split(' ')[0] || formData.guestName,
+        lastName: formData.guestName.split(' ').slice(1).join(' ') || '',
+        claimId,
+      });
+      setAuth(res.data.user, res.data.token);
+      navigate('/dashboard');
+    } catch {
+      setActivationError('Could not create account. Please try again.');
+    } finally {
+      setActivating(false);
+    }
   }
 
   function handleErrorRetry() {
@@ -114,6 +200,23 @@ export default function BookingPage() {
     setSelectedClass(null);
     setSelectedDay(null);
     setSelectedSlot(null);
+    setErrorMsg('');
+  }
+
+  function resetFlow() {
+    setStep('class');
+    setSelectedClass(null);
+    setSelectedDay(null);
+    setSelectedSlot(null);
+    setFormData({
+      classTypeId: '',
+      dayOfWeek: 0,
+      timeSlotId: '',
+      guestName: '',
+      guestEmail: '',
+    });
+    setBookingId('');
+    setClaimId('');
     setErrorMsg('');
   }
 
@@ -331,14 +434,16 @@ export default function BookingPage() {
                     required
                   />
                 </FormField>
-                <FormField label="Email Address" required>
+                <FormField label="Email Address" required error={errorMsg}>
                   <Input
                     type="email"
                     value={formData.guestEmail}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, guestEmail: e.target.value }))
-                    }
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, guestEmail: e.target.value }));
+                      setErrorMsg('');
+                    }}
                     placeholder="jane@example.com"
+                    error={!!errorMsg}
                     required
                   />
                 </FormField>
@@ -349,9 +454,11 @@ export default function BookingPage() {
                 <div className="flex gap-3">
                   <Button
                     type="submit"
-                    disabled={!formData.guestName.trim() || !formData.guestEmail.trim()}
+                    disabled={
+                      !formData.guestName.trim() || !formData.guestEmail.trim() || checkingClaim
+                    }
                   >
-                    Continue to Review
+                    {checkingClaim ? 'Checking…' : 'Continue to Review'}
                   </Button>
                 </div>
               </form>
@@ -416,8 +523,10 @@ export default function BookingPage() {
                 </div>
               </div>
               <div className="mt-6 flex gap-3">
-                <Button onClick={confirmBooking}>Confirm Booking</Button>
-                <Button variant="outline" onClick={() => setStep('info')}>
+                <Button onClick={confirmBooking} disabled={confirming}>
+                  {confirming ? 'Confirming…' : 'Confirm Booking'}
+                </Button>
+                <Button variant="outline" onClick={() => setStep('info')} disabled={confirming}>
                   Edit
                 </Button>
               </div>
@@ -471,24 +580,52 @@ export default function BookingPage() {
                 </div>
               </div>
             </Card>
+
+            {!token && (
+              <Card className="mx-auto mt-8 max-w-sm p-6 text-left">
+                <h3 className="text-lg font-semibold text-gray-900">Create Your Free Account</h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Manage your bookings and get exclusive perks.
+                </p>
+                <form onSubmit={handleActivationSubmit} className="mt-4 space-y-4">
+                  <FormField label="Password" required error={activationError}>
+                    <Input
+                      type="password"
+                      value={activationPassword}
+                      onChange={(e) => {
+                        setActivationPassword(e.target.value);
+                        setActivationError('');
+                      }}
+                      placeholder="At least 6 characters"
+                      error={!!activationError}
+                      required
+                    />
+                  </FormField>
+                  <FormField label="Confirm Password" required>
+                    <Input
+                      type="password"
+                      value={activationPasswordConfirm}
+                      onChange={(e) => {
+                        setActivationPasswordConfirm(e.target.value);
+                        setActivationError('');
+                      }}
+                      placeholder="Repeat your password"
+                      required
+                    />
+                  </FormField>
+                  {activationError && <p className="text-sm text-red-600">{activationError}</p>}
+                  <Button type="submit" className="w-full" disabled={activating}>
+                    {activating ? 'Creating Account…' : 'Create Account'}
+                  </Button>
+                </form>
+                <p className="mt-4 text-center text-xs text-gray-400">
+                  You can also create an account later from your dashboard.
+                </p>
+              </Card>
+            )}
+
             <div className="mt-8 flex justify-center gap-3">
-              <Button
-                onClick={() => {
-                  setStep('class');
-                  setSelectedClass(null);
-                  setSelectedDay(null);
-                  setSelectedSlot(null);
-                  setFormData({
-                    classTypeId: '',
-                    dayOfWeek: 0,
-                    timeSlotId: '',
-                    guestName: '',
-                    guestEmail: '',
-                  });
-                }}
-              >
-                Book Another Class
-              </Button>
+              <Button onClick={resetFlow}>Book Another Class</Button>
               <Link to="/">
                 <Button variant="outline">Back to Home</Button>
               </Link>

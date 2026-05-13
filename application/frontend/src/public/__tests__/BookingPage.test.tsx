@@ -1,7 +1,90 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
 import BookingPage from '@/public/BookingPage';
+
+let claimStore: Array<{ email: string; bookingId: string }> = [];
+
+const server = setupServer(
+  http.get('/api/free-session-claims/check', ({ request }) => {
+    const url = new URL(request.url);
+    const email = url.searchParams.get('email');
+    const existing = claimStore.find((c) => c.email === email);
+    return HttpResponse.json({
+      success: true,
+      data: { claimed: !!existing, claim: existing ?? null },
+    });
+  }),
+
+  http.post('/api/free-session-claims', async ({ request }) => {
+    const body = (await request.json()) as { email: string; bookingId: string };
+    claimStore.push(body);
+    return HttpResponse.json(
+      {
+        success: true,
+        data: {
+          id: 'fsc-test-001',
+          email: body.email,
+          userId: null,
+          bookingId: body.bookingId,
+          claimedAt: new Date().toISOString(),
+          activatedAt: null,
+        },
+      },
+      { status: 201 },
+    );
+  }),
+
+  http.post('/api/bookings', async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json(
+      {
+        success: true,
+        data: {
+          id: 'bkg-test-001',
+          ...body,
+          status: 'confirmed',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      },
+      { status: 201 },
+    );
+  }),
+
+  http.post('/api/guest/register', async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json(
+      {
+        success: true,
+        data: {
+          user: {
+            id: 'user-guest-001',
+            email: body.email,
+            role: 'customer',
+            firstName: body.firstName,
+            lastName: body.lastName,
+            emailVerifiedAt: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          token: 'mock-token-guest',
+        },
+      },
+      { status: 201 },
+    );
+  }),
+);
+
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'bypass' });
+});
+afterEach(() => {
+  claimStore = [];
+});
+afterAll(() => server.close());
 
 function renderPage() {
   return render(
@@ -9,6 +92,24 @@ function renderPage() {
       <BookingPage />
     </MemoryRouter>,
   );
+}
+
+async function navigateToInfo() {
+  fireEvent.click(screen.getByText('Morning Yoga'));
+  const monday = screen.getByText('Monday').closest('button');
+  if (monday) fireEvent.click(monday);
+  const timeSlot = screen.getByText('07:00').closest('button');
+  if (timeSlot) fireEvent.click(timeSlot);
+  await waitFor(() => expect(screen.getByText('Your Information')).toBeInTheDocument());
+}
+
+async function fillInfoAndContinue(email = 'test@test.com', name = 'Test User') {
+  await navigateToInfo();
+  fireEvent.change(screen.getByPlaceholderText('Jane Doe'), { target: { value: name } });
+  fireEvent.change(screen.getByPlaceholderText('jane@example.com'), {
+    target: { value: email },
+  });
+  fireEvent.click(screen.getByText('Continue to Review'));
 }
 
 describe('BookingPage', () => {
@@ -72,66 +173,69 @@ describe('BookingPage', () => {
     expect(screen.getByText('Your Information')).toBeInTheDocument();
   });
 
-  it('shows confirmation step after info is submitted', () => {
+  it('shows confirmation step after info is submitted with unclaimed email', async () => {
     renderPage();
-    fireEvent.click(screen.getByText('Morning Yoga'));
-    const monday = screen.getByText('Monday').closest('button');
-    if (monday) fireEvent.click(monday);
-    const timeSlot = screen.getByText('07:00').closest('button');
-    if (timeSlot) fireEvent.click(timeSlot);
-    fireEvent.change(screen.getByPlaceholderText('Jane Doe'), { target: { value: 'Test User' } });
-    fireEvent.change(screen.getByPlaceholderText('jane@example.com'), {
-      target: { value: 'test@test.com' },
-    });
-    fireEvent.click(screen.getByText('Continue to Review'));
-    expect(screen.getByText('Confirm Your Booking')).toBeInTheDocument();
+    await fillInfoAndContinue();
+    await waitFor(() => expect(screen.getByText('Confirm Your Booking')).toBeInTheDocument());
   });
 
-  it('shows success step after confirming booking', () => {
+  it('shows error when email has already claimed a free session', async () => {
+    claimStore.push({ email: 'used@test.com', bookingId: 'bkg-999' });
     renderPage();
-    fireEvent.click(screen.getByText('Morning Yoga'));
-    const monday = screen.getByText('Monday').closest('button');
-    if (monday) fireEvent.click(monday);
-    const timeSlot = screen.getByText('07:00').closest('button');
-    if (timeSlot) fireEvent.click(timeSlot);
-    fireEvent.change(screen.getByPlaceholderText('Jane Doe'), { target: { value: 'Test User' } });
-    fireEvent.change(screen.getByPlaceholderText('jane@example.com'), {
-      target: { value: 'test@test.com' },
+    await fillInfoAndContinue('used@test.com');
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'This email has already used a free session. Please log in to book additional classes.',
+        ),
+      ).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByText('Continue to Review'));
-    fireEvent.click(screen.getByText('Confirm Booking'));
-    expect(screen.getByText('Booking Confirmed!')).toBeInTheDocument();
   });
 
-  it('shows booking ID on success', () => {
+  it('shows success step after confirming booking', async () => {
     renderPage();
-    fireEvent.click(screen.getByText('Morning Yoga'));
-    const monday = screen.getByText('Monday').closest('button');
-    if (monday) fireEvent.click(monday);
-    const timeSlot = screen.getByText('07:00').closest('button');
-    if (timeSlot) fireEvent.click(timeSlot);
-    fireEvent.change(screen.getByPlaceholderText('Jane Doe'), { target: { value: 'Test User' } });
-    fireEvent.change(screen.getByPlaceholderText('jane@example.com'), {
-      target: { value: 'test@test.com' },
-    });
-    fireEvent.click(screen.getByText('Continue to Review'));
+    await fillInfoAndContinue();
+    await waitFor(() => expect(screen.getByText('Confirm Your Booking')).toBeInTheDocument());
     fireEvent.click(screen.getByText('Confirm Booking'));
-    expect(screen.getByText(/bkg-/)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('Booking Confirmed!')).toBeInTheDocument());
   });
 
-  it('renders back to home link on success', () => {
+  it('shows booking ID on success', async () => {
     renderPage();
-    fireEvent.click(screen.getByText('Morning Yoga'));
-    const monday = screen.getByText('Monday').closest('button');
-    if (monday) fireEvent.click(monday);
-    const timeSlot = screen.getByText('07:00').closest('button');
-    if (timeSlot) fireEvent.click(timeSlot);
-    fireEvent.change(screen.getByPlaceholderText('Jane Doe'), { target: { value: 'Test User' } });
-    fireEvent.change(screen.getByPlaceholderText('jane@example.com'), {
-      target: { value: 'test@test.com' },
-    });
-    fireEvent.click(screen.getByText('Continue to Review'));
+    await fillInfoAndContinue();
+    await waitFor(() => expect(screen.getByText('Confirm Your Booking')).toBeInTheDocument());
     fireEvent.click(screen.getByText('Confirm Booking'));
-    expect(screen.getByText('Back to Home')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText(/bkg-/)).toBeInTheDocument());
+  });
+
+  it('renders back to home link on success', async () => {
+    renderPage();
+    await fillInfoAndContinue();
+    await waitFor(() => expect(screen.getByText('Confirm Your Booking')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('Confirm Booking'));
+    await waitFor(() => expect(screen.getByText('Back to Home')).toBeInTheDocument());
+  });
+
+  it('shows create account form on success for guest users', async () => {
+    renderPage();
+    await fillInfoAndContinue();
+    await waitFor(() => expect(screen.getByText('Confirm Your Booking')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('Confirm Booking'));
+    await waitFor(() => {
+      expect(screen.getByText('Create Your Free Account')).toBeInTheDocument();
+    });
+  });
+
+  it('shows error step when booking API fails', async () => {
+    server.use(
+      http.post('/api/bookings', async () => {
+        return HttpResponse.json({ success: false, error: 'Server error' }, { status: 500 });
+      }),
+    );
+    renderPage();
+    await fillInfoAndContinue();
+    await waitFor(() => expect(screen.getByText('Confirm Your Booking')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('Confirm Booking'));
+    await waitFor(() => expect(screen.getByText('Something Went Wrong')).toBeInTheDocument());
   });
 });

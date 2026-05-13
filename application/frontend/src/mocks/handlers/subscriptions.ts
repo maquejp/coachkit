@@ -41,6 +41,15 @@ export const subscriptionHandlers = [
     return HttpResponse.json({ success: true, data: sub }, { status: 201 });
   }),
 
+  http.put('/api/customer-subscriptions/:id/change-plan', async ({ params, request }) => {
+    const idx = subStore.findIndex((s) => s.id === params.id);
+    if (idx === -1)
+      return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });
+    const body = (await request.json()) as { planId: string };
+    subStore[idx] = { ...subStore[idx], planId: body.planId, updatedAt: new Date().toISOString() };
+    return HttpResponse.json({ success: true, data: subStore[idx] });
+  }),
+
   http.post('/api/customer-subscriptions/:id/cancel', ({ params }) => {
     const idx = subStore.findIndex((s) => s.id === params.id);
     if (idx === -1)

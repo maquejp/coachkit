@@ -11,5 +11,12 @@ export type {
   PointCardPlan,
   PointCardPurchase,
 } from './subscription';
-export type { Booking, BookingStatus, Attendance, WaitlistEntry, WaitlistStatus } from './booking';
+export type {
+  Booking,
+  BookingStatus,
+  Attendance,
+  WaitlistEntry,
+  WaitlistStatus,
+  FreeSessionClaim,
+} from './booking';
 export type { PaymentTransaction, PaymentStatus, PaymentProvider } from './payment';

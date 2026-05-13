@@ -36,4 +36,17 @@ export const authHandlers = [
   http.post('/api/auth/password-reset', async () => {
     return HttpResponse.json({ success: true, data: null });
   }),
+
+  http.put('/api/profile', async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json({ success: true, data: { ...adminUser, ...body } });
+  }),
+
+  http.put('/api/profile/password', async () => {
+    return HttpResponse.json({ success: true, data: null });
+  }),
+
+  http.delete('/api/profile', async () => {
+    return HttpResponse.json({ success: true, data: null });
+  }),
 ];

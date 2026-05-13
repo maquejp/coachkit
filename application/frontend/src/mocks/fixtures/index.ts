@@ -11,3 +11,4 @@ export {
 } from './subscriptions';
 export { bookings, attendanceRecords, waitlistEntries, paymentTransactions } from './bookings';
 export { reviews } from './reviews';
+export { freeSessionClaims } from './freeSessionClaims';

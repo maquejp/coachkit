@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuthStore } from '@/stores/auth';
 
 interface SidebarItem {
   label: string;
@@ -7,6 +8,13 @@ interface SidebarItem {
   icon?: string;
   children?: { label: string; to: string }[];
 }
+
+const customerItems: SidebarItem[] = [
+  { label: 'Dashboard', to: '/dashboard', icon: '\u2302' },
+  { label: 'My Bookings', to: '/dashboard/bookings', icon: '\u2611' },
+  { label: 'My Subscription', to: '/dashboard/subscription', icon: '\u2606' },
+  { label: 'Profile', to: '/dashboard/profile', icon: '\u263A' },
+];
 
 const adminItems: (SidebarItem & { defaultOpen?: boolean })[] = [
   { label: 'Dashboard', to: '/admin', icon: '\u2302' },
@@ -26,10 +34,15 @@ const adminItems: (SidebarItem & { defaultOpen?: boolean })[] = [
 
 export default function Sidebar() {
   const location = useLocation();
+  const user = useAuthStore((s) => s.user);
   const [collapsed, setCollapsed] = useState(false);
   const [openGroups, setOpenGroups] = useState<string[]>(
     adminItems.filter((i) => i.defaultOpen).map((i) => i.label),
   );
+
+  const isAdmin = user?.role === 'admin';
+  const items = isAdmin ? adminItems : customerItems;
+  const title = isAdmin ? 'Admin' : 'Menu';
 
   function toggleGroup(label: string) {
     setOpenGroups((prev) =>
@@ -49,7 +62,7 @@ export default function Sidebar() {
       }`}
     >
       <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-        {!collapsed && <span className="text-sm font-bold text-primary-700">Admin</span>}
+        {!collapsed && <span className="text-sm font-bold text-primary-700">{title}</span>}
         <button
           onClick={() => setCollapsed((prev) => !prev)}
           className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
@@ -66,8 +79,8 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-3">
-        {adminItems.map((item) => {
-          if (item.children) {
+        {items.map((item) => {
+          if ('children' in item && item.children) {
             const open = openGroups.includes(item.label);
             return (
               <div key={item.label}>

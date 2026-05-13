@@ -247,50 +247,50 @@
 - [x] Create auth API client (login, register, me, logout, refresh)
 - [x] Create axios interceptors for token injection + 401 handling
 - [x] Wire MSW auth handlers
-- [ ] Write tests for auth store
+- [x] Write tests for auth store
 
-### 4.3 First Session Free (Guest Flow)
+### 4.3 First Session Free (Guest Flow) [x]
 
-- [ ] Build guest booking flow (no account required)
-- [ ] Build post-booking account activation form (set password)
-- [ ] Enforce one-per-email rule for free session
-- [ ] Write tests for guest booking flow
+- [x] Build guest booking flow (no account required)
+- [x] Build post-booking account activation form (set password)
+- [x] Enforce one-per-email rule for free session
+- [x] Write tests for guest booking flow
 
 ---
 
 ## Phase 5: Frontend — Customer Panel
 
-### 5.1 Dashboard Overview
+### 5.1 Dashboard Overview [x]
 
-- [ ] Build customer dashboard layout (sidebar + content)
-- [ ] Display upcoming bookings list
-- [ ] Display subscription status card (plan, sessions used/remaining, dates)
-- [ ] Display point card balances
-- [ ] Display recent payment history
-- [ ] Write tests for customer dashboard
+- [x] Build customer dashboard layout (sidebar + content)
+- [x] Display upcoming bookings list
+- [x] Display subscription status card (plan, sessions used/remaining, dates)
+- [x] Display point card balances
+- [x] Display recent payment history
+- [x] Write tests for customer dashboard
 
-### 5.2 Booking Management
+### 5.2 Booking Management [x]
 
-- [ ] Build upcoming bookings list with cancel/reschedule actions
-- [ ] Build booking history list (past bookings with attendance status)
-- [ ] Build reschedule flow (select new date/time, confirm)
-- [ ] Build cancel confirmation dialog
-- [ ] Write tests for booking management
+- [x] Build upcoming bookings list with cancel/reschedule actions
+- [x] Build booking history list (past bookings with attendance status)
+- [x] Build reschedule flow (select new date/time, confirm)
+- [x] Build cancel confirmation dialog
+- [x] Write tests for booking management
 
-### 5.3 Subscription Management
+### 5.3 Subscription Management [x]
 
-- [ ] Display current subscription details
-- [ ] Build plan change/upgrade flow
-- [ ] Build cancellation flow
-- [ ] Display session usage tracker (used vs remaining, per period)
-- [ ] Write tests for subscription management
+- [x] Display current subscription details
+- [x] Build plan change/upgrade flow
+- [x] Build cancellation flow
+- [x] Display session usage tracker (used vs remaining, per period)
+- [x] Write tests for subscription management
 
-### 5.4 Profile Management
+### 5.4 Profile Management [x]
 
-- [ ] Build profile edit form (name, email, phone)
-- [ ] Build password change form
-- [ ] Build account deletion flow (with confirmation)
-- [ ] Write tests for profile management
+- [x] Build profile edit form (name, email, phone)
+- [x] Build password change form
+- [x] Build account deletion flow (with confirmation)
+- [x] Write tests for profile management
 
 ---
 

@@ -21,6 +21,8 @@ export interface CustomerSubscription {
   startDate: string;
   endDate: string | null;
   trialEnd: string | null;
+  sessionsUsed: number;
+  sessionsLimit: number | null;
   createdAt: string;
   updatedAt: string;
 }

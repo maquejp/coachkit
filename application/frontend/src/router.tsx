@@ -12,6 +12,11 @@ import BookingPage from '@/public/BookingPage';
 import LoginPage from '@/public/LoginPage';
 import RegisterPage from '@/public/RegisterPage';
 import PasswordResetPage from '@/public/PasswordResetPage';
+import DashboardPage from '@/customer/DashboardPage';
+import BookingsPage from '@/customer/BookingsPage';
+import SubscriptionPage from '@/customer/SubscriptionPage';
+import ProfilePage from '@/customer/ProfilePage';
+import AdminDashboardPage from '@/admin/DashboardPage';
 import Placeholder from '@/components/ui/Placeholder';
 
 export const router = createBrowserRouter([
@@ -38,10 +43,10 @@ export const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      { path: 'dashboard', element: <Placeholder title="Customer Dashboard" /> },
-      { path: 'dashboard/bookings', element: <Placeholder title="My Bookings" /> },
-      { path: 'dashboard/subscription', element: <Placeholder title="My Subscription" /> },
-      { path: 'dashboard/profile', element: <Placeholder title="My Profile" /> },
+      { path: 'dashboard', element: <DashboardPage /> },
+      { path: 'dashboard/bookings', element: <BookingsPage /> },
+      { path: 'dashboard/subscription', element: <SubscriptionPage /> },
+      { path: 'dashboard/profile', element: <ProfilePage /> },
     ],
   },
   {
@@ -52,7 +57,7 @@ export const router = createBrowserRouter([
       </RoleGuard>
     ),
     children: [
-      { path: 'admin', element: <Placeholder title="Admin Dashboard" /> },
+      { path: 'admin', element: <AdminDashboardPage /> },
       { path: 'admin/classes', element: <Placeholder title="Admin Classes" /> },
       { path: 'admin/schedule', element: <Placeholder title="Admin Schedule" /> },
       { path: 'admin/customers', element: <Placeholder title="Admin Customers" /> },
