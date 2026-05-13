@@ -67,6 +67,7 @@ main
 ├── feat/auth                  # Login, Register, guest flow, auth store
 ├── feat/customer-panel        # Dashboard, bookings, subscriptions, profile
 ├── feat/admin-panel           # Full admin: schedule, classes, customers...
+├── feat/backend-scaffold      # Laravel project + Docker + docker-compose
 ├── feat/database              # Migrations + seed scripts
 ├── feat/api-auth              # Auth endpoints + guest flow
 ├── feat/api-crud              # All CRUD endpoints

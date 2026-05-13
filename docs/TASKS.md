@@ -3,7 +3,7 @@
 ## Development Order
 
 1. **Frontend** — Build all UI with mock data (MSW / static fixtures). No backend dependency.
-2. **Database** — Design schema, create migrations, implement seed scripts.
+2. **Backend** — Scaffold Laravel + Docker environment, design schema, migrations, seed scripts.
 3. **API** — Build Laravel REST API with all endpoints.
 4. **Integration** — Replace mocks with real API calls, glue frontend to backend.
 
@@ -605,6 +605,7 @@ main                    # Always deployable. Feature-flagged if incomplete.
 ├── feat/customer-panel      # Dashboard, bookings, subscriptions, profile
 ├── feat/admin-panel         # Dashboard, schedule, classes, locations, customers,
 │                            # attendance, instructors, waitlist, reporting
+├── feat/backend-scaffold    # Laravel project + Docker + docker-compose
 ├── feat/database            # Migrations + seed scripts
 ├── feat/api-auth            # Auth endpoints + guest flow
 ├── feat/api-crud            # All CRUD endpoints (users, locations, coaches,
