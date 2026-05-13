@@ -72,18 +72,18 @@
 - [x] `Mobile Nav` — drawer-style navigation for mobile
 - [x] `Logo` — SVG brand logo (fitness-themed icon + wordmark), used in Header, Footer, and favicon
 
-### 1.4 Section/Page Components
+### 1.4 Section/Page Components [x]
 
-- [ ] `Hero Section` — heading, subtext, CTA button, background
-- [ ] `Feature Card` — icon, title, description, optional link
-- [ ] `Review Card` — quote, author, rating stars, avatar
-- [ ] `Instructor Card` — photo, name, bio, social links
-- [ ] `Class Card` — image, name, duration, intensity badge, CTA
-- [ ] `Pricing Card` — plan name, price, features list, CTA, featured variant
-- [ ] `Contact Form` — name, email, phone, message fields, submit
-- [ ] `Gallery Grid` — image grid with lightbox
-- [ ] `Google Reviews Carousel` — auto-rotating review cards
-- [ ] `Schedule Preview` — week view, day columns, class blocks
+- [x] `Hero Section` — heading, subtext, CTA button, background
+- [x] `Feature Card` — icon, title, description, optional link
+- [x] `Review Card` — quote, author, rating stars, avatar
+- [x] `Instructor Card` — photo, name, bio, social links
+- [x] `Class Card` — image, name, duration, intensity badge, CTA
+- [x] `Pricing Card` — plan name, price, features list, CTA, featured variant
+- [x] `Contact Form` — name, email, phone, message fields, submit
+- [x] `Gallery Grid` — image grid with lightbox
+- [x] `Google Reviews Carousel` — auto-rotating review cards
+- [x] `Schedule Preview` — week view, day columns, class blocks
 
 ---
 
