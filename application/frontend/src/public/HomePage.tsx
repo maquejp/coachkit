@@ -134,7 +134,7 @@ const galleryImages = [
     alt: 'Fitness class',
   },
   {
-    src: 'https://images.unsplash.com/photo-1574680099147-dc0a824f3c60?w=400&h=300&fit=crop',
+    src: 'https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=400&h=300&fit=crop',
     alt: 'Personal training',
   },
   {
