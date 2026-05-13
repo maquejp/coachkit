@@ -70,7 +70,7 @@
 - [x] `Sidebar` — admin sidebar, collapsible, active state, nested items
 - [x] `Breadcrumbs` — auto-generated from route, with home link
 - [x] `Mobile Nav` — drawer-style navigation for mobile
-- [x] `Logo` — SVG brand logo (fitness-themed icon + wordmark), used in Header and Footer
+- [x] `Logo` — SVG brand logo (fitness-themed icon + wordmark), used in Header, Footer, and favicon
 
 ### 1.4 Section/Page Components
 
