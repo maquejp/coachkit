@@ -57,7 +57,8 @@ docker-compose.yml
 ## Key Rules
 
 - **Trunk-based Development** — `main` is the single long-lived branch and is always deployable. Feature/fix branches are short-lived (hours to 2 days max), branched off `main` and merged back via PR after CI passes.
-- **Feature branches** — Each feature/step in its own branch (e.g. `feat/class-booking`, `fix/payment-validation`). If a feature spans multiple days, use **feature flags** to merge incomplete work into `main` without exposing it. This keeps integration continuous and avoids long-lived branches.
+- **Feature branches** — One branch per **logical deliverable** (something that can be reviewed, merged, and potentially toggled on independently), not per checkbox. Group related tasks into a single branch (e.g. `feat/design-system` covers all base components, `feat/public-pages` covers the entire public site). This keeps the graph clean and PRs meaningful. See `docs/TASKS.md` for the recommended branch grouping.
+- **If a feature spans multiple days**, use **feature flags** to merge incomplete work into `main` without exposing it. This keeps integration continuous and avoids long-lived branches.
 - **Feature flags** — Unfinished or unreleased features are gated behind a simple toggle (e.g. `if (featureFlags.bookingWizard)`). Flags are removed once the feature is fully shipped and stable. This lets `main` stay deployable at all times.
 - **No `develop` branch** — Maintaining two long-lived branches adds sync overhead with no benefit for a single-dev or small team. All active work lives on `main` behind flags.
 - **Releases** — A release is simply a tag on `main` (e.g. `v1.0.0`). No release branches needed. Rollbacks are done by flipping a feature flag off or reverting a commit, not by reverting merge commits across branches.

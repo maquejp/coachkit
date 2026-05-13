@@ -768,36 +768,36 @@
 
 ## Git Branch Convention
 
-Trunk-based development with short-lived feature branches:
+Trunk-based development with short-lived feature branches grouped by deliverable:
 
 ```text
-main              # Always deployable. Feature-flagged if incomplete.
-├── feat/scaffold-frontend   # Branches off main, merges back via PR
-├── feat/design-system
-├── feat/public-home
-├── feat/public-classes
-├── feat/public-pricing
-├── feat/booking-wizard
-├── feat/customer-panel
-├── feat/admin-dashboard
-├── feat/admin-schedule
-├── feat/admin-classes
-├── feat/database-migrations
-├── feat/database-seeds
-├── feat/api-auth
-├── feat/api-crud
-├── feat/api-bookings
-├── feat/api-payments
-├── feat/api-notifications
-├── feat/integration-api
-├── feat/e2e-tests
-├── feat/ci-cd
+main                    # Always deployable. Feature-flagged if incomplete.
+├── feat/frontend-scaffold   # Vite + Tailwind + Router + MSW + Vitest + layout
+├── feat/design-system       # All base components (Button, Input, Card, Modal...)
+├── feat/mock-data-layer     # Types + fixtures + MSW handlers
+├── feat/public-pages        # Home, Classes, Pricing, About, Contact + SEO + Analytics
+├── feat/auth                # Login, Register, guest flow, auth store
+├── feat/customer-panel      # Dashboard, bookings, subscriptions, profile
+├── feat/admin-panel         # Dashboard, schedule, classes, locations, customers,
+│                            # attendance, instructors, waitlist, reporting
+├── feat/database            # Migrations + seed scripts
+├── feat/api-auth            # Auth endpoints + guest flow
+├── feat/api-crud            # All CRUD endpoints (users, locations, coaches,
+│                            # classes, schedule, subscriptions, point cards,
+│                            # bookings, attendance, waitlist, dashboard)
+├── feat/api-payments        # Stripe + PayPal integration
+├── feat/api-notifications   # Email templates + queue
+├── feat/integration         # Replace MSW with real API, error handling, perf
+├── feat/testing             # E2E, performance, QA
+├── feat/gdpr-legal          # Cookie consent, privacy, terms, deletion flow
+├── feat/ci-cd               # GitHub Actions, staging, monitoring, backups
 ├── fix/*
 └── chore/*
 ```
 
 Key rules:
 - No `develop` branch. `main` is the only long-lived branch.
+- One branch per logical deliverable, not per checkbox. Group related tasks.
 - Feature branches live at most 1-2 days. If a feature takes longer, use feature flags to merge early.
 - A release is just a git tag on `main` (e.g. `v1.0.0`). No release branches.
 - Rollback = toggle a flag off or revert a single commit.
