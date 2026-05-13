@@ -230,23 +230,23 @@
 
 ## Phase 4: Frontend — Authentication
 
-### 4.1 Auth UI
+### 4.1 Auth UI [x]
 
-- [ ] Build Login page (email + password)
-- [ ] Build Register page (name, email, password, phone)
-- [ ] Build Password reset flow (request + reset forms)
-- [ ] Build Auth guard component (redirect if not authenticated)
-- [ ] Build Role guard component (redirect if not admin)
-- [ ] Build Guest layout vs Authenticated layout switch
-- [ ] Write tests for Login flow
+- [x] Build Login page (email + password)
+- [x] Build Register page (name, email, password, phone)
+- [x] Build Password reset flow (request + reset forms)
+- [x] Build Auth guard component (redirect if not authenticated)
+- [x] Build Role guard component (redirect if not admin)
+- [x] Build Guest layout vs Authenticated layout switch
+- [x] Write tests for Login flow
 
 ### 4.2 Auth Logic
 
-- [ ] Create Zustand auth store (user, token, login, logout, refresh)
-- [ ] Persist token in localStorage/httpOnly cookie
-- [ ] Create auth API client (login, register, me, logout, refresh)
-- [ ] Create axios interceptors for token injection + 401 handling
-- [ ] Wire MSW auth handlers
+- [x] Create Zustand auth store (user, token, login, logout, refresh)
+- [x] Persist token in localStorage
+- [x] Create auth API client (login, register, me, logout, refresh)
+- [x] Create axios interceptors for token injection + 401 handling
+- [x] Wire MSW auth handlers
 - [ ] Write tests for auth store
 
 ### 4.3 First Session Free (Guest Flow)

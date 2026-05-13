@@ -1,11 +1,17 @@
 import { createBrowserRouter } from 'react-router-dom';
 import Layout from '@/components/Layout';
+import AuthLayout from '@/components/AuthLayout';
+import AuthGuard from '@/components/AuthGuard';
+import RoleGuard from '@/components/RoleGuard';
 import HomePage from '@/public/HomePage';
 import ClassesPage from '@/public/ClassesPage';
 import PricingPage from '@/public/PricingPage';
 import AboutPage from '@/public/AboutPage';
 import ContactPage from '@/public/ContactPage';
 import BookingPage from '@/public/BookingPage';
+import LoginPage from '@/public/LoginPage';
+import RegisterPage from '@/public/RegisterPage';
+import PasswordResetPage from '@/public/PasswordResetPage';
 import Placeholder from '@/components/ui/Placeholder';
 
 export const router = createBrowserRouter([
@@ -19,18 +25,39 @@ export const router = createBrowserRouter([
       { path: 'about', element: <AboutPage /> },
       { path: 'contact', element: <ContactPage /> },
       { path: 'book', element: <BookingPage /> },
-      { path: 'login', element: <Placeholder title="Login" /> },
-      { path: 'register', element: <Placeholder title="Register" /> },
+      { path: 'login', element: <LoginPage /> },
+      { path: 'register', element: <RegisterPage /> },
+      { path: 'password-reset', element: <PasswordResetPage /> },
+    ],
+  },
+  {
+    path: '/',
+    element: (
+      <AuthGuard>
+        <AuthLayout />
+      </AuthGuard>
+    ),
+    children: [
+      { path: 'dashboard', element: <Placeholder title="Customer Dashboard" /> },
+      { path: 'dashboard/bookings', element: <Placeholder title="My Bookings" /> },
+      { path: 'dashboard/subscription', element: <Placeholder title="My Subscription" /> },
+      { path: 'dashboard/profile', element: <Placeholder title="My Profile" /> },
+    ],
+  },
+  {
+    path: '/',
+    element: (
+      <RoleGuard role="admin">
+        <AuthLayout />
+      </RoleGuard>
+    ),
+    children: [
       { path: 'admin', element: <Placeholder title="Admin Dashboard" /> },
       { path: 'admin/classes', element: <Placeholder title="Admin Classes" /> },
       { path: 'admin/schedule', element: <Placeholder title="Admin Schedule" /> },
       { path: 'admin/customers', element: <Placeholder title="Admin Customers" /> },
       { path: 'admin/analytics', element: <Placeholder title="Admin Analytics" /> },
       { path: 'admin/settings', element: <Placeholder title="Admin Settings" /> },
-      { path: 'dashboard', element: <Placeholder title="Customer Dashboard" /> },
-      { path: 'dashboard/bookings', element: <Placeholder title="My Bookings" /> },
-      { path: 'dashboard/subscription', element: <Placeholder title="My Subscription" /> },
-      { path: 'dashboard/profile', element: <Placeholder title="My Profile" /> },
     ],
   },
 ]);
