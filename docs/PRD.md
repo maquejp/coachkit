@@ -350,6 +350,8 @@ erDiagram
 | **CI/CD**      | GitHub Actions — lint, typecheck, test on PR; auto-deploy on main |
 | **Backups**    | Daily PostgreSQL dump, retained 30 days                           |
 | **Monitoring** | Uptime monitoring (UptimeRobot or similar)                        |
+| **Analytics** | Umami (self-hosted) — tracks page views, bookings, waitlist joins, purchases, contact form |
+| **Email (dev)** | Mailpit — SMTP catcher with web UI, bundled in docker-compose     |
 
 ## Seed Data
 

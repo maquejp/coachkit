@@ -385,7 +385,8 @@
 
 - [ ] Scaffold Laravel project in `application/backend/`
 - [ ] Configure `.env` for local PostgreSQL
-- [ ] Set up Dockerfile + docker-compose.yml (Laravel + PHP 8 + PostgreSQL + Nginx)
+- [ ] Set up Dockerfile + docker-compose.yml (Laravel + PHP 8 + PostgreSQL + Nginx + Mailpit)
+- [ ] Add Mailpit for email catching in development (SMTP server, web UI at localhost:8025)
 - [ ] Install Sanctum (API auth) or JWT package
 - [ ] Configure CORS for frontend dev server
 - [ ] Set up PHPUnit configuration
