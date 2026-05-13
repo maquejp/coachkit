@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
+import Logo from './Logo';
 import MobileNav from './MobileNav';
 
 const navLinks = [
@@ -17,9 +18,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-        <Link to="/" className="text-xl font-bold tracking-tight text-primary-700">
-          CoachKit
-        </Link>
+        <Logo />
 
         <nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (

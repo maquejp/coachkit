@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Logo from './Logo';
 
 interface MobileNavProps {
   open: boolean;
@@ -22,7 +23,7 @@ export default function MobileNav({ open, onClose, links }: MobileNavProps) {
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="absolute right-0 top-0 h-full w-3/4 max-w-sm bg-white p-6 shadow-xl">
         <div className="mb-6 flex items-center justify-between">
-          <span className="text-lg font-bold text-primary-700">CoachKit</span>
+          <Logo showText={false} />
           <button
             onClick={onClose}
             className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
