@@ -28,4 +28,12 @@ export const authHandlers = [
   http.post('/api/auth/logout', () => {
     return HttpResponse.json({ success: true, data: null });
   }),
+
+  http.post('/api/auth/password-reset-request', async () => {
+    return HttpResponse.json({ success: true, data: null });
+  }),
+
+  http.post('/api/auth/password-reset', async () => {
+    return HttpResponse.json({ success: true, data: null });
+  }),
 ];
