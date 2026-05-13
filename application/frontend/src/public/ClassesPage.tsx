@@ -1,54 +1,39 @@
+import SEO from '@/components/SEO';
 import ClassCard from '@/components/ClassCard';
+import type { Intensity } from '@/types';
+import { classTypes } from '@/mocks/fixtures';
 
-const classes = [
-  {
-    name: 'Morning Yoga',
-    duration: '60 min',
-    intensity: 'beginner' as const,
-    description: 'Start your day with gentle stretches and mindfulness.',
-  },
-  {
-    name: 'HIIT Circuit',
-    duration: '45 min',
-    intensity: 'advanced' as const,
-    description: 'High-intensity interval training for maximum results.',
-  },
-  {
-    name: 'Pilates Flow',
-    duration: '50 min',
-    intensity: 'intermediate' as const,
-    description: 'Core-strengthening Pilates with controlled movements.',
-  },
-  {
-    name: 'Strength & Tone',
-    duration: '45 min',
-    intensity: 'intermediate' as const,
-    description: 'Build lean muscle with resistance training.',
-  },
-  {
-    name: 'Boxing Fitness',
-    duration: '50 min',
-    intensity: 'advanced' as const,
-    description: 'Cardio boxing combining technique and endurance.',
-  },
-  {
-    name: 'Meditation',
-    duration: '30 min',
-    intensity: 'beginner' as const,
-    description: 'Guided meditation for relaxation and focus.',
-  },
-];
+function getIntensity(durationMinutes: number): Intensity {
+  if (durationMinutes <= 35) return 'beginner';
+  if (durationMinutes <= 50) return 'intermediate';
+  return 'advanced';
+}
 
 export default function ClassesPage() {
+  const activeTypes = classTypes.filter((ct) => ct.isActive);
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-16">
-      <h1 className="mb-2 text-4xl font-bold text-gray-900">Our Classes</h1>
-      <p className="mb-10 text-gray-600">Find the perfect class for your fitness level.</p>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {classes.map((c) => (
-          <ClassCard key={c.name} {...c} />
-        ))}
+    <>
+      <SEO
+        title="Our Classes"
+        description="Find the perfect class for your fitness level — from gentle yoga to high-intensity boxing. 6 class types to choose from."
+        canonical="https://coachkit.app/classes"
+      />
+      <div className="mx-auto max-w-7xl px-4 py-16">
+        <h1 className="mb-2 text-4xl font-bold text-gray-900">Our Classes</h1>
+        <p className="mb-10 text-gray-600">Find the perfect class for your fitness level.</p>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {activeTypes.map((ct) => (
+            <ClassCard
+              key={ct.id}
+              name={ct.name}
+              duration={`${ct.durationMinutes} min`}
+              intensity={getIntensity(ct.durationMinutes)}
+              description={ct.description}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -147,36 +147,36 @@
 
 ## Phase 3: Frontend — Public Site Pages
 
-### 3.1 Home Page
+### 3.1 Home Page [x]
 
-- [ ] Build Hero section with CTA (first session free)
-- [ ] Build Google Reviews carousel component
-- [ ] Build Coach/Instructor story snippet section
-- [ ] Build Weekly schedule preview (next 7 days)
-- [ ] Build Class preview cards (grid of class types)
-- [ ] Build Gallery section (image grid)
-- [ ] Build Social media links section
-- [ ] Build Footer with contact info
-- [ ] Add responsive breakpoints for all sections
-- [ ] Write tests for Home page sections
+- [x] Build Hero section with CTA (first session free)
+- [x] Build Google Reviews carousel component
+- [x] Build Coach/Instructor story snippet section
+- [x] Build Weekly schedule preview (next 7 days)
+- [x] Build Class preview cards (grid of class types)
+- [x] Build Gallery section (image grid)
+- [x] Build Social media links section
+- [x] Build Footer with contact info
+- [x] Add responsive breakpoints for all sections
+- [x] Write tests for Home page sections
 
-### 3.2 Classes Page
+### 3.2 Classes Page [x]
 
-- [ ] Build class type listing grid
-- [ ] Build individual class detail view (description, benefits, duration, intensity)
-- [ ] Build class images/gallery per type
-- [ ] Add booking CTA per class
-- [ ] Write tests for Classes page
+- [x] Build class type listing grid
+- [x] Build individual class detail view (description, benefits, duration, intensity)
+- [x] Build class images/gallery per type
+- [x] Add booking CTA per class
+- [x] Write tests for Classes page
 
-### 3.3 Pricing Page
+### 3.3 Pricing Page [x]
 
-- [ ] Build subscription plans cards (annual)
-- [ ] Build subscription plans cards (monthly)
-- [ ] Build point card plans listing
-- [ ] Display single session price from class type `default_price`
-- [ ] Wire all pricing data live from mock API (no hardcoding)
-- [ ] Add insurance fee display
-- [ ] Write tests for Pricing page
+- [x] Build subscription plans cards (annual)
+- [x] Build subscription plans cards (monthly)
+- [x] Build point card plans listing
+- [x] Display single session price from class type `default_price`
+- [x] Wire all pricing data live from mock API (no hardcoding)
+- [x] Add insurance fee display
+- [x] Write tests for Pricing page
 
 ### 3.4 Booking Page
 
@@ -192,39 +192,39 @@
 - [ ] Handle full-class waitlist prompt
 - [ ] Write tests for Booking wizard (all steps)
 
-### 3.5 About Page
+### 3.5 About Page [x]
 
-- [ ] Build Coach bio section
-- [ ] Build Mission/Vision section
-- [ ] Build Team section
-- [ ] Build Gallery section
-- [ ] Write tests for About page
+- [x] Build Coach bio section
+- [x] Build Mission/Vision section
+- [x] Build Team section
+- [x] Build Gallery section
+- [x] Write tests for About page
 
-### 3.6 Contact Page
+### 3.6 Contact Page [x]
 
-- [ ] Build Contact form (name, email, phone, message)
-- [ ] Add form validation (required fields, email format)
-- [ ] Build form submission flow with success/error feedback
-- [ ] Display contact info (phone, email, address, map)
-- [ ] Write tests for Contact page
+- [x] Build Contact form (name, email, phone, message)
+- [x] Add form validation (required fields, email format)
+- [x] Build form submission flow with success/error feedback
+- [x] Display contact info (phone, email, address, map)
+- [x] Write tests for Contact page
 
-### 3.7 SEO Setup
+### 3.7 SEO Setup [x]
 
-- [ ] Add react-helmet-async for per-page meta tags
-- [ ] Set meta titles, descriptions, OG tags per page
-- [ ] Add JSON-LD structured data (LocalBusiness)
-- [ ] Generate sitemap.xml
-- [ ] Add robots.txt
-- [ ] Add canonical URLs
+- [x] Add react-helmet-async for per-page meta tags
+- [x] Set meta titles, descriptions, OG tags per page
+- [x] Add JSON-LD structured data (LocalBusiness)
+- [x] Generate sitemap.xml
+- [x] Add robots.txt
+- [x] Add canonical URLs
 
-### 3.8 Analytics Setup
+### 3.8 Analytics Setup [x]
 
-- [ ] Add Umami tracking script to layout
-- [ ] Track page views
-- [ ] Track booking confirmed event
-- [ ] Track waitlist joined event
-- [ ] Track subscription purchased event
-- [ ] Track contact form submitted event
+- [x] Add Umami tracking script to layout
+- [x] Track page views
+- [x] Track booking confirmed event
+- [x] Track waitlist joined event
+- [x] Track subscription purchased event
+- [x] Track contact form submitted event
 
 ---
 

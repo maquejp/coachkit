@@ -10,3 +10,4 @@ export {
   pointCardPurchases,
 } from './subscriptions';
 export { bookings, attendanceRecords, waitlistEntries, paymentTransactions } from './bookings';
+export { reviews } from './reviews';
