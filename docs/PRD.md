@@ -28,7 +28,8 @@ A full-featured appointment and event booking SaaS platform built with React + T
 
 ### Admin & Management
 
-- **Admin Dashboard** — KPIs: active subscriptions, class occupancy rates, revenue, new signups. Charts and attendance overview.
+- **Admin Dashboard** — KPIs: active subscriptions, class occupancy rates, revenue, new signups (filterable by location). Charts and attendance overview.
+- **Location Management** — CRUD for sites/locations: name, address, contact info, map link. Each schedule entry and exception is tied to a location. Filter reporting and dashboards by location.
 - **Instructor Management** — Instructor profiles, bio, photo, class assignments. Built for multi-instructor scaling.
 - **Attendance & Session Tracking** — Check-in per session. Track per-participant session usage within their subscription period. Overview per week/month/custom date range showing used and remaining sessions.
 - **Reporting & Export** — All list views and reports exportable to XLS and PDF (customers, attendance, subscriptions, revenue, occupancy).
@@ -88,11 +89,14 @@ erDiagram
     users ||--o{ attendance : recorded
     users ||--o{ waitlist : joins
     users ||--o{ payment_transactions : pays
+    users ||--o{ free_session_claims : claims
 
     coaches ||--o{ weekly_schedule : assigned
 
+    locations ||--o{ weekly_schedule : schedules
+    locations ||--o{ schedule_exceptions : closes
+
     class_types ||--o{ weekly_schedule : defines
-    class_types ||--o{ single_session_pricing : priced
     class_types ||--o{ attendance : for
 
     weekly_schedule ||--o{ bookings : contains
@@ -112,7 +116,28 @@ erDiagram
         string last_name
         string phone
         enum role "customer | admin"
+        datetime email_verified_at
+        datetime last_login_at
         datetime created_at
+        datetime updated_at
+        datetime deleted_at
+    }
+
+    locations {
+        int id PK
+        string name
+        string slug
+        string address
+        string city
+        string postal_code
+        string phone
+        string email
+        string google_maps_url
+        text notes
+        boolean is_active
+        datetime created_at
+        datetime updated_at
+        datetime deleted_at
     }
 
     coaches {
@@ -124,6 +149,9 @@ erDiagram
         string email
         string phone
         boolean is_active
+        datetime created_at
+        datetime updated_at
+        datetime deleted_at
     }
 
     class_types {
@@ -132,56 +160,76 @@ erDiagram
         string slug
         string description
         string color
+        enum intensity_level "low | moderate | high | intense"
+        string image_url
         int duration_minutes
         int max_capacity
+        decimal default_price
+        int sort_order
         boolean is_active
+        datetime created_at
+        datetime updated_at
+        datetime deleted_at
     }
 
     weekly_schedule {
         int id PK
         int class_type_id FK
         int coach_id FK
+        int location_id FK
         int day_of_week "1=Mon..7=Sun"
         time start_time
         time end_time
         int max_capacity
+        date valid_from
+        date valid_to
         boolean is_active
+        datetime created_at
+        datetime updated_at
+        datetime deleted_at
     }
 
     schedule_exceptions {
         int id PK
+        int location_id FK
         date date
         boolean is_closed
         time open_time
         time close_time
         string reason
+        datetime created_at
+        datetime updated_at
     }
 
     subscription_plans {
         int id PK
         string name
+        string description
         enum type "annual | monthly"
         int sessions_per_week
         decimal price_per_month
         int commitment_months
         decimal insurance_fee
+        int trial_days
         boolean is_active
+        string stripe_price_id
+        datetime created_at
+        datetime updated_at
+        datetime deleted_at
     }
 
     point_card_plans {
         int id PK
         string name
+        string description
         int points
         decimal price
         int validity_months
         boolean is_active
-    }
-
-    single_session_pricing {
-        int id PK
-        int class_type_id FK
-        decimal price
-        boolean is_active
+        string stripe_price_id
+        datetime created_at
+        datetime updated_at
+        datetime deleted_at
     }
 
     customer_subscriptions {
@@ -193,6 +241,11 @@ erDiagram
         int sessions_used
         enum status "active | cancelled | expired"
         string stripe_subscription_id
+        boolean auto_renew
+        text notes
+        datetime cancelled_at
+        datetime created_at
+        datetime updated_at
     }
 
     point_card_purchases {
@@ -202,6 +255,8 @@ erDiagram
         int points_remaining
         date purchase_date
         date expiry_date
+        datetime created_at
+        datetime updated_at
     }
 
     bookings {
@@ -211,7 +266,12 @@ erDiagram
         date booking_date
         enum status "confirmed | cancelled | attended | no_show"
         string guest_email
+        string source "web | admin | mobile"
+        int waitlist_promoted_from_id FK "nullable, references waitlist"
+        text notes
+        datetime cancelled_at
         datetime created_at
+        datetime updated_at
     }
 
     attendance {
@@ -221,6 +281,10 @@ erDiagram
         int class_type_id FK
         datetime attended_at
         int marked_by FK "admin user_id"
+        string check_in_method "manual | self | qr"
+        text notes
+        datetime created_at
+        datetime updated_at
     }
 
     waitlist {
@@ -228,20 +292,42 @@ erDiagram
         int user_id FK
         int schedule_id FK
         date date
-        datetime created_at
+        enum status "waiting | promoted | claimed | expired | cancelled"
+        datetime expires_at
+        datetime confirmed_at
         datetime notified_at
+        datetime created_at
+        datetime updated_at
     }
 
     payment_transactions {
         int id PK
         int user_id FK
+        int subscription_id FK "nullable"
+        int point_card_purchase_id FK "nullable"
+        int booking_id FK "nullable"
         decimal amount
+        decimal fee_amount
+        decimal net_amount
         string currency
         string status
+        string payment_method
         string stripe_payment_intent_id
-        string related_type "subscription | point_card | single_session"
-        int related_id
+        string receipt_url
+        text description
+        json metadata
         datetime created_at
+        datetime updated_at
+    }
+
+    free_session_claims {
+        int id PK
+        string email
+        int user_id FK "nullable, set on account activation"
+        int booking_id FK
+        datetime claimed_at
+        datetime created_at
+        datetime updated_at
     }
 ```
 
@@ -272,15 +358,16 @@ A database seed script provisions demo data for development and staging environm
 | Entity                     | Source / Approach                            | Notes                                                                  |
 | -------------------------- | -------------------------------------------- | ---------------------------------------------------------------------- |
 | **Users**                  | `https://jsonplaceholder.typicode.com/users` | Fetch via HTTP, map to `users` table. First entry promoted to `admin`. |
+| **Locations**              | 2–3 hardcoded sites/locations                | Name, address, city, contact info, `is_active = true`                  |
 | **Coaches**                | 3–5 hardcoded instructor profiles            | Name, bio, photo_url, email, phone, `is_active = true`                 |
-| **Class Types**            | 5–8 hardcoded service types                  | Name, slug, description, color, duration, max_capacity                 |
-| **Weekly Schedule**        | Generated from class types + coaches         | Spread across days/times, configurable capacity                        |
-| **Schedule Exceptions**    | 2–3 hardcoded holiday/closure dates          | Past and future dates for testing                                      |
-| **Subscription Plans**     | 4–6 hardcoded plans (monthly + annual)       | Mix of session counts, commitment months, insurance fees               |
-| **Point Card Plans**       | 3 hardcoded point card options               | 5/10/20 points, varying prices and validity periods                    |
-| **Single Session Pricing** | 1 price per class type                       | Default price for each active class type                               |
-| **Sample Bookings**        | 10–15 generated from users + schedule        | Mix of confirmed, cancelled, attended, no-show statuses                |
-| **Sample Attendance**      | Subset of attended bookings                  | Marked_by set to admin user                                            |
+| **Class Types**      | 5–8 hardcoded service types                              | Name, slug, description, color, intensity_level, duration, max_capacity, default_price, sort_order |
+| **Weekly Schedule**  | Generated from class types + coaches + locations         | Spread across days/times/locations, valid date range                  |
+| **Schedule Exceptions** | 2–3 hardcoded holiday/closure dates                  | Per location, past and future dates for testing                       |
+| **Subscription Plans** | 4–6 hardcoded plans (monthly + annual)                | Mix of session counts, commitment months, insurance fees, trial_days |
+| **Point Card Plans** | 3 hardcoded point card options                           | 5/10/20 points, varying prices and validity periods                   |
+| **Sample Bookings**        | 10–15 generated from users + schedule        | Mix of confirmed, cancelled, attended, no-show statuses ; various sources               |
+| **Sample Attendance**      | Subset of attended bookings                  | Marked_by set to admin user, mix of check-in methods                  |
+| **Free Session Claims**    | 2–3 from guest bookings                      | Email + booking_id, 1 linked to activated user account                |
 
 ## Testing Methodology
 

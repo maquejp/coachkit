@@ -101,13 +101,14 @@
 ### 2.1 Type Definitions
 
 - [ ] Define `User`, `AdminUser`, `CustomerUser` types
+- [ ] Define `Location` type
 - [ ] Define `Coach` type
 - [ ] Define `ClassType` type
 - [ ] Define `WeeklySchedule` type
 - [ ] Define `ScheduleException` type
 - [ ] Define `SubscriptionPlan`, `CustomerSubscription` types
 - [ ] Define `PointCardPlan`, `PointCardPurchase` types
-- [ ] Define `SingleSessionPricing` type
+- [ ] Add `default_price` field to `ClassType` type
 - [ ] Define `Booking` type
 - [ ] Define `Attendance` type
 - [ ] Define `WaitlistEntry` type
@@ -117,13 +118,14 @@
 ### 2.2 Mock Data Fixtures
 
 - [ ] Create mock users (10 from jsonplaceholder.typicode.com structure, 1 admin)
+- [ ] Create mock locations (3 sites with addresses, contact info)
 - [ ] Create mock coaches (4 profiles)
 - [ ] Create mock class types (6 types with colors, durations, capacities)
 - [ ] Create mock weekly schedule (full week with assigned classes/coaches)
 - [ ] Create mock schedule exceptions (2 holidays, 1 early closure)
 - [ ] Create mock subscription plans (4 plans: monthly/annual variants)
 - [ ] Create mock point card plans (3 plans)
-- [ ] Create mock single session pricing (1 per class type)
+- [ ] Add `default_price` field to mock class types
 - [ ] Create mock customer subscriptions (mix of active/cancelled/expired)
 - [ ] Create mock point card purchases
 - [ ] Create mock bookings (confirmed, cancelled, attended, no-show, guest)
@@ -133,6 +135,7 @@
 
 ### 2.3 MSW Handlers
 
+- [ ] Locations handlers: list, get, create, update, delete
 - [ ] Auth handlers: login, register, me, logout
 - [ ] Users/coaches handlers: list, get, create, update, delete
 - [ ] Class types handlers: list, get, create, update, delete
@@ -179,7 +182,7 @@
 - [ ] Build subscription plans cards (annual)
 - [ ] Build subscription plans cards (monthly)
 - [ ] Build point card plans listing
-- [ ] Build single session pricing table
+- [ ] Display single session price from class type `default_price`
 - [ ] Wire all pricing data live from mock API (no hardcoding)
 - [ ] Add insurance fee display
 - [ ] Write tests for Pricing page
@@ -314,11 +317,11 @@
 
 ### 6.2 Schedule Management
 
-- [ ] Build weekly timetable editor (day columns, time rows)
+- [ ] Build weekly timetable editor (day columns, time rows, location filter)
 - [ ] Build drag-to-create slot
-- [ ] Build edit slot modal (class type, coach, capacity, time)
+- [ ] Build edit slot modal (class type, coach, location, capacity, time)
 - [ ] Build delete slot confirmation
-- [ ] Build exception dates manager (holidays, closures)
+- [ ] Build exception dates manager (holidays, closures, per location)
 - [ ] Write tests for schedule management
 
 ### 6.3 Class Management
@@ -333,38 +336,45 @@
 - [ ] Build subscription plans list with CRUD
 - [ ] Build create/edit plan form (name, type, sessions/week, price, commitment, insurance)
 - [ ] Build point card plans CRUD
-- [ ] Build single session pricing CRUD (per class type)
+- [ ] Build default price field in class type create/edit form
 - [ ] Write tests for pricing management
 
-### 6.5 Customer Management
+### 6.5 Location Management
+
+- [ ] Build locations list with CRUD
+- [ ] Build create/edit location form (name, address, city, postal code, phone, email, maps URL, notes)
+- [ ] Build location detail view (linked schedule, exceptions)
+- [ ] Write tests for location management
+
+### 6.6 Customer Management
 
 - [ ] Build customers list (searchable, sortable, paginated)
 - [ ] Build customer detail view (profile, subscriptions, bookings, attendance, payments)
 - [ ] Build impersonation/assist mode
 - [ ] Write tests for customer management
 
-### 6.6 Attendance
+### 6.7 Attendance
 
 - [ ] Build attendance check-in interface (select date, view class, mark attendees)
 - [ ] Build attendance history view (per customer, per class, date range)
 - [ ] Build session usage report (used vs remaining per customer)
 - [ ] Write tests for attendance
 
-### 6.7 Instructor Management
+### 6.8 Instructor Management
 
 - [ ] Build instructors list with CRUD
 - [ ] Build create/edit instructor form (name, bio, photo, email, phone)
 - [ ] Build instructor schedule view
 - [ ] Write tests for instructor management
 
-### 6.8 Waitlist Management
+### 6.9 Waitlist Management
 
 - [ ] Build waitlist view per class/date
 - [ ] Build manual promote action
 - [ ] Build notify all action
 - [ ] Write tests for waitlist management
 
-### 6.9 Reporting & Export
+### 6.10 Reporting & Export
 
 - [ ] Build customer report (list, export XLS/PDF)
 - [ ] Build attendance report (date range, exportable)
@@ -373,7 +383,7 @@
 - [ ] Build revenue report (monthly, annual)
 - [ ] Write tests for report generation
 
-### 6.10 Embedded Analytics
+### 6.11 Embedded Analytics
 
 - [ ] Build analytics page with Umami iframe/integration
 - [ ] Show conversion rate, popular classes, peak booking times
@@ -385,20 +395,22 @@
 
 ### 7.1 Migration: Core Tables
 
-- [ ] Create `users` table migration (id, email, password_hash, first_name, last_name, phone, role, timestamps)
-- [ ] Create `coaches` table migration (id, first_name, last_name, bio, photo_url, email, phone, is_active, timestamps)
-- [ ] Create `class_types` table migration (id, name, slug, description, color, duration_minutes, max_capacity, is_active, timestamps)
-- [ ] Create `weekly_schedule` table migration (id, class_type_id FK, coach_id FK, day_of_week, start_time, end_time, max_capacity, is_active, timestamps)
-- [ ] Create `schedule_exceptions` table migration (id, date, is_closed, open_time, close_time, reason, timestamps)
-- [ ] Create `subscription_plans` table migration (id, name, type, sessions_per_week, price_per_month, commitment_months, insurance_fee, is_active, timestamps)
-- [ ] Create `point_card_plans` table migration (id, name, points, price, validity_months, is_active, timestamps)
-- [ ] Create `single_session_pricing` table migration (id, class_type_id FK, price, is_active, timestamps)
-- [ ] Create `customer_subscriptions` table migration (id, user_id FK, subscription_plan_id FK, start_date, end_date, sessions_used, status, stripe_subscription_id, timestamps)
+- [ ] Create `users` table migration (id, email, password_hash, first_name, last_name, phone, role, email_verified_at, last_login_at, timestamps, soft_deletes)
+- [ ] Create `locations` table migration (id, name, slug, address, city, postal_code, phone, email, google_maps_url, notes, is_active, timestamps, soft_deletes)
+- [ ] Create `coaches` table migration (id, first_name, last_name, bio, photo_url, email, phone, is_active, timestamps, soft_deletes)
+- [ ] Create `class_types` table migration (id, name, slug, description, color, intensity_level, image_url, duration_minutes, max_capacity, default_price, sort_order, is_active, timestamps, soft_deletes)
+- [ ] Create `weekly_schedule` table migration (id, class_type_id FK, coach_id FK, location_id FK, day_of_week, start_time, end_time, max_capacity, valid_from, valid_to, is_active, timestamps, soft_deletes)
+- [ ] Create `schedule_exceptions` table migration (id, location_id FK, date, is_closed, open_time, close_time, reason, timestamps)
+- [ ] Create `subscription_plans` table migration (id, name, description, type, sessions_per_week, price_per_month, commitment_months, insurance_fee, trial_days, is_active, stripe_price_id, timestamps, soft_deletes)
+- [ ] Create `point_card_plans` table migration (id, name, description, points, price, validity_months, is_active, stripe_price_id, timestamps, soft_deletes)
+- [ ] Add `default_price` column to `class_types` table migration
+- [ ] Create `customer_subscriptions` table migration (id, user_id FK, subscription_plan_id FK, start_date, end_date, sessions_used, status, stripe_subscription_id, auto_renew, notes, cancelled_at, timestamps)
 - [ ] Create `point_card_purchases` table migration (id, user_id FK, point_card_plan_id FK, points_remaining, purchase_date, expiry_date, timestamps)
-- [ ] Create `bookings` table migration (id, user_id FK nullable, schedule_id FK, booking_date, status, guest_email, timestamps)
-- [ ] Create `attendance` table migration (id, booking_id FK, user_id FK, class_type_id FK, attended_at, marked_by FK)
-- [ ] Create `waitlist` table migration (id, user_id FK, schedule_id FK, date, created_at, notified_at)
-- [ ] Create `payment_transactions` table migration (id, user_id FK, amount, currency, status, stripe_payment_intent_id, related_type, related_id, timestamps)
+- [ ] Create `bookings` table migration (id, user_id FK nullable, schedule_id FK, booking_date, status, guest_email, source, waitlist_promoted_from_id FK nullable, notes, cancelled_at, timestamps)
+- [ ] Create `attendance` table migration (id, booking_id FK, user_id FK, class_type_id FK, attended_at, marked_by FK, check_in_method, notes, timestamps)
+- [ ] Create `waitlist` table migration (id, user_id FK, schedule_id FK, date, status, expires_at, confirmed_at, notified_at, timestamps)
+- [ ] Create `payment_transactions` table migration (id, user_id FK, subscription_id FK nullable, point_card_purchase_id FK nullable, booking_id FK nullable, amount, fee_amount, net_amount, currency, status, payment_method, stripe_payment_intent_id, receipt_url, description, metadata json, timestamps)
+- [ ] Create `free_session_claims` table migration (id, email, user_id FK nullable, booking_id FK, claimed_at, timestamps)
 - [ ] Add indexes on foreign keys, status columns, and date columns
 - [ ] Add unique constraints where appropriate
 
@@ -406,14 +418,16 @@
 
 - [ ] Create `DatabaseSeeder` orchestrator
 - [ ] Create `UserSeeder`: fetch `https://jsonplaceholder.typicode.com/users`, map to users table, promote first entry to admin
+- [ ] Create `LocationSeeder`: insert 2-3 hardcoded sites with address, contact info
 - [ ] Create `CoachSeeder`: insert 4 hardcoded instructor profiles
 - [ ] Create `ClassTypeSeeder`: insert 6 hardcoded class types with colors
-- [ ] Create `WeeklyScheduleSeeder`: generate schedule entries across weekdays
-- [ ] Create `ScheduleExceptionSeeder`: insert 2-3 holiday/closure dates
+- [ ] Create `WeeklyScheduleSeeder`: generate schedule entries across weekdays and locations
+- [ ] Create `ScheduleExceptionSeeder`: insert 2-3 holiday/closure dates per location
 - [ ] Create `SubscriptionPlanSeeder`: insert 4 plans (monthly + annual variants)
 - [ ] Create `PointCardPlanSeeder`: insert 3 point card options
-- [ ] Create `SingleSessionPricingSeeder`: insert 1 price per active class type
-- [ ] Create `CustomerSubscriptionSeeder`: assign subscriptions to subset of users
+- [ ] Set `default_price` on each class type in `ClassTypeSeeder`
+- [ ] Create `CustomerSubscriptionSeeder`: assign subscriptions to subset of users (with auto_renew mix)
+- [ ] Create `FreeSessionClaimSeeder`: insert 2-3 claims from guest bookings, 1 linked to activated account
 - [ ] Create `PointCardPurchaseSeeder`: assign point cards to subset of users
 - [ ] Create `BookingSeeder`: generate 10-15 bookings with varied statuses
 - [ ] Create `AttendanceSeeder`: mark attendance for subset of confirmed bookings
@@ -458,7 +472,17 @@
 - [ ] Create `DELETE /api/admin/users/{id}` — soft delete user
 - [ ] Write tests for user endpoints
 
-### 9.2 Instructor Management
+### 9.2 Location Management
+
+- [ ] Create `GET /api/locations` — list active locations (public)
+- [ ] Create `GET /api/admin/locations` — list all locations (admin)
+- [ ] Create `POST /api/admin/locations` — create location
+- [ ] Create `GET /api/admin/locations/{id}` — get location detail
+- [ ] Create `PUT /api/admin/locations/{id}` — update location
+- [ ] Create `DELETE /api/admin/locations/{id}` — soft delete location
+- [ ] Write tests for location endpoints
+
+### 9.3 Instructor Management
 
 - [ ] Create `GET /api/admin/coaches` — list all coaches
 - [ ] Create `POST /api/admin/coaches` — create coach
@@ -467,7 +491,7 @@
 - [ ] Create `DELETE /api/admin/coaches/{id}` — soft delete coach
 - [ ] Write tests for coach endpoints
 
-### 9.3 Class Type Management
+### 9.4 Class Type Management
 
 - [ ] Create `GET /api/class-types` — list active class types (public)
 - [ ] Create `GET /api/admin/class-types` — list all class types (admin)
@@ -477,20 +501,20 @@
 - [ ] Create `DELETE /api/admin/class-types/{id}` — soft delete class type
 - [ ] Write tests for class type endpoints
 
-### 9.4 Schedule Management
+### 9.5 Schedule Management
 
-- [ ] Create `GET /api/schedule` — list schedule for given week/date range (public)
+- [ ] Create `GET /api/schedule` — list schedule (filterable by week, date range, location_id)
 - [ ] Create `GET /api/schedule/{id}` — get schedule detail with capacity info
 - [ ] Create `POST /api/admin/schedule` — create schedule entry
 - [ ] Create `PUT /api/admin/schedule/{id}` — update schedule entry
 - [ ] Create `DELETE /api/admin/schedule/{id}` — delete schedule entry
-- [ ] Create `GET /api/admin/schedule-exceptions` — list exceptions
+- [ ] Create `GET /api/admin/schedule-exceptions` — list exceptions (filterable by location_id)
 - [ ] Create `POST /api/admin/schedule-exceptions` — create exception
 - [ ] Create `PUT /api/admin/schedule-exceptions/{id}` — update exception
 - [ ] Create `DELETE /api/admin/schedule-exceptions/{id}` — delete exception
 - [ ] Write tests for schedule endpoints
 
-### 9.5 Subscription Management
+### 9.6 Subscription Management
 
 - [ ] Create `GET /api/subscription-plans` — list active plans (public)
 - [ ] Create `GET /api/admin/subscription-plans` — list all plans (admin)
@@ -503,7 +527,7 @@
 - [ ] Create `GET /api/admin/customer-subscriptions` — list all subscriptions (admin)
 - [ ] Write tests for subscription endpoints
 
-### 9.6 Point Card Management
+### 9.7 Point Card Management
 
 - [ ] Create `GET /api/point-card-plans` — list active plans (public)
 - [ ] Create `GET /api/admin/point-card-plans` — list all plans (admin)
@@ -514,13 +538,13 @@
 - [ ] Create `POST /api/customer/point-cards` — purchase point card
 - [ ] Write tests for point card endpoints
 
-### 9.7 Single Session Pricing
+### 9.8 Class Pricing
 
-- [ ] Create `GET /api/single-session-pricing` — list active pricing by class type
-- [ ] Create `POST /api/admin/single-session-pricing` — create/update pricing
+- [ ] Include `default_price` in `GET /api/class-types` response
+- [ ] Include `default_price` field in admin class type create/update endpoints
 - [ ] Write tests for pricing endpoints
 
-### 9.8 Booking Endpoints
+### 9.9 Booking Endpoints
 
 - [ ] Create `POST /api/customer/bookings` — create booking (with deduction logic)
 - [ ] Create `GET /api/customer/bookings` — list current user's bookings
@@ -534,7 +558,7 @@
 - [ ] Implement capacity check on booking creation
 - [ ] Write tests for booking endpoints (including edge cases)
 
-### 9.9 Attendance Endpoints
+### 9.10 Attendance Endpoints
 
 - [ ] Create `POST /api/admin/attendance` — mark attendance for a booking
 - [ ] Create `GET /api/admin/attendance` — list attendance (filterable by date, class, customer)
@@ -542,7 +566,7 @@
 - [ ] Create `GET /api/customer/attendance` — list current user's attendance
 - [ ] Write tests for attendance endpoints
 
-### 9.10 Waitlist Endpoints
+### 9.11 Waitlist Endpoints
 
 - [ ] Create `POST /api/customer/waitlist` — join waitlist for a full class
 - [ ] Create `DELETE /api/customer/waitlist/{id}` — leave waitlist
@@ -553,7 +577,7 @@
 - [ ] Implement waitlist FIFO ordering
 - [ ] Write tests for waitlist endpoints
 
-### 9.11 Dashboard & Reporting Endpoints
+### 9.12 Dashboard & Reporting Endpoints
 
 - [ ] Create `GET /api/admin/dashboard/kpi` — active subs, occupancy, revenue, signups
 - [ ] Create `GET /api/admin/dashboard/revenue-chart` — revenue over time
@@ -629,6 +653,7 @@
 
 ### 12.2 Hook Migration (per entity)
 
+- [ ] Replace MSW handlers with real API calls for locations
 - [ ] Replace MSW handlers with real API calls for auth
 - [ ] Replace MSW handlers with real API calls for users
 - [ ] Replace MSW handlers with real API calls for coaches
@@ -636,7 +661,7 @@
 - [ ] Replace MSW handlers with real API calls for schedule
 - [ ] Replace MSW handlers with real API calls for subscriptions
 - [ ] Replace MSW handlers with real API calls for point cards
-- [ ] Replace MSW handlers with real API calls for single session pricing
+- [ ] Wire `default_price` from class types API to pricing display
 - [ ] Replace MSW handlers with real API calls for bookings
 - [ ] Replace MSW handlers with real API calls for attendance
 - [ ] Replace MSW handlers with real API calls for waitlist

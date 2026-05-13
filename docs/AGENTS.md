@@ -63,3 +63,4 @@ docker-compose.yml
 - **YAGNI** — You aren't gonna need it. Don't build features or abstractions until there's a clear requirement for them.
 - **Testing** — Write tests for critical logic and components, but don't aim for 100% coverage. Focus on meaningful tests that validate behavior, not implementation details.
 - **Documentation** — Keep code well-commented where necessary, and maintain clear documentation in this `AGENTS.md` file for architecture decisions, conventions, and development guidelines. Update it as the project evolves.
+- **Markdown lint** — All `.md` files must follow [markdownlint](https://github.com/DavidAnson/markdownlint) rules. Run `markdownlint-cli2` (or IDE plugin) before committing to catch violations. This applies to AI-generated content as well.

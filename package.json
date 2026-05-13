@@ -1,0 +1,11 @@
+{
+  "name": "aqua-tempo",
+  "private": true,
+  "scripts": {
+    "lint:markdown": "markdownlint-cli2 docs/**/*.md",
+    "lint:markdown:fix": "markdownlint-cli2 --fix docs/**/*.md"
+  },
+  "devDependencies": {
+    "markdownlint-cli2": "^0.22.1"
+  }
+}
