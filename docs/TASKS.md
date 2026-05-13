@@ -88,61 +88,60 @@
 
 ---
 
-## Phase 2: Frontend — Mock Data Layer
+## Phase 2: Frontend — Mock Data Layer [x]
 
-### 2.1 Type Definitions
+### 2.1 Type Definitions [x]
 
-- [ ] Define `User`, `AdminUser`, `CustomerUser` types
-- [ ] Define `Location` type
-- [ ] Define `Coach` type
-- [ ] Define `ClassType` type
-- [ ] Define `WeeklySchedule` type
-- [ ] Define `ScheduleException` type
-- [ ] Define `SubscriptionPlan`, `CustomerSubscription` types
-- [ ] Define `PointCardPlan`, `PointCardPurchase` types
-- [ ] Add `default_price` field to `ClassType` type
-- [ ] Define `Booking` type
-- [ ] Define `Attendance` type
-- [ ] Define `WaitlistEntry` type
-- [ ] Define `PaymentTransaction` type
-- [ ] Define API response wrapper types (`ApiResponse<T>`, `PaginatedResponse<T>`)
+- [x] Define `User`, `AdminUser`, `CustomerUser` types
+- [x] Define `Location` type
+- [x] Define `Coach` type
+- [x] Define `ClassType` type
+- [x] Define `WeeklySchedule` type
+- [x] Define `ScheduleException` type
+- [x] Define `SubscriptionPlan`, `CustomerSubscription` types
+- [x] Define `PointCardPlan`, `PointCardPurchase` types
+- [x] Add `default_price` field to `ClassType` type
+- [x] Define `Booking` type
+- [x] Define `Attendance` type
+- [x] Define `WaitlistEntry` type
+- [x] Define `PaymentTransaction` type
+- [x] Define API response wrapper types (`ApiResponse<T>`, `PaginatedResponse<T>`)
 
-### 2.2 Mock Data Fixtures
+### 2.2 Mock Data Fixtures [x]
 
-- [ ] Create mock users (10 from jsonplaceholder.typicode.com structure, 1 admin)
-- [ ] Create mock locations (3 sites with addresses, contact info)
-- [ ] Create mock coaches (4 profiles)
-- [ ] Create mock class types (6 types with colors, durations, capacities)
-- [ ] Create mock weekly schedule (full week with assigned classes/coaches)
-- [ ] Create mock schedule exceptions (2 holidays, 1 early closure)
-- [ ] Create mock subscription plans (4 plans: monthly/annual variants)
-- [ ] Create mock point card plans (3 plans)
-- [ ] Add `default_price` field to mock class types
-- [ ] Create mock customer subscriptions (mix of active/cancelled/expired)
-- [ ] Create mock point card purchases
-- [ ] Create mock bookings (confirmed, cancelled, attended, no-show, guest)
-- [ ] Create mock attendance records
-- [ ] Create mock waitlist entries
-- [ ] Create mock payment transactions
+- [x] Create mock users (10 from jsonplaceholder.typicode.com structure, 1 admin)
+- [x] Create mock locations (3 sites with addresses, contact info)
+- [x] Create mock coaches (4 profiles)
+- [x] Create mock class types (6 types with colors, durations, capacities)
+- [x] Create mock weekly schedule (full week with assigned classes/coaches)
+- [x] Create mock schedule exceptions (2 holidays, 1 early closure)
+- [x] Create mock subscription plans (4 plans: monthly/annual variants)
+- [x] Create mock point card plans (3 plans)
+- [x] Create mock customer subscriptions (mix of active/cancelled/expired)
+- [x] Create mock point card purchases
+- [x] Create mock bookings (confirmed, cancelled, attended, no-show, guest)
+- [x] Create mock attendance records
+- [x] Create mock waitlist entries
+- [x] Create mock payment transactions
 
-### 2.3 MSW Handlers
+### 2.3 MSW Handlers [x]
 
-- [ ] Locations handlers: list, get, create, update, delete
-- [ ] Auth handlers: login, register, me, logout
-- [ ] Users/coaches handlers: list, get, create, update, delete
-- [ ] Class types handlers: list, get, create, update, delete
-- [ ] Weekly schedule handlers: list by day/week, get, create, update, delete
-- [ ] Schedule exceptions handlers: list, create, update, delete
-- [ ] Subscription plans handlers: list, get
-- [ ] Customer subscriptions handlers: list mine, list all (admin), create, cancel
-- [ ] Point card plans handlers: list, get
-- [ ] Point card purchases handlers: list mine, create
-- [ ] Single session pricing handlers: list by class type
-- [ ] Bookings handlers: list mine, list all (admin), create, cancel, check-in
-- [ ] Attendance handlers: list, create, report
-- [ ] Waitlist handlers: list, join, leave, promote
-- [ ] Payment handlers: create intent, webhook mock
-- [ ] Dashboard analytics handlers: KPIs, charts, occupancy
+- [x] Locations handlers: list, get, create, update, delete
+- [x] Auth handlers: login, register, me, logout
+- [x] Users/coaches handlers: list, get, create, update, delete
+- [x] Class types handlers: list, get, create, update, delete
+- [x] Weekly schedule handlers: list by day/week, get, create, update, delete
+- [x] Schedule exceptions handlers: list, create, update, delete
+- [x] Subscription plans handlers: list, get
+- [x] Customer subscriptions handlers: list mine, list all (admin), create, cancel
+- [x] Point card plans handlers: list, get
+- [x] Point card purchases handlers: list mine, create
+- [x] Single session pricing handlers: list by class type
+- [x] Bookings handlers: list mine, list all (admin), create, cancel, check-in
+- [x] Attendance handlers: list, create, report
+- [x] Waitlist handlers: list, join, leave, promote
+- [x] Payment handlers: create intent, webhook mock
+- [x] Dashboard analytics handlers: KPIs, charts, occupancy
 
 ---
 

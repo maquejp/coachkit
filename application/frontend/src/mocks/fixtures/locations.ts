@@ -1,0 +1,40 @@
+import type { Location } from '@/types';
+
+export const locations: Location[] = [
+  {
+    id: 'loc-001',
+    name: 'CoachKit Downtown',
+    address: '123 Main Street',
+    city: 'Portland',
+    phone: '+1-555-1001',
+    email: 'downtown@coachkit.test',
+    mapLink: 'https://maps.example.com/downtown',
+    isActive: true,
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+  {
+    id: 'loc-002',
+    name: 'CoachKit Eastside',
+    address: '456 Oak Avenue',
+    city: 'Portland',
+    phone: '+1-555-1002',
+    email: 'eastside@coachkit.test',
+    mapLink: 'https://maps.example.com/eastside',
+    isActive: true,
+    createdAt: '2025-01-15T00:00:00Z',
+    updatedAt: '2025-01-15T00:00:00Z',
+  },
+  {
+    id: 'loc-003',
+    name: 'CoachKit West Hills',
+    address: '789 Pine Road',
+    city: 'Portland',
+    phone: '+1-555-1003',
+    email: 'westhills@coachkit.test',
+    mapLink: null,
+    isActive: false,
+    createdAt: '2025-02-01T00:00:00Z',
+    updatedAt: '2025-03-01T00:00:00Z',
+  },
+];
