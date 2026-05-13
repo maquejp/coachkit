@@ -17,7 +17,7 @@
 - [x] Create `application/`, `docs/` directory structure
 - [x] Add `.gitignore` (Node, PHP, Laravel, Docker, OS files)
 - [x] Add `.editorconfig`
-- [x] Configure branch protection rules for `main`
+- [x] Configure branch protection rules for `main` (no force pushes, no deletions, admin enforced — no review required, solo dev)
 
 ### 0.2 Frontend Scaffolding
 
