@@ -1,9 +1,23 @@
+import SEO from '@/components/SEO';
 import PricingCard from '@/components/PricingCard';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { subscriptionPlans, pointCardPlans, classTypes } from '@/mocks/fixtures';
 
 export default function PricingPage() {
+  return (
+    <>
+      <SEO
+        title="Pricing"
+        description="Choose the plan that fits your lifestyle — monthly, annual, class packs, or single session. No commitment required."
+        canonical="https://coachkit.app/pricing"
+      />
+      {content()}
+    </>
+  );
+}
+
+function content() {
   const activePlans = subscriptionPlans
     .filter((sp) => sp.isActive)
     .map((p) => ({

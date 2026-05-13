@@ -208,23 +208,23 @@
 - [x] Display contact info (phone, email, address, map)
 - [x] Write tests for Contact page
 
-### 3.7 SEO Setup
+### 3.7 SEO Setup [x]
 
-- [ ] Add react-helmet-async for per-page meta tags
-- [ ] Set meta titles, descriptions, OG tags per page
-- [ ] Add JSON-LD structured data (LocalBusiness)
-- [ ] Generate sitemap.xml
-- [ ] Add robots.txt
-- [ ] Add canonical URLs
+- [x] Add react-helmet-async for per-page meta tags
+- [x] Set meta titles, descriptions, OG tags per page
+- [x] Add JSON-LD structured data (LocalBusiness)
+- [x] Generate sitemap.xml
+- [x] Add robots.txt
+- [x] Add canonical URLs
 
-### 3.8 Analytics Setup
+### 3.8 Analytics Setup [x]
 
-- [ ] Add Umami tracking script to layout
-- [ ] Track page views
-- [ ] Track booking confirmed event
-- [ ] Track waitlist joined event
-- [ ] Track subscription purchased event
-- [ ] Track contact form submitted event
+- [x] Add Umami tracking script to layout
+- [x] Track page views
+- [x] Track booking confirmed event
+- [x] Track waitlist joined event
+- [x] Track subscription purchased event
+- [x] Track contact form submitted event
 
 ---
 

@@ -1,3 +1,4 @@
+import SEO from '@/components/SEO';
 import HeroSection from '@/components/HeroSection';
 import FeatureCard from '@/components/FeatureCard';
 import PricingCard from '@/components/PricingCard';
@@ -149,6 +150,11 @@ const galleryImages = [
 export default function HomePage() {
   return (
     <>
+      <SEO
+        title="Your First Session Free"
+        description="Try any class for free — no commitment, no credit card. Smart scheduling, member management, and analytics for fitness studios."
+        canonical="https://coachkit.app/"
+      />
       <HeroSection
         title="Your First Session, On Us."
         subtitle="Try any class for free — no commitment, no credit card. Smart scheduling, member management, and analytics for fitness studios and wellness businesses."
