@@ -57,7 +57,7 @@ docker-compose.yml
 ## Key Rules
 
 - **Trunk-based Development** — `main` is the single long-lived branch and is always deployable. Feature/fix branches are short-lived (hours to 2 days max), branched off `main` and merged back via PR after CI passes.
-- **Feature branches** — One branch per **logical deliverable** (something that can be reviewed, merged, and potentially toggled on independently), not per checkbox. Group related tasks into a single branch (e.g. `feat/design-system` covers all base components, `feat/public-pages` covers the entire public site). This keeps the graph clean and PRs meaningful. See `docs/TASKS.md` for the recommended branch grouping.
+- **Feature branches** — One branch per **logical deliverable** (something that can be reviewed, merged, and toggled on independently), not per checkbox. Group related tasks into a single branch (e.g. `feat/design-system` covers all base components, `feat/public-pages` covers the entire public site). This keeps PRs meaningful. See `docs/TASKS.md` for the recommended grouping.
 - **If a feature spans multiple days**, use **feature flags** to merge incomplete work into `main` without exposing it. This keeps integration continuous and avoids long-lived branches.
 - **Feature flags** — Unfinished or unreleased features are gated behind a simple toggle (e.g. `if (featureFlags.bookingWizard)`). Flags are removed once the feature is fully shipped and stable. This lets `main` stay deployable at all times.
 - **No `develop` branch** — Maintaining two long-lived branches adds sync overhead with no benefit for a single-dev or small team. All active work lives on `main` behind flags.
@@ -68,4 +68,4 @@ docker-compose.yml
 - **YAGNI** — You aren't gonna need it. Don't build features or abstractions until there's a clear requirement for them.
 - **Testing** — Write tests for critical logic and components, but don't aim for 100% coverage. Focus on meaningful tests that validate behavior, not implementation details.
 - **Documentation** — Keep code well-commented where necessary, and maintain clear documentation in this `AGENTS.md` file for architecture decisions, conventions, and development guidelines. Update it as the project evolves.
-- **Markdown lint** — All `.md` files must follow [markdownlint](https://github.com/DavidAnson/markdownlint) rules. Run `markdownlint-cli2` (or IDE plugin) before committing to catch violations. This applies to AI-generated content as well.
+- **Markdown lint** — All `.md` files must follow [markdownlint](https://github.com/DavidAnson/markdownlint) rules. A pre-commit hook (Husky + lint-staged) auto-fixes staged `.md` files on commit. To run manually: `npm run lint:markdown` (check) or `npm run lint:markdown:fix` (fix).
