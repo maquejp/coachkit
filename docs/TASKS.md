@@ -44,24 +44,24 @@
 - [x] Create CSS custom properties file for design tokens
 - [x] Set up global styles (body, headings, links, transitions)
 
-### 1.2 Base Components
+### 1.2 Base Components [x]
 
-- [ ] `Button` — variants (primary, secondary, outline, ghost), sizes, loading state, disabled, icon support
-- [ ] `Input` — text, email, password, number variants; error state, label, helper text
-- [ ] `Select` — native select with custom styling, error state
-- [ ] `Textarea` — with resize control, error state
-- [ ] `Card` — with optional header, footer, hover shadow, variants
-- [ ] `Modal` — overlay, close button, body scroll lock, animation, sizes
-- [ ] `Badge` — color variants, dot indicator
-- [ ] `Avatar` — image fallback to initials, sizes
-- [ ] `Spinner` — size variants, centered container
-- [ ] `Skeleton` — loading placeholder, text/avatar/card variants
-- [ ] `Toast` — success/error/info/warning, auto-dismiss, stackable
-- [ ] `Pagination` — page numbers, prev/next, ellipsis
-- [ ] `Tabs` — horizontal tab bar with content panel
-- [ ] `Table` — sortable headers, striped rows, empty state, loading state
-- [ ] `Dropdown Menu` — click trigger, positioned menu, item variants
-- [ ] `Form Field` — wrapper with label, error, help text, required indicator
+- [x] `Button` — variants (primary, secondary, outline, ghost), sizes, loading state, disabled, icon support
+- [x] `Input` — text, email, password, number variants; error state, label, helper text
+- [x] `Select` — native select with custom styling, error state
+- [x] `Textarea` — with resize control, error state
+- [x] `Card` — with optional header, footer, hover shadow, variants
+- [x] `Modal` — overlay, close button, body scroll lock, animation, sizes
+- [x] `Badge` — color variants, dot indicator
+- [x] `Avatar` — image fallback to initials, sizes
+- [x] `Spinner` — size variants, centered container
+- [x] `Skeleton` — loading placeholder, text/avatar/card variants
+- [x] `Toast` — success/error/info/warning, auto-dismiss, stackable
+- [x] `Pagination` — page numbers, prev/next, ellipsis
+- [x] `Tabs` — horizontal tab bar with content panel
+- [x] `Table` — sortable headers, striped rows, empty state, loading state
+- [x] `Dropdown Menu` — click trigger, positioned menu, item variants
+- [x] `Form Field` — wrapper with label, error, help text, required indicator
 
 ### 1.3 Navigation Components
 
