@@ -50,4 +50,12 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## License
 
-MIT
+[MIT](LICENSE)
+
+## Code of Conduct
+
+This project is governed by a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you agree to abide by its terms.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to this project.
