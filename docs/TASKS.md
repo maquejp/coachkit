@@ -88,24 +88,24 @@
 
 ---
 
-## Phase 2: Frontend — Mock Data Layer
+## Phase 2: Frontend — Mock Data Layer [/]
 
-### 2.1 Type Definitions
+### 2.1 Type Definitions [x]
 
-- [ ] Define `User`, `AdminUser`, `CustomerUser` types
-- [ ] Define `Location` type
-- [ ] Define `Coach` type
-- [ ] Define `ClassType` type
-- [ ] Define `WeeklySchedule` type
-- [ ] Define `ScheduleException` type
-- [ ] Define `SubscriptionPlan`, `CustomerSubscription` types
-- [ ] Define `PointCardPlan`, `PointCardPurchase` types
-- [ ] Add `default_price` field to `ClassType` type
-- [ ] Define `Booking` type
-- [ ] Define `Attendance` type
-- [ ] Define `WaitlistEntry` type
-- [ ] Define `PaymentTransaction` type
-- [ ] Define API response wrapper types (`ApiResponse<T>`, `PaginatedResponse<T>`)
+- [x] Define `User`, `AdminUser`, `CustomerUser` types
+- [x] Define `Location` type
+- [x] Define `Coach` type
+- [x] Define `ClassType` type
+- [x] Define `WeeklySchedule` type
+- [x] Define `ScheduleException` type
+- [x] Define `SubscriptionPlan`, `CustomerSubscription` types
+- [x] Define `PointCardPlan`, `PointCardPurchase` types
+- [x] Add `default_price` field to `ClassType` type
+- [x] Define `Booking` type
+- [x] Define `Attendance` type
+- [x] Define `WaitlistEntry` type
+- [x] Define `PaymentTransaction` type
+- [x] Define API response wrapper types (`ApiResponse<T>`, `PaginatedResponse<T>`)
 
 ### 2.2 Mock Data Fixtures
 
