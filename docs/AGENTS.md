@@ -54,6 +54,38 @@ docker-compose.yml
 - `test:` — adding/updating tests
 - `chore:` — tooling, CI, dependencies
 
+## Git Branch Convention
+
+One branch per **logical deliverable**, grouped by phase. No `develop` branch — `main` is the only long-lived branch. Releases are tags on `main`.
+
+```text
+main
+├── feat/frontend-scaffold     # Vite + Tailwind + Router + MSW + layout
+├── feat/design-system         # All base components (Button, Input, Card...)
+├── feat/mock-data-layer       # Types + fixtures + MSW handlers
+├── feat/public-pages          # Home, Classes, Pricing, About, Contact
+├── feat/auth                  # Login, Register, guest flow, auth store
+├── feat/customer-panel        # Dashboard, bookings, subscriptions, profile
+├── feat/admin-panel           # Full admin: schedule, classes, customers...
+├── feat/database              # Migrations + seed scripts
+├── feat/api-auth              # Auth endpoints + guest flow
+├── feat/api-crud              # All CRUD endpoints
+├── feat/api-payments          # Stripe + PayPal
+├── feat/api-notifications     # Email templates + queue
+├── feat/integration           # Replace MSW with real API
+├── feat/testing               # E2E + performance + QA
+├── feat/gdpr-legal            # Cookie consent, privacy, terms
+├── feat/ci-cd                 # GitHub Actions, staging, monitoring
+├── fix/*
+└── chore/*
+```
+
+Rules:
+
+- Branch off `main`, merge back via PR after CI passes.
+- Feature branches live 1-2 days max. If a feature takes longer, use feature flags to merge early.
+- Rollbacks: toggle a feature flag off or revert a single commit — no release branches.
+
 ## Key Rules
 
 - **Trunk-based Development** — `main` is the single long-lived branch and is always deployable. Feature/fix branches are short-lived (hours to 2 days max), branched off `main` and merged back via PR after CI passes.
