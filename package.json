@@ -8,6 +8,7 @@
     "lint:markdown:fix": "markdownlint-cli2 --fix docs/**/*.md",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "dev:frontend": "npm --prefix application/frontend run dev",
     "prepare": "husky"
   },
   "lint-staged": {
