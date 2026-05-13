@@ -34,16 +34,6 @@
 - [ ] Set up React Router with route placeholders for all pages
 - [ ] Set up MSW handlers skeleton
 
-### 0.3 Backend Scaffolding
-
-- [ ] Scaffold Laravel project in `application/backend/`
-- [ ] Configure `.env` for local PostgreSQL
-- [ ] Set up Dockerfile + docker-compose.yml (Laravel + PHP 8 + PostgreSQL + Nginx)
-- [ ] Install Sanctum (API auth) or JWT package
-- [ ] Configure CORS for frontend dev server
-- [ ] Set up PHPUnit configuration
-- [ ] Create database migration skeleton
-
 ---
 
 ## Phase 1: Frontend — Design System
@@ -391,7 +381,19 @@
 
 ---
 
-## Phase 7: Database
+## Phase 7: Backend Scaffolding
+
+- [ ] Scaffold Laravel project in `application/backend/`
+- [ ] Configure `.env` for local PostgreSQL
+- [ ] Set up Dockerfile + docker-compose.yml (Laravel + PHP 8 + PostgreSQL + Nginx)
+- [ ] Install Sanctum (API auth) or JWT package
+- [ ] Configure CORS for frontend dev server
+- [ ] Set up PHPUnit configuration
+- [ ] Create database migration skeleton
+
+---
+
+## Phase 8: Database
 
 ### 7.1 Migration: Core Tables
 
@@ -437,23 +439,11 @@
 
 ---
 
-## Phase 8: API — Authentication
+## Phase 9: API — Authentication
 
-### 8.1 Auth Endpoints
+### 9.1 Auth Endpoints
 
-- [ ] Create `POST /api/auth/register` — customer registration
-- [ ] Create `POST /api/auth/login` — email + password, return JWT
-- [ ] Create `POST /api/auth/logout` — invalidate token
-- [ ] Create `GET /api/auth/me` — return current user profile
-- [ ] Create `POST /api/auth/refresh` — refresh token
-- [ ] Create `POST /api/auth/forgot-password` — send reset email
-- [ ] Create `POST /api/auth/reset-password` — reset with token
-- [ ] Implement JWT token generation, validation, refresh
-- [ ] Implement auth middleware/guard for protected routes
-- [ ] Implement admin middleware/guard for admin-only routes
-- [ ] Write PHPUnit tests for all auth endpoints
-
-### 8.2 Guest Flow
+### 9.2 Guest Flow
 
 - [ ] Create `POST /api/guest/register` — register after first free session
 - [ ] Create `GET /api/guest/check-email` — check if email already used for free session
@@ -462,122 +452,31 @@
 
 ---
 
-## Phase 9: API — Core CRUD
+## Phase 10: API — Core CRUD
 
-### 9.1 User Management
+### 10.1 User Management
 
-- [ ] Create `GET /api/admin/users` — list all users (paginated, searchable)
-- [ ] Create `GET /api/admin/users/{id}` — get user detail
-- [ ] Create `PUT /api/admin/users/{id}` — update user
-- [ ] Create `DELETE /api/admin/users/{id}` — soft delete user
-- [ ] Write tests for user endpoints
+### 10.2 Location Management
 
-### 9.2 Location Management
+### 10.3 Instructor Management
 
-- [ ] Create `GET /api/locations` — list active locations (public)
-- [ ] Create `GET /api/admin/locations` — list all locations (admin)
-- [ ] Create `POST /api/admin/locations` — create location
-- [ ] Create `GET /api/admin/locations/{id}` — get location detail
-- [ ] Create `PUT /api/admin/locations/{id}` — update location
-- [ ] Create `DELETE /api/admin/locations/{id}` — soft delete location
-- [ ] Write tests for location endpoints
+### 10.4 Class Type Management
 
-### 9.3 Instructor Management
+### 10.5 Schedule Management
 
-- [ ] Create `GET /api/admin/coaches` — list all coaches
-- [ ] Create `POST /api/admin/coaches` — create coach
-- [ ] Create `GET /api/admin/coaches/{id}` — get coach detail
-- [ ] Create `PUT /api/admin/coaches/{id}` — update coach
-- [ ] Create `DELETE /api/admin/coaches/{id}` — soft delete coach
-- [ ] Write tests for coach endpoints
+### 10.6 Subscription Management
 
-### 9.4 Class Type Management
+### 10.7 Point Card Management
 
-- [ ] Create `GET /api/class-types` — list active class types (public)
-- [ ] Create `GET /api/admin/class-types` — list all class types (admin)
-- [ ] Create `POST /api/admin/class-types` — create class type
-- [ ] Create `GET /api/admin/class-types/{id}` — get class type detail
-- [ ] Create `PUT /api/admin/class-types/{id}` — update class type
-- [ ] Create `DELETE /api/admin/class-types/{id}` — soft delete class type
-- [ ] Write tests for class type endpoints
+### 10.8 Class Pricing
 
-### 9.5 Schedule Management
+### 10.9 Booking Endpoints
 
-- [ ] Create `GET /api/schedule` — list schedule (filterable by week, date range, location_id)
-- [ ] Create `GET /api/schedule/{id}` — get schedule detail with capacity info
-- [ ] Create `POST /api/admin/schedule` — create schedule entry
-- [ ] Create `PUT /api/admin/schedule/{id}` — update schedule entry
-- [ ] Create `DELETE /api/admin/schedule/{id}` — delete schedule entry
-- [ ] Create `GET /api/admin/schedule-exceptions` — list exceptions (filterable by location_id)
-- [ ] Create `POST /api/admin/schedule-exceptions` — create exception
-- [ ] Create `PUT /api/admin/schedule-exceptions/{id}` — update exception
-- [ ] Create `DELETE /api/admin/schedule-exceptions/{id}` — delete exception
-- [ ] Write tests for schedule endpoints
+### 10.10 Attendance Endpoints
 
-### 9.6 Subscription Management
+### 10.11 Waitlist Endpoints
 
-- [ ] Create `GET /api/subscription-plans` — list active plans (public)
-- [ ] Create `GET /api/admin/subscription-plans` — list all plans (admin)
-- [ ] Create `POST /api/admin/subscription-plans` — create plan
-- [ ] Create `PUT /api/admin/subscription-plans/{id}` — update plan
-- [ ] Create `DELETE /api/admin/subscription-plans/{id}` — soft delete plan
-- [ ] Create `GET /api/customer/subscriptions` — list current user's subscriptions
-- [ ] Create `POST /api/customer/subscriptions` — subscribe to plan
-- [ ] Create `PUT /api/customer/subscriptions/{id}/cancel` — cancel subscription
-- [ ] Create `GET /api/admin/customer-subscriptions` — list all subscriptions (admin)
-- [ ] Write tests for subscription endpoints
-
-### 9.7 Point Card Management
-
-- [ ] Create `GET /api/point-card-plans` — list active plans (public)
-- [ ] Create `GET /api/admin/point-card-plans` — list all plans (admin)
-- [ ] Create `POST /api/admin/point-card-plans` — create plan
-- [ ] Create `PUT /api/admin/point-card-plans/{id}` — update plan
-- [ ] Create `DELETE /api/admin/point-card-plans/{id}` — soft delete plan
-- [ ] Create `GET /api/customer/point-cards` — list current user's point cards
-- [ ] Create `POST /api/customer/point-cards` — purchase point card
-- [ ] Write tests for point card endpoints
-
-### 9.8 Class Pricing
-
-- [ ] Include `default_price` in `GET /api/class-types` response
-- [ ] Include `default_price` field in admin class type create/update endpoints
-- [ ] Write tests for pricing endpoints
-
-### 9.9 Booking Endpoints
-
-- [ ] Create `POST /api/customer/bookings` — create booking (with deduction logic)
-- [ ] Create `GET /api/customer/bookings` — list current user's bookings
-- [ ] Create `GET /api/customer/bookings/{id}` — get booking detail
-- [ ] Create `PUT /api/customer/bookings/{id}/cancel` — cancel booking
-- [ ] Create `PUT /api/customer/bookings/{id}/reschedule` — reschedule booking
-- [ ] Create `GET /api/admin/bookings` — list all bookings (admin)
-- [ ] Create `GET /api/admin/bookings/{id}` — get booking detail (admin)
-- [ ] Implement booking deduction priority: subscription -> point card -> redirect to purchase
-- [ ] Implement cancellation: refund point, free subscription slot
-- [ ] Implement capacity check on booking creation
-- [ ] Write tests for booking endpoints (including edge cases)
-
-### 9.10 Attendance Endpoints
-
-- [ ] Create `POST /api/admin/attendance` — mark attendance for a booking
-- [ ] Create `GET /api/admin/attendance` — list attendance (filterable by date, class, customer)
-- [ ] Create `GET /api/admin/attendance/report` — session usage report per customer
-- [ ] Create `GET /api/customer/attendance` — list current user's attendance
-- [ ] Write tests for attendance endpoints
-
-### 9.11 Waitlist Endpoints
-
-- [ ] Create `POST /api/customer/waitlist` — join waitlist for a full class
-- [ ] Create `DELETE /api/customer/waitlist/{id}` — leave waitlist
-- [ ] Create `GET /api/customer/waitlist` — list current user's waitlist entries
-- [ ] Create `GET /api/admin/waitlist` — list all waitlist entries (admin)
-- [ ] Create `POST /api/admin/waitlist/{id}/promote` — manually promote
-- [ ] Implement auto-promotion on cancellation with confirmation window
-- [ ] Implement waitlist FIFO ordering
-- [ ] Write tests for waitlist endpoints
-
-### 9.12 Dashboard & Reporting Endpoints
+### 10.12 Dashboard & Reporting Endpoints
 
 - [ ] Create `GET /api/admin/dashboard/kpi` — active subs, occupancy, revenue, signups
 - [ ] Create `GET /api/admin/dashboard/revenue-chart` — revenue over time
@@ -592,23 +491,11 @@
 
 ---
 
-## Phase 10: API — Payments
+## Phase 11: API — Payments
 
-### 10.1 Stripe Integration
+### 11.1 Stripe Integration
 
-- [ ] Set up Stripe PHP SDK
-- [ ] Create `POST /api/customer/payments/create-intent` — create payment intent
-- [ ] Create `POST /api/customer/payments/subscription` — create Stripe subscription
-- [ ] Create `POST /api/webhooks/stripe` — handle Stripe webhooks
-- [ ] Handle `payment_intent.succeeded` — update transaction status
-- [ ] Handle `payment_intent.payment_failed` — notify customer + admin
-- [ ] Handle `invoice.payment_succeeded` — confirm subscription active
-- [ ] Handle `invoice.payment_failed` — retry logic, notify
-- [ ] Handle `customer.subscription.updated` — sync status
-- [ ] Handle `customer.subscription.deleted` — cancel subscription
-- [ ] Implement idempotency key support for webhooks
-
-### 10.2 PayPal Integration
+### 11.2 PayPal Integration
 
 - [ ] Set up PayPal PHP SDK
 - [ ] Create `POST /api/customer/payments/paypal/create-order` — create order
@@ -617,15 +504,11 @@
 
 ---
 
-## Phase 11: API — Email Notifications
+## Phase 12: API — Email Notifications
 
-### 11.1 Mail Setup
+### 12.1 Mail Setup
 
-- [ ] Configure mail driver (SMTP / Mailgun / SES)
-- [ ] Set up email queue (database queue driver)
-- [ ] Create base mail template (HTML + text versions)
-
-### 11.2 Notification Templates
+### 12.2 Notification Templates
 
 - [ ] Create booking confirmation mail (customer + guest)
 - [ ] Create booking reminder mail (24h before)
@@ -641,55 +524,17 @@
 
 ---
 
-## Phase 12: Integration — Frontend + API
+## Phase 13: Integration — Frontend + API
 
-### 12.1 API Client Setup
+### 13.1 API Client Setup
 
-- [ ] Create axios instance with base URL, interceptors, error handling
-- [ ] Create typed API client functions per entity (replacing MSW)
-- [ ] Set up TanStack Query hooks per entity (useQuery, useMutation)
-- [ ] Set up query keys enum/constants
-- [ ] Set up optimistic updates for mutations (booking, cancel, etc.)
+### 13.2 Hook Migration (per entity)
 
-### 12.2 Hook Migration (per entity)
+### 13.3 Integration Testing
 
-- [ ] Replace MSW handlers with real API calls for locations
-- [ ] Replace MSW handlers with real API calls for auth
-- [ ] Replace MSW handlers with real API calls for users
-- [ ] Replace MSW handlers with real API calls for coaches
-- [ ] Replace MSW handlers with real API calls for class types
-- [ ] Replace MSW handlers with real API calls for schedule
-- [ ] Replace MSW handlers with real API calls for subscriptions
-- [ ] Replace MSW handlers with real API calls for point cards
-- [ ] Wire `default_price` from class types API to pricing display
-- [ ] Replace MSW handlers with real API calls for bookings
-- [ ] Replace MSW handlers with real API calls for attendance
-- [ ] Replace MSW handlers with real API calls for waitlist
-- [ ] Replace MSW handlers with real API calls for payments
-- [ ] Replace MSW handlers with real API calls for dashboard/reports
+### 13.4 Error Handling
 
-### 12.3 Integration Testing
-
-- [ ] Run full app with Docker backend + frontend dev server
-- [ ] Test public site pages with live data
-- [ ] Test booking flow end-to-end
-- [ ] Test admin CRUD operations
-- [ ] Test customer panel flows
-- [ ] Test guest booking + account activation
-- [ ] Test payment flows (Stripe test mode)
-- [ ] Test email notifications (mailtrap or similar)
-- [ ] Fix any integration issues
-
-### 12.4 Error Handling
-
-- [ ] Add global error boundary (React error boundaries)
-- [ ] Add API error handling (toast notifications for errors)
-- [ ] Add retry logic for transient failures (TanStack Query retry)
-- [ ] Add offline/network error state UI
-- [ ] Add form validation error display from API responses
-- [ ] Add session expiry handling (redirect to login)
-
-### 12.5 Performance
+### 13.5 Performance
 
 - [ ] Add loading skeletons for all pages
 - [ ] Add pagination for all list views
@@ -702,35 +547,15 @@
 
 ---
 
-## Phase 13: Testing & QA
+## Phase 14: Testing & QA
 
-### 13.1 Frontend Tests
+### 14.1 Frontend Tests
 
-- [ ] Unit tests: all utils (lib/), Zustand stores, custom hooks
-- [ ] Component tests: all shared components (Testing Library)
-- [ ] Page-level integration tests: all public pages, customer panel, admin panel
-- [ ] Mock API tests: all MSW handlers return correct data
-- [ ] Target >= 80% coverage on utilities and stores
+### 14.2 E2E Tests (Playwright)
 
-### 13.2 E2E Tests (Playwright)
+### 14.3 API Tests (PHPUnit)
 
-- [ ] Public site: full navigation, class browsing, contact form
-- [ ] Booking: guest first-session-free flow, authenticated booking, cancellation
-- [ ] Admin: login, CRUD schedule/classes/subscriptions, attendance marking, report export
-- [ ] Customer panel: login, view bookings, cancel, session usage
-- [ ] Mobile responsive: verify layouts at mobile breakpoints
-- [ ] All critical paths covered before launch
-
-### 13.3 API Tests (PHPUnit)
-
-- [ ] Auth endpoints: register, login, logout, me, refresh, password reset
-- [ ] CRUD endpoints: all entities, all operations
-- [ ] Booking logic: deduction priority, capacity edge cases, waitlist trigger
-- [ ] Validation: input validation errors, auth guards, idempotency
-- [ ] Payment webhooks: event handling, idempotency
-- [ ] Email notifications: mailables render correctly
-
-### 13.4 Performance Tests
+### 14.4 Performance Tests
 
 - [ ] Dashboard load time < 2s (initial load)
 - [ ] Booking wizard responsiveness under concurrent booking simulation
@@ -739,7 +564,7 @@
 
 ---
 
-## Phase 14: GDPR, Legal & Compliance
+## Phase 15: GDPR, Legal & Compliance
 
 - [ ] Add cookie consent banner with explicit opt-in
 - [ ] Create Privacy policy page
@@ -751,7 +576,7 @@
 
 ---
 
-## Phase 15: CI/CD & Deployment
+## Phase 16: CI/CD & Deployment
 
 - [ ] Set up GitHub Actions workflow: lint + typecheck + test on PR
 - [ ] Set up GitHub Actions workflow: auto-deploy on merge to main
