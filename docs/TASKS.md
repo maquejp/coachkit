@@ -768,12 +768,11 @@
 
 ## Git Branch Convention
 
-Each task or logical group of tasks should be developed in its own branch:
+Trunk-based development with short-lived feature branches:
 
 ```text
-main              # Production-ready code
-├── develop       # Integration branch
-├── feat/scaffold-frontend
+main              # Always deployable. Feature-flagged if incomplete.
+├── feat/scaffold-frontend   # Branches off main, merges back via PR
 ├── feat/design-system
 ├── feat/public-home
 ├── feat/public-classes
@@ -796,6 +795,12 @@ main              # Production-ready code
 ├── fix/*
 └── chore/*
 ```
+
+Key rules:
+- No `develop` branch. `main` is the only long-lived branch.
+- Feature branches live at most 1-2 days. If a feature takes longer, use feature flags to merge early.
+- A release is just a git tag on `main` (e.g. `v1.0.0`). No release branches.
+- Rollback = toggle a flag off or revert a single commit.
 
 ## Task Tracking
 

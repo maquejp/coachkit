@@ -56,7 +56,11 @@ docker-compose.yml
 
 ## Key Rules
 
-- **Feature branches** — Each feature/step must be developed in its own git branch (e.g. `feat/class-booking`, `fix/payment-validation`). Never commit directly to `main`.
+- **Trunk-based Development** — `main` is the single long-lived branch and is always deployable. Feature/fix branches are short-lived (hours to 2 days max), branched off `main` and merged back via PR after CI passes.
+- **Feature branches** — Each feature/step in its own branch (e.g. `feat/class-booking`, `fix/payment-validation`). If a feature spans multiple days, use **feature flags** to merge incomplete work into `main` without exposing it. This keeps integration continuous and avoids long-lived branches.
+- **Feature flags** — Unfinished or unreleased features are gated behind a simple toggle (e.g. `if (featureFlags.bookingWizard)`). Flags are removed once the feature is fully shipped and stable. This lets `main` stay deployable at all times.
+- **No `develop` branch** — Maintaining two long-lived branches adds sync overhead with no benefit for a single-dev or small team. All active work lives on `main` behind flags.
+- **Releases** — A release is simply a tag on `main` (e.g. `v1.0.0`). No release branches needed. Rollbacks are done by flipping a feature flag off or reverting a commit, not by reverting merge commits across branches.
 - **No overengineering** — Build what's needed, not what might be needed later. No abstraction layers "just in case." Refactor when there's a concrete need, not preemptively.
 - **SOLID principles** — Single responsibility, Open-closed, Liskov substitution, Interface segregation, Dependency inversion
 - **DRY** — Don't repeat yourself. Extract shared logic into hooks, utils, or components
