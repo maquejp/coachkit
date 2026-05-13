@@ -156,3 +156,29 @@ export async function fetchAllLocations() {
   );
   return data.data;
 }
+
+export type ClassType = import('@/types').ClassType;
+
+export async function createClassType(item: Omit<ClassType, 'id' | 'createdAt' | 'updatedAt'>) {
+  const { data } = await apiClient.post<{ success: boolean; data: ClassType }>(
+    '/class-types',
+    item,
+  );
+  return data.data;
+}
+
+export async function updateClassType(
+  id: string,
+  item: Partial<Omit<ClassType, 'id' | 'createdAt' | 'updatedAt'>>,
+) {
+  const { data } = await apiClient.put<{ success: boolean; data: ClassType }>(
+    `/class-types/${id}`,
+    item,
+  );
+  return data.data;
+}
+
+export async function deleteClassType(id: string) {
+  const { data } = await apiClient.delete<{ success: boolean; data: null }>(`/class-types/${id}`);
+  return data.data;
+}

@@ -315,12 +315,12 @@
 - [x] Build exception dates manager (holidays, closures, per location)
 - [x] Write tests for schedule management
 
-### 6.3 Class Management
+### 6.3 Class Management [x]
 
-- [ ] Build class types list with CRUD
-- [ ] Build create/edit class form (name, slug, description, color, duration, max capacity)
-- [ ] Build delete confirmation
-- [ ] Write tests for class management
+- [x] Build class types list with CRUD
+- [x] Build create/edit class form (name, slug, description, color, duration, max capacity)
+- [x] Build delete confirmation
+- [x] Write tests for class management
 
 ### 6.4 Subscription & Pricing Management
 
