@@ -1,0 +1,48 @@
+import type { Coach } from '@/types';
+
+export const coaches: Coach[] = [
+  {
+    id: 'coach-001',
+    name: 'Alex Rivera',
+    bio: 'Yoga & Mindfulness — 10+ years guiding students.',
+    email: 'alex@coachkit.test',
+    phone: '+1-555-2001',
+    photoUrl: null,
+    isActive: true,
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+  {
+    id: 'coach-002',
+    name: 'Jordan Chen',
+    bio: 'HIIT & Strength Training — Former athlete turned coach.',
+    email: 'jordan@coachkit.test',
+    phone: '+1-555-2002',
+    photoUrl: null,
+    isActive: true,
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+  {
+    id: 'coach-003',
+    name: 'Priya Sharma',
+    bio: 'Pilates & Flexibility — Certified in multiple movement disciplines.',
+    email: 'priya@coachkit.test',
+    phone: null,
+    photoUrl: null,
+    isActive: true,
+    createdAt: '2025-01-10T00:00:00Z',
+    updatedAt: '2025-01-10T00:00:00Z',
+  },
+  {
+    id: 'coach-004',
+    name: 'Marcus Webb',
+    bio: 'Boxing & Cardio — Professional boxer with a passion for teaching.',
+    email: 'marcus@coachkit.test',
+    phone: '+1-555-2004',
+    photoUrl: null,
+    isActive: true,
+    createdAt: '2025-02-01T00:00:00Z',
+    updatedAt: '2025-02-01T00:00:00Z',
+  },
+];

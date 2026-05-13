@@ -107,23 +107,22 @@
 - [x] Define `PaymentTransaction` type
 - [x] Define API response wrapper types (`ApiResponse<T>`, `PaginatedResponse<T>`)
 
-### 2.2 Mock Data Fixtures
+### 2.2 Mock Data Fixtures [x]
 
-- [ ] Create mock users (10 from jsonplaceholder.typicode.com structure, 1 admin)
-- [ ] Create mock locations (3 sites with addresses, contact info)
-- [ ] Create mock coaches (4 profiles)
-- [ ] Create mock class types (6 types with colors, durations, capacities)
-- [ ] Create mock weekly schedule (full week with assigned classes/coaches)
-- [ ] Create mock schedule exceptions (2 holidays, 1 early closure)
-- [ ] Create mock subscription plans (4 plans: monthly/annual variants)
-- [ ] Create mock point card plans (3 plans)
-- [ ] Add `default_price` field to mock class types
-- [ ] Create mock customer subscriptions (mix of active/cancelled/expired)
-- [ ] Create mock point card purchases
-- [ ] Create mock bookings (confirmed, cancelled, attended, no-show, guest)
-- [ ] Create mock attendance records
-- [ ] Create mock waitlist entries
-- [ ] Create mock payment transactions
+- [x] Create mock users (10 from jsonplaceholder.typicode.com structure, 1 admin)
+- [x] Create mock locations (3 sites with addresses, contact info)
+- [x] Create mock coaches (4 profiles)
+- [x] Create mock class types (6 types with colors, durations, capacities)
+- [x] Create mock weekly schedule (full week with assigned classes/coaches)
+- [x] Create mock schedule exceptions (2 holidays, 1 early closure)
+- [x] Create mock subscription plans (4 plans: monthly/annual variants)
+- [x] Create mock point card plans (3 plans)
+- [x] Create mock customer subscriptions (mix of active/cancelled/expired)
+- [x] Create mock point card purchases
+- [x] Create mock bookings (confirmed, cancelled, attended, no-show, guest)
+- [x] Create mock attendance records
+- [x] Create mock waitlist entries
+- [x] Create mock payment transactions
 
 ### 2.3 MSW Handlers
 
