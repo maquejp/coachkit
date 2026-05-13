@@ -1,5 +1,5 @@
 {
-  "name": "aqua-tempo",
+  "name": "coachkit",
   "private": true,
   "scripts": {
     "lint:markdown": "markdownlint-cli2 docs/**/*.md",
