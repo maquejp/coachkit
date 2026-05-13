@@ -19,20 +19,20 @@
 - [x] Add `.editorconfig`
 - [x] Configure branch protection rules for `main` (no force pushes, no deletions, admin enforced — no review required, solo dev)
 
-### 0.2 Frontend Scaffolding
+### 0.2 Frontend Scaffolding [x]
 
-- [ ] Scaffold Vite + React + TypeScript project in `application/frontend/`
-- [ ] Install and configure Tailwind CSS
-- [ ] Install React Router, TanStack Query, Zustand, axios
-- [ ] Install MSW (Mock Service Worker) for API mocking
-- [ ] Install and configure Vitest + Testing Library
-- [ ] Install and configure Playwright
-- [ ] Set up path aliases (`@/` -> `src/`)
+- [x] Scaffold Vite + React + TypeScript project in `application/frontend/`
+- [x] Install and configure Tailwind CSS
+- [x] Install React Router, TanStack Query, Zustand, axios
+- [x] Install MSW (Mock Service Worker) for API mocking
+- [x] Install and configure Vitest + Testing Library
+- [x] Install and configure Playwright
+- [x] Set up path aliases (`@/` -> `src/`)
 - [x] Configure ESLint + Prettier (root-level config, refined during Vite scaffold)
-- [ ] Create folder structure: `public/`, `admin/`, `customer/`, `components/`, `hooks/`, `stores/`, `api/`, `types/`, `lib/`, `mocks/`
-- [ ] Set up base layout (header, footer, shell)
-- [ ] Set up React Router with route placeholders for all pages
-- [ ] Set up MSW handlers skeleton
+- [x] Create folder structure: `public/`, `admin/`, `customer/`, `components/`, `hooks/`, `stores/`, `api/`, `types/`, `lib/`, `mocks/`
+- [x] Set up base layout (header, footer, shell)
+- [x] Set up React Router with route placeholders for all pages
+- [x] Set up MSW handlers skeleton
 
 ---
 

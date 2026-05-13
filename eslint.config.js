@@ -5,7 +5,15 @@ const reactHooks = require('eslint-plugin-react-hooks');
 const reactRefresh = require('eslint-plugin-react-refresh');
 
 module.exports = tseslint.config(
-  { ignores: ['**/dist/**', '**/build/**', '**/node_modules/**', '**/vendor/**'] },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/build/**',
+      '**/node_modules/**',
+      '**/vendor/**',
+      'application/frontend/public/mockServiceWorker.js',
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['application/frontend/**/*.{ts,tsx}'],
