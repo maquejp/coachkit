@@ -66,11 +66,10 @@
 ### 1.3 Navigation Components [x]
 
 - [x] `Header` — logo, nav links, mobile hamburger menu, CTA button
-- [ ] `Footer` — columns for links, social icons, copyright, legal links
+- [x] `Footer` — columns for links, social icons, copyright, legal links
 - [x] `Sidebar` — admin sidebar, collapsible, active state, nested items
 - [x] `Breadcrumbs` — auto-generated from route, with home link
 - [x] `Mobile Nav` — drawer-style navigation for mobile
-- [x] `Footer` — columns for links, social icons, copyright, legal links
 
 ### 1.4 Section/Page Components
 
