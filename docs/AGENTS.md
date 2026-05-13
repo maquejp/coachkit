@@ -105,11 +105,17 @@ Rules:
 
 ## Task Tracking
 
-Tasks use the following markers:
+Tasks are tracked in a `TASKS.md` file following this structure convention:
 
-- `[ ]` not started
-- `[/]` in progress
-- `[x]` completed
-- `[~]` delayed — blocked or deferred
+- **Phases** — Top-level sections (`## Phase N: Name`). Ordered by dependency (frontend-first with mocks → database → API → integration → CI/CD).
+- **Sections** — Sub-groupings within a phase (`### N.M Title`) for logical task clusters.
+- **Task items** — Checkboxes with a brief description of what to do: `- [ ] Do this thing`.
+- **Dependency order** — Tasks within a section are ordered so that earlier tasks don't block later ones.
+- **Completing** — Replace `[ ]` with `[x]` when done. The commit message should use the appropriate conventional commit prefix (`feat:`, `docs:`, `chore:`, etc.).
+- **Progress markers:**
+  - `[ ]` not started
+  - `[/]` in progress
+  - `[x]` completed
+  - `[~]` delayed — blocked or deferred
 
-As work progresses, update the relevant checkbox and mark the commit with the appropriate conventional commit prefix.
+When starting work on a new task, update the checkbox to `[/]` and create the corresponding feature branch. When the PR is merged, mark it `[x]`.
