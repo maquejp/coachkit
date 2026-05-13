@@ -178,19 +178,19 @@
 - [x] Add insurance fee display
 - [x] Write tests for Pricing page
 
-### 3.4 Booking Page
+### 3.4 Booking Page [x]
 
-- [ ] Build schedule selection (week view, pick a day)
-- [ ] Build class type filter
-- [ ] Build time slot picker
-- [ ] Build date confirmation step
-- [ ] Build guest booking form (email, name)
-- [ ] Build authenticated booking flow
-- [ ] Build booking confirmation/success view
-- [ ] Build booking error handling
-- [ ] Show capacity remaining per slot
-- [ ] Handle full-class waitlist prompt
-- [ ] Write tests for Booking wizard (all steps)
+- [x] Build schedule selection (week view, pick a day)
+- [x] Build class type filter
+- [x] Build time slot picker
+- [x] Build date confirmation step
+- [x] Build guest booking form (email, name)
+- [x] Build authenticated booking flow (login prompt in guest form)
+- [x] Build booking confirmation/success view
+- [x] Build booking error handling
+- [x] Show capacity remaining per slot
+- [~] Handle full-class waitlist prompt (shows "Full" badge, no join flow yet)
+- [x] Write tests for Booking wizard (all steps)
 
 ### 3.5 About Page [x]
 

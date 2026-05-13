@@ -5,6 +5,7 @@ import ClassesPage from '@/public/ClassesPage';
 import PricingPage from '@/public/PricingPage';
 import AboutPage from '@/public/AboutPage';
 import ContactPage from '@/public/ContactPage';
+import BookingPage from '@/public/BookingPage';
 import Placeholder from '@/components/ui/Placeholder';
 
 export const router = createBrowserRouter([
@@ -17,6 +18,7 @@ export const router = createBrowserRouter([
       { path: 'pricing', element: <PricingPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'contact', element: <ContactPage /> },
+      { path: 'book', element: <BookingPage /> },
       { path: 'login', element: <Placeholder title="Login" /> },
       { path: 'register', element: <Placeholder title="Register" /> },
       { path: 'admin', element: <Placeholder title="Admin Dashboard" /> },
