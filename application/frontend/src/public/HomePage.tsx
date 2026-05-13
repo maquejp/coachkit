@@ -121,30 +121,12 @@ const pricingPlans = subscriptionPlans
   }));
 
 const galleryImages = [
-  {
-    src: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400&h=300&fit=crop',
-    alt: 'Yoga studio',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=300&fit=crop',
-    alt: 'Gym equipment',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=300&fit=crop',
-    alt: 'Fitness class',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1574680099147-dc0a824f3c60?w=400&h=300&fit=crop',
-    alt: 'Personal training',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=400&h=300&fit=crop',
-    alt: 'Meditation session',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=400&h=300&fit=crop',
-    alt: 'Boxing class',
-  },
+  { src: '/images/yoga-studio.jpg', alt: 'Yoga studio' },
+  { src: '/images/gym-equipment.jpg', alt: 'Gym equipment' },
+  { src: '/images/fitness-class.jpg', alt: 'Fitness class' },
+  { src: '/images/personal-training.jpg', alt: 'Personal training' },
+  { src: '/images/meditation.jpg', alt: 'Meditation session' },
+  { src: '/images/boxing.jpg', alt: 'Boxing class' },
 ];
 
 export default function HomePage() {
