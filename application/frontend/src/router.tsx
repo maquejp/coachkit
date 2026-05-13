@@ -1,5 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
 import Layout from '@/components/Layout';
+import HomePage from '@/public/HomePage';
+import ClassesPage from '@/public/ClassesPage';
+import PricingPage from '@/public/PricingPage';
+import AboutPage from '@/public/AboutPage';
+import ContactPage from '@/public/ContactPage';
 import Placeholder from '@/components/ui/Placeholder';
 
 export const router = createBrowserRouter([
@@ -7,11 +12,11 @@ export const router = createBrowserRouter([
     path: '/',
     element: <Layout />,
     children: [
-      { index: true, element: <Placeholder title="Home" /> },
-      { path: 'classes', element: <Placeholder title="Classes" /> },
-      { path: 'pricing', element: <Placeholder title="Pricing" /> },
-      { path: 'about', element: <Placeholder title="About" /> },
-      { path: 'contact', element: <Placeholder title="Contact" /> },
+      { index: true, element: <HomePage /> },
+      { path: 'classes', element: <ClassesPage /> },
+      { path: 'pricing', element: <PricingPage /> },
+      { path: 'about', element: <AboutPage /> },
+      { path: 'contact', element: <ContactPage /> },
       { path: 'login', element: <Placeholder title="Login" /> },
       { path: 'register', element: <Placeholder title="Register" /> },
       { path: 'admin', element: <Placeholder title="Admin Dashboard" /> },

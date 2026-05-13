@@ -84,6 +84,7 @@
 - [x] `Gallery Grid` — image grid with lightbox
 - [x] `Google Reviews Carousel` — auto-rotating review cards
 - [x] `Schedule Preview` — week view, day columns, class blocks
+- [x] Wire design system components into route pages for visual preview
 
 ---
 
