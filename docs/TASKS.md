@@ -13,11 +13,11 @@
 
 ### 0.1 Repository Setup
 
-- [ ] Initialize git repo with `main` + `develop` branches
-- [ ] Create `application/`, `docs/` directory structure
-- [ ] Add `.gitignore` (Node, PHP, Laravel, Docker, OS files)
-- [ ] Add `.editorconfig`
-- [ ] Configure branch protection rules for `main`
+- [x] Initialize git repo
+- [x] Create `application/`, `docs/` directory structure
+- [x] Add `.gitignore` (Node, PHP, Laravel, Docker, OS files)
+- [x] Add `.editorconfig`
+- [~] Configure branch protection rules for `main` — requires GitHub repo settings (Protect matching branches)
 
 ### 0.2 Frontend Scaffolding
 
@@ -28,7 +28,7 @@
 - [ ] Install and configure Vitest + Testing Library
 - [ ] Install and configure Playwright
 - [ ] Set up path aliases (`@/` -> `src/`)
-- [ ] Configure ESLint + Prettier
+- [x] Configure ESLint + Prettier (root-level config, refined during Vite scaffold)
 - [ ] Create folder structure: `public/`, `admin/`, `customer/`, `components/`, `hooks/`, `stores/`, `api/`, `types/`, `lib/`, `mocks/`
 - [ ] Set up base layout (header, footer, shell)
 - [ ] Set up React Router with route placeholders for all pages
