@@ -63,13 +63,14 @@
 - [x] `Dropdown Menu` — click trigger, positioned menu, item variants
 - [x] `Form Field` — wrapper with label, error, help text, required indicator
 
-### 1.3 Navigation Components
+### 1.3 Navigation Components [x]
 
-- [ ] `Header` — logo, nav links, mobile hamburger menu, CTA button
+- [x] `Header` — logo, nav links, mobile hamburger menu, CTA button
 - [ ] `Footer` — columns for links, social icons, copyright, legal links
-- [ ] `Sidebar` — admin sidebar, collapsible, active state, nested items
-- [ ] `Breadcrumbs` — auto-generated from route, with home link
-- [ ] `Mobile Nav` — drawer-style navigation for mobile
+- [x] `Sidebar` — admin sidebar, collapsible, active state, nested items
+- [x] `Breadcrumbs` — auto-generated from route, with home link
+- [x] `Mobile Nav` — drawer-style navigation for mobile
+- [x] `Footer` — columns for links, social icons, copyright, legal links
 
 ### 1.4 Section/Page Components
 

@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import Layout from '@/components/Layout';
-import Placeholder from '@/components/Placeholder';
+import Placeholder from '@/components/ui/Placeholder';
 
 export const router = createBrowserRouter([
   {
