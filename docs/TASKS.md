@@ -344,12 +344,12 @@
 - [x] Build impersonation/assist mode
 - [x] Write tests for customer management
 
-### 6.7 Attendance
+### 6.7 Attendance [x]
 
-- [ ] Build attendance check-in interface (select date, view class, mark attendees)
-- [ ] Build attendance history view (per customer, per class, date range)
-- [ ] Build session usage report (used vs remaining per customer)
-- [ ] Write tests for attendance
+- [x] Build attendance check-in interface (select date, view class, mark attendees)
+- [x] Build attendance history view (per customer, per class, date range)
+- [x] Build session usage report (used vs remaining per customer)
+- [x] Write tests for attendance
 
 ### 6.8 Instructor Management
 
