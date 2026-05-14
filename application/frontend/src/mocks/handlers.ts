@@ -11,6 +11,7 @@ import { paymentHandlers } from './handlers/payments';
 import { dashboardHandlers } from './handlers/dashboard';
 import { guestHandlers } from './handlers/guest';
 import { customerHandlers } from './handlers/customers';
+import { attendanceAdminHandlers } from './handlers/attendanceAdmin';
 
 export const handlers = [
   ...locationHandlers,
@@ -26,4 +27,5 @@ export const handlers = [
   ...dashboardHandlers,
   ...guestHandlers,
   ...customerHandlers,
+  ...attendanceAdminHandlers,
 ];

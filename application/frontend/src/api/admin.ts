@@ -407,3 +407,77 @@ export async function impersonateCustomer(userId: string) {
   }>('/admin/impersonate', { userId });
   return data.data;
 }
+
+/* ─── Attendance ─── */
+
+export interface CheckInBooking {
+  id: string;
+  userId: string | null;
+  guestEmail: string | null;
+  classTypeId: string;
+  date: string;
+  status: string;
+  customerName: string;
+  className: string;
+  classColor: string;
+  checkInTime: string | null;
+}
+
+export async function fetchCheckInBookings(date: string) {
+  const { data } = await apiClient.get<{ success: boolean; data: CheckInBooking[] }>(
+    '/admin/attendance/check-in',
+    { params: { date } },
+  );
+  return data.data;
+}
+
+export async function checkInBooking(bookingId: string) {
+  const { data } = await apiClient.post<{
+    success: boolean;
+    data: { id: string; checkInTime: string };
+  }>('/admin/attendance/check-in', { bookingId });
+  return data.data;
+}
+
+export interface AttendanceReportRecord {
+  id: string;
+  bookingId: string;
+  userId: string;
+  date: string;
+  checkInTime: string;
+  customerName: string;
+  className: string;
+  classColor: string;
+}
+
+export async function fetchAttendanceReport(from: string, to: string) {
+  const { data } = await apiClient.get<{
+    success: boolean;
+    data: { total: number; records: AttendanceReportRecord[] };
+  }>('/admin/attendance/report', { params: { from, to } });
+  return data.data;
+}
+
+export interface SessionUsageEntry {
+  userId: string;
+  customerName: string;
+  subscription: {
+    planName: string;
+    sessionsUsed: number;
+    sessionsLimit: number | null;
+    status: string;
+  } | null;
+  pointCards: {
+    planName: string;
+    sessionsRemaining: number;
+    totalSessions: number;
+    expiresAt: string;
+  }[];
+}
+
+export async function fetchSessionUsage() {
+  const { data } = await apiClient.get<{ success: boolean; data: SessionUsageEntry[] }>(
+    '/admin/session-usage',
+  );
+  return data.data;
+}
