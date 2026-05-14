@@ -337,12 +337,12 @@
 - [x] Build location detail view (linked schedule, exceptions)
 - [x] Write tests for location management
 
-### 6.6 Customer Management
+### 6.6 Customer Management [x]
 
-- [ ] Build customers list (searchable, sortable, paginated)
-- [ ] Build customer detail view (profile, subscriptions, bookings, attendance, payments)
-- [ ] Build impersonation/assist mode
-- [ ] Write tests for customer management
+- [x] Build customers list (searchable, sortable, paginated)
+- [x] Build customer detail view (profile, subscriptions, bookings, attendance, payments)
+- [x] Build impersonation/assist mode
+- [x] Write tests for customer management
 
 ### 6.7 Attendance
 
