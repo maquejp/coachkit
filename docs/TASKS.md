@@ -233,7 +233,7 @@
 - [x] Set up language detection and switching
 - [x] Configure primary language per deployment via environment
 - [x] Store language preference in user profile (persisted across sessions)
-- [ ] Write tests for language switching
+- [x] Write tests for language switching
 
 ---
 
@@ -398,6 +398,16 @@
 - [x] Build instructor attendance marking — mark students present for own sessions
 - [x] Build instructor profile editing — bio, photo, contact info
 - [x] Write tests for instructor dashboard pages
+
+### 6.13 Admin Settings
+
+- [x] Build admin settings page — General (studio name, email, phone, address, timezone, default currency)
+- [x] Build business hours editor — per-day open/close times
+- [x] Build booking rules section — lead time, cancellation window, max bookings per customer
+- [x] Build notifications section — default email sender, event-based notification toggles
+- [x] Build payments section stub — currency, tax rate (placeholder for Phase 11)
+- [x] i18n support for all settings labels
+- [x] Write tests for settings page
 
 ---
 

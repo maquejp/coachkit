@@ -4,6 +4,7 @@ import PricingCard from '@/components/PricingCard';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { subscriptionPlans, pointCardPlans, classTypes } from '@/mocks/fixtures';
+import { formatCurrency } from '@/lib/format';
 
 export default function PricingPage() {
   const { t } = useTranslation();
@@ -12,7 +13,7 @@ export default function PricingPage() {
     .filter((sp) => sp.isActive)
     .map((p) => ({
       planName: p.name,
-      price: `$${(p.priceCents / 100).toFixed(0)}`,
+      price: formatCurrency(p.priceCents, 'EUR', false),
       period: p.interval === 'monthly' ? t('pricingPage.perMonth') : t('pricingPage.perYear'),
       features: p.features,
       featured: p.name === 'Monthly Unlimited',
@@ -54,7 +55,7 @@ export default function PricingPage() {
               <p className="mt-1 text-sm text-gray-500">{pcp.description}</p>
               <div className="mt-4">
                 <span className="text-3xl font-bold text-gray-900">
-                  ${(pcp.priceCents / 100).toFixed(0)}
+                  {formatCurrency(pcp.priceCents, 'EUR', false)}
                 </span>
               </div>
               <div className="mt-4 space-y-2">
@@ -100,7 +101,7 @@ export default function PricingPage() {
           <p className="text-sm text-gray-500">{t('pricingPage.dropIn')}</p>
           <div className="mt-2">
             <span className="text-3xl font-bold text-gray-900">
-              ${(singlePrice / 100).toFixed(0)}
+              {formatCurrency(singlePrice, 'EUR', false)}
             </span>
             <span className="ml-1 text-sm text-gray-500">{t('pricingPage.perSession')}</span>
           </div>

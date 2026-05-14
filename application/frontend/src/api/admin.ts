@@ -676,3 +676,46 @@ export async function fetchAnalytics() {
   );
   return data.data;
 }
+
+/* ─── Settings ─── */
+
+export interface BusinessHoursEntry {
+  open: string;
+  close: string;
+  isClosed: boolean;
+}
+
+export interface AdminSettings {
+  studioName: string;
+  studioEmail: string;
+  studioPhone: string;
+  studioAddress: string;
+  studioCity: string;
+  timezone: string;
+  defaultCurrency: string;
+  businessHours: Record<number, BusinessHoursEntry>;
+  bookingLeadTimeMinutes: number;
+  cancellationWindowMinutes: number;
+  maxBookingsPerCustomer: number;
+  defaultEmailSender: string;
+  notifyOnBooking: boolean;
+  notifyOnCancellation: boolean;
+  notifyOnWaitlist: boolean;
+  notifyOnReminder: boolean;
+  taxRate: number;
+}
+
+export async function fetchSettings() {
+  const { data } = await apiClient.get<{ success: boolean; data: AdminSettings }>(
+    '/admin/settings',
+  );
+  return data.data;
+}
+
+export async function updateSettings(settings: Partial<AdminSettings>) {
+  const { data } = await apiClient.put<{ success: boolean; data: AdminSettings }>(
+    '/admin/settings',
+    settings,
+  );
+  return data.data;
+}

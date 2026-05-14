@@ -9,7 +9,15 @@ import GoogleReviewsCarousel from '@/components/GoogleReviewsCarousel';
 import SchedulePreview from '@/components/SchedulePreview';
 import GalleryGrid from '@/components/GalleryGrid';
 import InstructorCard from '@/components/InstructorCard';
-import { coaches, classTypes, reviews, subscriptionPlans, weeklySchedule } from '@/mocks/fixtures';
+import {
+  coaches,
+  classTypes,
+  locations,
+  reviews,
+  subscriptionPlans,
+  weeklySchedule,
+} from '@/mocks/fixtures';
+import { formatCurrency } from '@/lib/format';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -39,78 +47,108 @@ export default function HomePage() {
       date: 'May 11',
       classes: weeklySchedule
         .filter((s) => s.dayOfWeek === 1)
-        .map((s) => ({
-          name: classTypes.find((c) => c.id === s.classTypeId)?.name ?? '',
-          time: s.startTime,
-          duration: `${Math.round((new Date(`2000-01-01T${s.endTime}`).getTime() - new Date(`2000-01-01T${s.startTime}`).getTime()) / 60000)} min`,
-          intensity: 'intermediate' as const,
-          instructor: coaches.find((c) => c.id === s.coachId)?.name.split(' ')[0] ?? '',
-        })),
+        .map((s) => {
+          const l = locations.find((l) => l.id === s.locationId);
+          return {
+            name: classTypes.find((c) => c.id === s.classTypeId)?.name ?? '',
+            time: s.startTime,
+            duration: `${Math.round((new Date(`2000-01-01T${s.endTime}`).getTime() - new Date(`2000-01-01T${s.startTime}`).getTime()) / 60000)} min`,
+            intensity: 'intermediate' as const,
+            instructor: coaches.find((c) => c.id === s.coachId)?.name.split(' ')[0] ?? '',
+            locationColor: l?.color,
+            locationName: l?.name,
+          };
+        }),
     },
     {
       label: t('homePage.scheduleDays.tue'),
       date: 'May 12',
       classes: weeklySchedule
         .filter((s) => s.dayOfWeek === 2)
-        .map((s) => ({
-          name: classTypes.find((c) => c.id === s.classTypeId)?.name ?? '',
-          time: s.startTime,
-          duration: `${Math.round((new Date(`2000-01-01T${s.endTime}`).getTime() - new Date(`2000-01-01T${s.startTime}`).getTime()) / 60000)} min`,
-          intensity: 'intermediate' as const,
-          instructor: coaches.find((c) => c.id === s.coachId)?.name.split(' ')[0] ?? '',
-        })),
+        .map((s) => {
+          const l = locations.find((l) => l.id === s.locationId);
+          return {
+            name: classTypes.find((c) => c.id === s.classTypeId)?.name ?? '',
+            time: s.startTime,
+            duration: `${Math.round((new Date(`2000-01-01T${s.endTime}`).getTime() - new Date(`2000-01-01T${s.startTime}`).getTime()) / 60000)} min`,
+            intensity: 'intermediate' as const,
+            instructor: coaches.find((c) => c.id === s.coachId)?.name.split(' ')[0] ?? '',
+            locationColor: l?.color,
+            locationName: l?.name,
+          };
+        }),
     },
     {
       label: t('homePage.scheduleDays.wed'),
       date: 'May 13',
       classes: weeklySchedule
         .filter((s) => s.dayOfWeek === 3)
-        .map((s) => ({
-          name: classTypes.find((c) => c.id === s.classTypeId)?.name ?? '',
-          time: s.startTime,
-          duration: `${Math.round((new Date(`2000-01-01T${s.endTime}`).getTime() - new Date(`2000-01-01T${s.startTime}`).getTime()) / 60000)} min`,
-          intensity: 'intermediate' as const,
-          instructor: coaches.find((c) => c.id === s.coachId)?.name.split(' ')[0] ?? '',
-        })),
+        .map((s) => {
+          const l = locations.find((l) => l.id === s.locationId);
+          return {
+            name: classTypes.find((c) => c.id === s.classTypeId)?.name ?? '',
+            time: s.startTime,
+            duration: `${Math.round((new Date(`2000-01-01T${s.endTime}`).getTime() - new Date(`2000-01-01T${s.startTime}`).getTime()) / 60000)} min`,
+            intensity: 'intermediate' as const,
+            instructor: coaches.find((c) => c.id === s.coachId)?.name.split(' ')[0] ?? '',
+            locationColor: l?.color,
+            locationName: l?.name,
+          };
+        }),
     },
     {
       label: t('homePage.scheduleDays.thu'),
       date: 'May 14',
       classes: weeklySchedule
         .filter((s) => s.dayOfWeek === 4)
-        .map((s) => ({
-          name: classTypes.find((c) => c.id === s.classTypeId)?.name ?? '',
-          time: s.startTime,
-          duration: `${Math.round((new Date(`2000-01-01T${s.endTime}`).getTime() - new Date(`2000-01-01T${s.startTime}`).getTime()) / 60000)} min`,
-          intensity: 'intermediate' as const,
-          instructor: coaches.find((c) => c.id === s.coachId)?.name.split(' ')[0] ?? '',
-        })),
+        .map((s) => {
+          const l = locations.find((l) => l.id === s.locationId);
+          return {
+            name: classTypes.find((c) => c.id === s.classTypeId)?.name ?? '',
+            time: s.startTime,
+            duration: `${Math.round((new Date(`2000-01-01T${s.endTime}`).getTime() - new Date(`2000-01-01T${s.startTime}`).getTime()) / 60000)} min`,
+            intensity: 'intermediate' as const,
+            instructor: coaches.find((c) => c.id === s.coachId)?.name.split(' ')[0] ?? '',
+            locationColor: l?.color,
+            locationName: l?.name,
+          };
+        }),
     },
     {
       label: t('homePage.scheduleDays.fri'),
       date: 'May 15',
       classes: weeklySchedule
         .filter((s) => s.dayOfWeek === 5)
-        .map((s) => ({
-          name: classTypes.find((c) => c.id === s.classTypeId)?.name ?? '',
-          time: s.startTime,
-          duration: `${Math.round((new Date(`2000-01-01T${s.endTime}`).getTime() - new Date(`2000-01-01T${s.startTime}`).getTime()) / 60000)} min`,
-          intensity: 'intermediate' as const,
-          instructor: coaches.find((c) => c.id === s.coachId)?.name.split(' ')[0] ?? '',
-        })),
+        .map((s) => {
+          const l = locations.find((l) => l.id === s.locationId);
+          return {
+            name: classTypes.find((c) => c.id === s.classTypeId)?.name ?? '',
+            time: s.startTime,
+            duration: `${Math.round((new Date(`2000-01-01T${s.endTime}`).getTime() - new Date(`2000-01-01T${s.startTime}`).getTime()) / 60000)} min`,
+            intensity: 'intermediate' as const,
+            instructor: coaches.find((c) => c.id === s.coachId)?.name.split(' ')[0] ?? '',
+            locationColor: l?.color,
+            locationName: l?.name,
+          };
+        }),
     },
     {
       label: t('homePage.scheduleDays.sat'),
       date: 'May 16',
       classes: weeklySchedule
         .filter((s) => s.dayOfWeek === 6)
-        .map((s) => ({
-          name: classTypes.find((c) => c.id === s.classTypeId)?.name ?? '',
-          time: s.startTime,
-          duration: `${Math.round((new Date(`2000-01-01T${s.endTime}`).getTime() - new Date(`2000-01-01T${s.startTime}`).getTime()) / 60000)} min`,
-          intensity: 'intermediate' as const,
-          instructor: coaches.find((c) => c.id === s.coachId)?.name.split(' ')[0] ?? '',
-        })),
+        .map((s) => {
+          const l = locations.find((l) => l.id === s.locationId);
+          return {
+            name: classTypes.find((c) => c.id === s.classTypeId)?.name ?? '',
+            time: s.startTime,
+            duration: `${Math.round((new Date(`2000-01-01T${s.endTime}`).getTime() - new Date(`2000-01-01T${s.startTime}`).getTime()) / 60000)} min`,
+            intensity: 'intermediate' as const,
+            instructor: coaches.find((c) => c.id === s.coachId)?.name.split(' ')[0] ?? '',
+            locationColor: l?.color,
+            locationName: l?.name,
+          };
+        }),
     },
   ];
 
@@ -119,7 +157,7 @@ export default function HomePage() {
     .filter((sp) => sp.isActive)
     .map((p) => ({
       planName: p.name,
-      price: `$${(p.priceCents / 100).toFixed(0)}`,
+      price: formatCurrency(p.priceCents, 'EUR', false),
       period: p.interval === 'monthly' ? t('pricingPage.perMonth') : t('pricingPage.perYear'),
       features: p.features,
       featured: p.name === 'Monthly Unlimited',

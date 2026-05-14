@@ -19,6 +19,7 @@ const emptyForm = {
   phone: '',
   email: '',
   mapLink: '',
+  color: '#0ea5e9',
   isActive: true,
 };
 
@@ -66,6 +67,7 @@ export default function LocationsPage() {
       phone: loc.phone,
       email: loc.email,
       mapLink: loc.mapLink ?? '',
+      color: loc.color,
       isActive: loc.isActive,
     });
     setEditing(loc);
@@ -133,12 +135,18 @@ export default function LocationsPage() {
             <Card key={loc.id} hover>
               <div className="flex items-start justify-between">
                 <div className="min-w-0 flex-1">
-                  <Link
-                    to={`/admin/locations/${loc.id}`}
-                    className="font-medium text-gray-900 hover:text-primary-600"
-                  >
-                    {loc.name}
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="h-3 w-3 shrink-0 rounded-full"
+                      style={{ backgroundColor: loc.color }}
+                    />
+                    <Link
+                      to={`/admin/locations/${loc.id}`}
+                      className="font-medium text-gray-900 hover:text-primary-600"
+                    >
+                      {loc.name}
+                    </Link>
+                  </div>
                   <p className="truncate text-xs text-gray-500">{loc.address}</p>
                 </div>
                 <Badge color={loc.isActive ? 'green' : 'gray'}>
@@ -218,6 +226,20 @@ export default function LocationsPage() {
                 onChange={(e) => setForm((p) => ({ ...p, mapLink: e.target.value }))}
                 placeholder={t('adminLocations.mapsPlaceholder')}
               />
+            </FormField>
+            <FormField label={t('adminLocations.color')}>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={form.color}
+                  onChange={(e) => setForm((p) => ({ ...p, color: e.target.value }))}
+                  className="h-9 w-9 cursor-pointer rounded border"
+                />
+                <Input
+                  value={form.color}
+                  onChange={(e) => setForm((p) => ({ ...p, color: e.target.value }))}
+                />
+              </div>
             </FormField>
           </div>
           <FormField label={t('adminLocations.status')}>

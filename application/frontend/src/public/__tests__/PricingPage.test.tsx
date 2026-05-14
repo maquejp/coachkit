@@ -27,9 +27,9 @@ describe('PricingPage', () => {
 
   it('renders subscription prices from fixtures', () => {
     renderPage();
-    expect(screen.getByText('$99')).toBeInTheDocument();
-    expect(screen.getByText('$899')).toBeInTheDocument();
-    expect(screen.getByText('$69')).toBeInTheDocument();
+    expect(screen.getByText('€99')).toBeInTheDocument();
+    expect(screen.getByText('€899')).toBeInTheDocument();
+    expect(screen.getByText('€69')).toBeInTheDocument();
   });
 
   it('renders class pack (point card) section', () => {
@@ -42,14 +42,14 @@ describe('PricingPage', () => {
 
   it('renders point card prices from fixtures', () => {
     renderPage();
-    expect(screen.getByText('$90')).toBeInTheDocument();
-    expect(screen.getByText('$160')).toBeInTheDocument();
-    expect(screen.getByText('$280')).toBeInTheDocument();
+    expect(screen.getByText('€90')).toBeInTheDocument();
+    expect(screen.getByText('€160')).toBeInTheDocument();
+    expect(screen.getByText('€280')).toBeInTheDocument();
   });
 
   it('renders single session pricing section', () => {
     renderPage();
     expect(screen.getByText('Single Session')).toBeInTheDocument();
-    expect(screen.getByText('$20')).toBeInTheDocument();
+    expect(screen.getByText('€20')).toBeInTheDocument();
   });
 });

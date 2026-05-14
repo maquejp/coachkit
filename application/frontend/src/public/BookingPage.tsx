@@ -414,7 +414,15 @@ export default function BookingPage() {
                       </Badge>
                     </div>
                     <div className="mt-2 flex items-center gap-4 text-sm text-gray-500">
-                      {location && <span>{location.name}</span>}
+                      {location && (
+                        <span className="flex items-center gap-1">
+                          <div
+                            className="h-2.5 w-2.5 rounded-full"
+                            style={{ backgroundColor: location.color }}
+                          />
+                          {location.name}
+                        </span>
+                      )}
                       {coach && (
                         <span>{t('bookingPage.withInstructor', { name: coach.name })}</span>
                       )}

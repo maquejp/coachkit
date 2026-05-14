@@ -6,10 +6,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { fetchDashboardKpis, fetchDashboardCharts, fetchDashboardOccupancy } from '@/api/admin';
 import type { Kpis, ChartsData, OccupancyData } from '@/api/admin';
 import { bookings, classTypes, weeklySchedule, locations } from '@/mocks/fixtures';
-
-function formatCents(cents: number) {
-  return `$${(cents / 100).toFixed(0)}`;
-}
+import { formatCurrency } from '@/lib/format';
 
 function pct(v: number) {
   return `${Math.round(v * 100)}%`;
@@ -77,7 +74,9 @@ export default function AdminDashboardPage() {
             {t('adminDashboard.revenue')}
           </p>
           <p className="mt-1 text-2xl font-bold text-gray-900">
-            {kpis ? formatCents(kpis.revenueCents) : '$0'}
+            {kpis
+              ? formatCurrency(kpis.revenueCents, 'EUR', false)
+              : formatCurrency(0, 'EUR', false)}
           </p>
         </Card>
         <Card>
@@ -118,7 +117,7 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
                   <span className="w-16 text-right text-xs font-medium text-gray-700">
-                    {formatCents(r.amountCents)}
+                    {formatCurrency(r.amountCents)}
                   </span>
                 </div>
               ))}
@@ -190,7 +189,16 @@ export default function AdminDashboardPage() {
                       <p className="text-xs text-gray-500">
                         {b.date}
                         {slot ? ` ${slot.startTime}—${slot.endTime}` : ''}
-                        {loc ? ` · ${loc.name}` : ''}
+                        {loc ? (
+                          <span className="inline-flex items-center gap-1">
+                            <span> · </span>
+                            <div
+                              className="h-2 w-2 rounded-full"
+                              style={{ backgroundColor: loc.color }}
+                            />
+                            {loc.name}
+                          </span>
+                        ) : null}
                       </p>
                     </div>
                   </div>

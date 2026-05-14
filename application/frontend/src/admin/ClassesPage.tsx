@@ -10,6 +10,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { Badge } from '@/components/ui/Badge';
 import { fetchAllClassTypes, createClassType, updateClassType, deleteClassType } from '@/api/admin';
 import type { ClassType } from '@/api/admin';
+import { formatCurrency } from '@/lib/format';
 
 const emptyForm = {
   name: '',
@@ -100,10 +101,6 @@ export default function ClassesPage() {
     }
   }
 
-  function formatCents(cents: number) {
-    return `$${(cents / 100).toFixed(2)}`;
-  }
-
   if (loading) return <Spinner centered size="lg" />;
 
   return (
@@ -143,7 +140,7 @@ export default function ClassesPage() {
               <p className="mt-2 text-sm text-gray-600 line-clamp-2">{ct.description}</p>
               <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 text-xs text-gray-500">
                 <span>{t('adminClasses.capacity', { count: ct.capacity })}</span>
-                <span>{formatCents(ct.defaultPriceCents)}</span>
+                <span>{formatCurrency(ct.defaultPriceCents)}</span>
               </div>
               <div className="mt-3 flex gap-2 border-t border-gray-100 pt-3">
                 <Button size="sm" variant="outline" onClick={() => openEdit(ct)}>

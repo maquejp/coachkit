@@ -6,6 +6,7 @@ export interface Location {
   phone: string;
   email: string;
   mapLink: string | null;
+  color: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

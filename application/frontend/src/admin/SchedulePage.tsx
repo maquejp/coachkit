@@ -300,10 +300,15 @@ export default function SchedulePage() {
                             <button
                               key={slot.id}
                               onClick={() => setEditingSlot(slot)}
-                              className="w-full rounded bg-primary-100 px-1 py-0.5 text-left text-xs text-primary-800 transition-colors hover:bg-primary-200"
+                              className="w-full rounded px-1 py-0.5 text-left text-xs text-gray-900 transition-colors hover:opacity-80"
+                              style={{ backgroundColor: ct?.color ? ct.color + '20' : '#e0f2fe' }}
                             >
-                              <span className="font-medium">{ct?.name ?? t('common.classes')}</span>
-                              <span className="ml-1 text-primary-600">
+                              <div className="flex items-center gap-1">
+                                <span className="font-medium truncate">
+                                  {ct?.name ?? t('common.classes')}
+                                </span>
+                              </div>
+                              <span className="text-gray-600">
                                 {formatTime(slot.startTime)}–{formatTime(slot.endTime)}
                               </span>
                             </button>

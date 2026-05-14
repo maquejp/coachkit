@@ -123,7 +123,13 @@ export default function BookingsPage() {
           <p className="text-xs text-gray-500">
             {formatDate(b.date)}
             {slot ? ` · ${slot.startTime}—${slot.endTime}` : ''}
-            {loc ? ` · ${loc.name}` : ''}
+            {loc ? (
+              <span className="inline-flex items-center gap-1">
+                <span> · </span>
+                <div className="h-2 w-2 rounded-full" style={{ backgroundColor: loc.color }} />
+                {loc.name}
+              </span>
+            ) : null}
           </p>
         </div>
         <div className="flex items-center gap-2">

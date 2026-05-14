@@ -47,6 +47,16 @@ const server = setupServer(
           maxCapacity: 15,
           isActive: true,
         },
+        {
+          id: 'sched-003',
+          classTypeId: 'ct-001',
+          locationId: 'loc-002',
+          dayOfWeek: 1,
+          startTime: '09:00',
+          endTime: '10:00',
+          maxCapacity: 25,
+          isActive: true,
+        },
       ],
     });
   }),
@@ -67,6 +77,26 @@ const server = setupServer(
           name: 'HIIT Circuit',
           color: '#F97316',
           durationMinutes: 45,
+          isActive: true,
+        },
+      ],
+    });
+  }),
+
+  http.get('/api/locations', () => {
+    return HttpResponse.json({
+      success: true,
+      data: [
+        {
+          id: 'loc-001',
+          name: 'CoachKit Downtown',
+          color: '#0ea5e9',
+          isActive: true,
+        },
+        {
+          id: 'loc-002',
+          name: 'CoachKit Eastside',
+          color: '#10b981',
           isActive: true,
         },
       ],

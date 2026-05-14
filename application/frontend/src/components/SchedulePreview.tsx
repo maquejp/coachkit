@@ -7,6 +7,8 @@ interface ScheduleClass {
   duration: string;
   intensity: 'beginner' | 'intermediate' | 'advanced';
   instructor: string;
+  locationColor?: string;
+  locationName?: string;
 }
 
 interface SchedulePreviewProps {
@@ -51,7 +53,21 @@ export default function SchedulePreview({ weekDays }: SchedulePreviewProps) {
                       <span>&middot;</span>
                       <span>{cls.duration}</span>
                     </div>
-                    <p className="mt-1 text-xs text-gray-400">{cls.instructor}</p>
+                    <div className="mt-1 flex items-center gap-1 text-xs text-gray-400">
+                      <span>{cls.instructor}</span>
+                      {cls.locationName && (
+                        <>
+                          <span>·</span>
+                          {cls.locationColor && (
+                            <div
+                              className="h-2 w-2 rounded-full"
+                              style={{ backgroundColor: cls.locationColor }}
+                            />
+                          )}
+                          <span>{cls.locationName}</span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

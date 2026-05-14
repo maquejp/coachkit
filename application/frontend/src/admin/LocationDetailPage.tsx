@@ -110,7 +110,10 @@ export default function LocationDetailPage() {
 
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{location.name}</h1>
+          <div className="flex items-center gap-2">
+            <div className="h-4 w-4 rounded-full" style={{ backgroundColor: location.color }} />
+            <h1 className="text-2xl font-bold text-gray-900">{location.name}</h1>
+          </div>
           <p className="mt-1 text-gray-500">
             {location.address}, {location.city}
           </p>
@@ -190,12 +193,9 @@ export default function LocationDetailPage() {
                         return (
                           <div
                             key={slot.id}
-                            className="flex items-center gap-3 rounded-lg bg-gray-50 px-3 py-2 text-sm"
+                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm"
+                            style={{ backgroundColor: ct?.color ? ct.color + '20' : '#f9fafb' }}
                           >
-                            <div
-                              className="h-3 w-3 rounded-full"
-                              style={{ backgroundColor: ct?.color ?? '#ccc' }}
-                            />
                             <span className="font-medium text-gray-900">
                               {ct?.name ?? t('common.classes')}
                             </span>

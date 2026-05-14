@@ -25,12 +25,9 @@ import type {
   CustomerPaymentDetail,
   CustomerPointCardDetail,
 } from '@/api/admin';
+import { formatCurrency } from '@/lib/format';
 
 type Tab = 'profile' | 'subscriptions' | 'bookings' | 'attendance' | 'payments';
-
-function formatCents(cents: number) {
-  return '$' + (cents / 100).toFixed(2);
-}
 
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString();
@@ -383,7 +380,7 @@ export default function CustomerDetailPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-medium text-gray-900">
-                      {formatCents(p.amountCents)}
+                      {formatCurrency(p.amountCents)}
                     </span>
                     <Badge
                       color={

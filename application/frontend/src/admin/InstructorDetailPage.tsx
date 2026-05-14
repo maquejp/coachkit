@@ -5,10 +5,15 @@ import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Spinner } from '@/components/ui/Spinner';
 import { Badge } from '@/components/ui/Badge';
-import { fetchAllCoaches, fetchWeeklySchedule, fetchAllClassTypes } from '@/api/admin';
+import {
+  fetchAllCoaches,
+  fetchWeeklySchedule,
+  fetchAllClassTypes,
+  fetchAllLocations,
+} from '@/api/admin';
 import type { Coach } from '@/api/admin';
 import type { WeeklyScheduleItem } from '@/api/admin';
-import type { ClassType } from '@/types';
+import type { ClassType, Location } from '@/types';
 
 function formatTime(time: string) {
   const [h, m] = time.split(':');
@@ -26,6 +31,7 @@ export default function InstructorDetailPage() {
   const [coach, setCoach] = useState<Coach | null>(null);
   const [schedules, setSchedules] = useState<WeeklyScheduleItem[]>([]);
   const [classTypes, setClassTypes] = useState<ClassType[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,15 +40,17 @@ export default function InstructorDetailPage() {
     async function load() {
       setLoading(true);
       try {
-        const [cos, sched, cts] = await Promise.all([
+        const [cos, sched, cts, locs] = await Promise.all([
           fetchAllCoaches(),
           fetchWeeklySchedule(),
           fetchAllClassTypes(),
+          fetchAllLocations(),
         ]);
         if (cancelled) return;
         setCoach(cos.find((c) => c.id === id) ?? null);
         setSchedules(sched.filter((s) => s.coachId === id));
         setClassTypes(cts);
+        setLocations(locs);
       } catch {
         // non-fatal
       } finally {
@@ -155,21 +163,28 @@ export default function InstructorDetailPage() {
                     <div className="space-y-1">
                       {g.slots.map((slot) => {
                         const ct = classTypes.find((c) => c.id === slot.classTypeId);
+                        const loc = locations.find((l) => l.id === slot.locationId);
                         return (
                           <div
                             key={slot.id}
-                            className="flex items-center gap-3 rounded-lg bg-gray-50 px-3 py-2 text-sm"
+                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm"
+                            style={{ backgroundColor: ct?.color ? ct.color + '20' : '#f9fafb' }}
                           >
-                            <div
-                              className="h-3 w-3 rounded-full"
-                              style={{ backgroundColor: ct?.color ?? '#ccc' }}
-                            />
                             <span className="font-medium text-gray-900">
                               {ct?.name ?? t('common.classes')}
                             </span>
                             <span className="text-gray-500">
                               {formatTime(slot.startTime)}-{formatTime(slot.endTime)}
                             </span>
+                            {loc && (
+                              <div className="ml-auto flex items-center gap-1 text-xs text-gray-400">
+                                <div
+                                  className="h-2 w-2 rounded-full"
+                                  style={{ backgroundColor: loc.color }}
+                                />
+                                <span>{loc.name}</span>
+                              </div>
+                            )}
                           </div>
                         );
                       })}

@@ -186,7 +186,7 @@ describe('DashboardPage', () => {
     renderPage();
     await waitFor(() => {
       expect(screen.getByText('Monthly Unlimited')).toBeInTheDocument();
-      expect(screen.getAllByText('$99.00').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText('€99.00').length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText((c) => c.includes('monthly'))).toBeInTheDocument();
     });
   });

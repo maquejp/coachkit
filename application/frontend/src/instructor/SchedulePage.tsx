@@ -7,9 +7,9 @@ import { Badge } from '@/components/ui/Badge';
 import { Spinner } from '@/components/ui/Spinner';
 import { useAuthStore } from '@/stores/auth';
 import { fetchInstructorSchedule } from '@/api/instructor';
-import { fetchAllClassTypes } from '@/api/admin';
+import { fetchAllClassTypes, fetchAllLocations } from '@/api/admin';
 import type { InstructorScheduleItem } from '@/api/instructor';
-import type { ClassType, InstructorUser } from '@/types';
+import type { ClassType, InstructorUser, Location } from '@/types';
 
 const DAYS = [
   { num: 1, name: 'Monday' },
@@ -36,6 +36,7 @@ export default function InstructorSchedulePage() {
 
   const [schedules, setSchedules] = useState<InstructorScheduleItem[]>([]);
   const [classTypes, setClassTypes] = useState<ClassType[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,13 +45,15 @@ export default function InstructorSchedulePage() {
     async function load() {
       setLoading(true);
       try {
-        const [sched, cts] = await Promise.all([
+        const [sched, cts, locs] = await Promise.all([
           fetchInstructorSchedule(coachId),
           fetchAllClassTypes(),
+          fetchAllLocations(),
         ]);
         if (!cancelled) {
           setSchedules(sched);
           setClassTypes(cts);
+          setLocations(locs);
         }
       } catch {
         // non-fatal
@@ -92,17 +95,15 @@ export default function InstructorSchedulePage() {
                 <div className="space-y-2">
                   {daySlots.map((slot) => {
                     const ct = classTypes.find((c) => c.id === slot.classTypeId);
+                    const loc = locations.find((l) => l.id === slot.locationId);
                     return (
                       <Link
                         key={slot.id}
                         to={`/instructor/attendance?scheduleId=${slot.id}`}
-                        className="block rounded-lg bg-gray-50 p-2 transition-colors hover:bg-primary-50"
+                        className="block rounded-lg p-2 transition-colors hover:opacity-80"
+                        style={{ backgroundColor: ct?.color ? ct.color + '20' : '#f3f4f6' }}
                       >
                         <div className="flex items-center gap-1.5">
-                          <div
-                            className="h-2.5 w-2.5 rounded-full shrink-0"
-                            style={{ backgroundColor: ct?.color ?? '#ccc' }}
-                          />
                           <span className="text-sm font-medium text-gray-900">
                             {ct?.name ?? 'Class'}
                           </span>
@@ -110,6 +111,17 @@ export default function InstructorSchedulePage() {
                         <p className="mt-1 text-xs text-gray-500">
                           {formatTime(slot.startTime)} – {formatTime(slot.endTime)}
                         </p>
+                        <div className="mt-1 flex items-center gap-1 text-xs text-gray-400">
+                          {loc && (
+                            <>
+                              <div
+                                className="h-2 w-2 rounded-full"
+                                style={{ backgroundColor: loc.color }}
+                              />
+                              <span>{loc.name}</span>
+                            </>
+                          )}
+                        </div>
                         <Badge color="green" className="mt-1">
                           {t('instructorSchedule.spots', { count: slot.maxCapacity })}
                         </Badge>

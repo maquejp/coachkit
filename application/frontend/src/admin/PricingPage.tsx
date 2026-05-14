@@ -20,10 +20,7 @@ import {
   deletePointCardPlan,
 } from '@/api/admin';
 import type { SubscriptionPlan, PointCardPlan } from '@/api/admin';
-
-function formatCents(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`;
-}
+import { formatCurrency } from '@/lib/format';
 
 const emptySubForm = {
   name: '',
@@ -212,7 +209,7 @@ export default function PricingPage() {
                   </Badge>
                 </div>
                 <p className="mt-2 text-2xl font-bold text-gray-900">
-                  {formatCents(p.priceCents)}
+                  {formatCurrency(p.priceCents)}
                   <span className="text-sm font-normal text-gray-500">/{p.interval}</span>
                 </p>
                 {p.trialDays > 0 && (
@@ -269,7 +266,9 @@ export default function PricingPage() {
                     {p.isActive ? t('common.active') : t('common.inactive')}
                   </Badge>
                 </div>
-                <p className="mt-2 text-2xl font-bold text-gray-900">{formatCents(p.priceCents)}</p>
+                <p className="mt-2 text-2xl font-bold text-gray-900">
+                  {formatCurrency(p.priceCents)}
+                </p>
                 <p className="text-xs text-gray-500">
                   {t('adminPricing.packInfo', { sessions: p.sessionsCount, days: p.validityDays })}
                 </p>

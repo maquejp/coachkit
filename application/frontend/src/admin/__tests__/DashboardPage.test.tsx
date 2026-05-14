@@ -102,7 +102,7 @@ describe('AdminDashboardPage', () => {
     renderPage();
     await waitFor(() => {
       expect(screen.getByText('Revenue by Month')).toBeInTheDocument();
-      expect(screen.getByText('$1500')).toBeInTheDocument();
+      expect(screen.getByText('€1,500')).toBeInTheDocument();
     });
   });
 

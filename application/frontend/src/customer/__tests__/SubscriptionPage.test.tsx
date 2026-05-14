@@ -184,7 +184,7 @@ describe('SubscriptionPage', () => {
   it('renders plan price', async () => {
     renderPage();
     await waitFor(() => {
-      expect(screen.getByText((c) => c.includes('$99.00'))).toBeInTheDocument();
+      expect(screen.getByText((c) => c.includes('€99.00'))).toBeInTheDocument();
     });
   });
 

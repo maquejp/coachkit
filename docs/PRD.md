@@ -34,6 +34,7 @@ A full-featured appointment and event booking SaaS platform built with React + T
 - **Instructor Dashboard** — Role-based dashboard for instructors. View personal weekly schedule with assigned classes, mark attendance for own sessions, and edit personal profile (bio, photo, contact info). Instructors log in with their own credentials (role: `instructor`).
 - **Attendance & Session Tracking** — Check-in per session. Track per-participant session usage within their subscription period. Overview per week/month/custom date range showing used and remaining sessions.
 - **Reporting & Export** — All list views and reports exportable to XLS and PDF (customers, attendance, subscriptions, revenue, occupancy).
+- **Admin Settings** — Configures studio-wide preferences: business name/contact/address, timezone and default currency, per-day business hours, booking rules (lead time, cancellation window, max bookings per customer), default email sender and notification event toggles, and tax rate. Serves as the central configuration hub for the platform.
 
 ### Billing & Payments
 

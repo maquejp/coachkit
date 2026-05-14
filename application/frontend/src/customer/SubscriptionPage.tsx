@@ -23,9 +23,7 @@ function formatDate(dateStr: string) {
   });
 }
 
-function formatCents(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`;
-}
+import { formatCurrency } from '@/lib/format';
 
 function statusBadgeColor(status: string) {
   switch (status) {
@@ -137,7 +135,7 @@ export default function SubscriptionPage() {
                 <div>
                   <p className="text-xs text-gray-500">{t('common.price')}</p>
                   <p className="font-medium text-gray-900">
-                    {formatCents(activePlan.priceCents)}/{activePlan.interval}
+                    {formatCurrency(activePlan.priceCents)}/{activePlan.interval}
                   </p>
                 </div>
                 <div>
@@ -285,7 +283,7 @@ export default function SubscriptionPage() {
                 <div>
                   <p className="font-medium text-gray-900">{plan.name}</p>
                   <p className="text-sm text-gray-500">
-                    {formatCents(plan.priceCents)}/{plan.interval}
+                    {formatCurrency(plan.priceCents)}/{plan.interval}
                   </p>
                 </div>
                 <Button size="sm" loading={changingPlan} onClick={() => handleChangePlan(plan.id)}>

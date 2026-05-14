@@ -111,7 +111,7 @@ describe('ClassesPage', () => {
   it('shows price on cards', async () => {
     renderPage();
     await waitFor(() => {
-      expect(screen.getByText('$20.00')).toBeInTheDocument();
+      expect(screen.getByText('€20.00')).toBeInTheDocument();
     });
   });
 

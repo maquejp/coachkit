@@ -21,6 +21,7 @@ import type {
   SubscriptionPlan,
   PointCardPlan,
 } from '@/types';
+import { formatCurrency } from '@/lib/format';
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('en-US', {
@@ -28,10 +29,6 @@ function formatDate(dateStr: string) {
     day: 'numeric',
     year: 'numeric',
   });
-}
-
-function formatCents(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`;
 }
 
 function statusBadgeColor(status: string) {
@@ -185,7 +182,16 @@ export default function DashboardPage() {
                         {slot
                           ? `${dayLabel(slot.dayOfWeek)}, ${slot.startTime} — ${slot.endTime}`
                           : b.date}
-                        {loc ? ` · ${loc.name}` : ''}
+                        {loc ? (
+                          <span className="inline-flex items-center gap-1">
+                            <span> · </span>
+                            <div
+                              className="h-2 w-2 rounded-full"
+                              style={{ backgroundColor: loc.color }}
+                            />
+                            {loc.name}
+                          </span>
+                        ) : null}
                       </p>
                     </div>
                     <Badge color={statusBadgeColor(b.status)}>{b.status}</Badge>
@@ -234,7 +240,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-500">{t('common.price')}</span>
                 <span className="font-medium text-gray-900">
-                  {formatCents(activeSubPlan.priceCents)}/{activeSubPlan.interval}
+                  {formatCurrency(activeSubPlan.priceCents)}/{activeSubPlan.interval}
                 </span>
               </div>
             </div>
@@ -339,7 +345,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-gray-900">
-                      {formatCents(p.amountCents)}
+                      {formatCurrency(p.amountCents)}
                     </p>
                     <Badge color={statusBadgeColor(p.status)}>{p.status}</Badge>
                   </div>

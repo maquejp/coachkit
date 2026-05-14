@@ -19,6 +19,7 @@ const server = setupServer(
           phone: '+1-555-1001',
           email: 'downtown@coachkit.test',
           mapLink: 'https://maps.example.com/downtown',
+          color: '#0ea5e9',
           isActive: true,
           createdAt: '2025-01-01T00:00:00Z',
           updatedAt: '2025-01-01T00:00:00Z',

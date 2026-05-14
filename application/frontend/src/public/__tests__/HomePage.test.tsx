@@ -46,7 +46,7 @@ describe('HomePage', () => {
   it('renders pricing section', () => {
     renderPage();
     expect(screen.getByText('Pricing')).toBeInTheDocument();
-    expect(screen.getByText('$99')).toBeInTheDocument();
+    expect(screen.getByText('€99')).toBeInTheDocument();
   });
 
   it('renders reviews carousel', () => {

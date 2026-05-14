@@ -34,7 +34,7 @@ import InstructorDashboardPage from '@/instructor/DashboardPage';
 import InstructorSchedulePage from '@/instructor/SchedulePage';
 import InstructorAttendancePage from '@/instructor/AttendancePage';
 import InstructorProfilePage from '@/instructor/ProfilePage';
-import Placeholder from '@/components/ui/Placeholder';
+import AdminSettingsPage from '@/admin/SettingsPage';
 
 export const router = createBrowserRouter([
   {
@@ -88,7 +88,7 @@ export const router = createBrowserRouter([
       { path: 'admin/waitlist', element: <AdminWaitlistPage /> },
       { path: 'admin/reports', element: <AdminReportsPage /> },
       { path: 'admin/analytics', element: <AdminAnalyticsPage /> },
-      { path: 'admin/settings', element: <Placeholder title="Admin Settings" /> },
+      { path: 'admin/settings', element: <AdminSettingsPage /> },
     ],
   },
   {
