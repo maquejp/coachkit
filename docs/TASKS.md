@@ -322,20 +322,20 @@
 - [x] Build delete confirmation
 - [x] Write tests for class management
 
-### 6.4 Subscription & Pricing Management
+### 6.4 Subscription & Pricing Management [x]
 
-- [ ] Build subscription plans list with CRUD
-- [ ] Build create/edit plan form (name, type, sessions/week, price, commitment, insurance)
-- [ ] Build point card plans CRUD
-- [ ] Build default price field in class type create/edit form
-- [ ] Write tests for pricing management
+- [x] Build subscription plans list with CRUD
+- [x] Build create/edit plan form (name, type, sessions/week, price, commitment, insurance)
+- [x] Build point card plans CRUD
+- [x] Build default price field in class type create/edit form
+- [x] Write tests for pricing management
 
-### 6.5 Location Management
+### 6.5 Location Management [x]
 
-- [ ] Build locations list with CRUD
-- [ ] Build create/edit location form (name, address, city, postal code, phone, email, maps URL, notes)
-- [ ] Build location detail view (linked schedule, exceptions)
-- [ ] Write tests for location management
+- [x] Build locations list with CRUD
+- [x] Build create/edit location form (name, address, city, postal code, phone, email, maps URL, notes)
+- [x] Build location detail view (linked schedule, exceptions)
+- [x] Write tests for location management
 
 ### 6.6 Customer Management
 
