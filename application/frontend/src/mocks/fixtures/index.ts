@@ -1,4 +1,4 @@
-export { allUsers, adminUser, customerUsers } from './users';
+export { allUsers, adminUser, customerUsers, instructorUsers } from './users';
 export { locations } from './locations';
 export { coaches } from './coaches';
 export { classTypes } from './classTypes';

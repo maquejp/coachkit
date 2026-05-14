@@ -31,6 +31,7 @@ A full-featured appointment and event booking SaaS platform built with React + T
 - **Admin Dashboard** — KPIs: active subscriptions, class occupancy rates, revenue, new signups (filterable by location). Charts and attendance overview.
 - **Location Management** — CRUD for sites/locations: name, address, contact info, map link. Each schedule entry and exception is tied to a location. Filter reporting and dashboards by location.
 - **Instructor Management** — Instructor profiles, bio, photo, class assignments. Built for multi-instructor scaling.
+- **Instructor Dashboard** — Role-based dashboard for instructors. View personal weekly schedule with assigned classes, mark attendance for own sessions, and edit personal profile (bio, photo, contact info). Instructors log in with their own credentials (role: `instructor`).
 - **Attendance & Session Tracking** — Check-in per session. Track per-participant session usage within their subscription period. Overview per week/month/custom date range showing used and remaining sessions.
 - **Reporting & Export** — All list views and reports exportable to XLS and PDF (customers, attendance, subscriptions, revenue, occupancy).
 
@@ -41,7 +42,8 @@ A full-featured appointment and event booking SaaS platform built with React + T
 
 ### Platform
 
-- **Authentication & Roles** — JWT-based with two roles: Customer (bookings, subscription status, session usage, payment history) and Admin (full dashboard access). Guest flow: first session free without account — post-booking link to set password and activate panel. Admin created via seed script (no public registration). Email + password only.
+- **Authentication & Roles** — JWT-based with three roles: Customer (bookings, subscription status, session usage, payment history), Instructor (own schedule, attendance marking, profile), and Admin (full dashboard access). Guest flow: first session free without account — post-booking link to set password and activate
+  panel. Admin created via seed script (no public registration). Email + password only.
 - **Email Notifications** — Email channel with transactional templates: booking confirmation, 24h reminder, cancellation confirmation, waitlist spot opened, subscription confirmation, payment receipt, payment failed (customer + admin), renewal reminder (7 days), contact form (admin), account activation (guest).
 - **Multi-language** — i18n approach (react-i18next or similar). All user-facing strings externalized. Primary language set per deployment via configuration.
 - **SEO & Metadata** — Per-page meta titles, descriptions, Open Graph tags. JSON-LD structured data for LocalBusiness. Sitemap.xml, robots.txt, canonical URLs.
@@ -115,7 +117,7 @@ erDiagram
         string first_name
         string last_name
         string phone
-        enum role "customer | admin"
+        enum role "customer | admin | instructor"
         datetime email_verified_at
         datetime last_login_at
         datetime created_at

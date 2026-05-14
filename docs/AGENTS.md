@@ -93,6 +93,7 @@ Rules:
 - **Feature branches** — One branch per **logical deliverable** (something that can be reviewed, merged, and toggled on independently), not per checkbox. Group related tasks into a single branch (e.g. `feat/design-system` covers all base components, `feat/public-pages` covers the entire public site). This keeps PRs meaningful.
 - **If a feature spans multiple days**, use **feature flags** to merge incomplete work into `main` without exposing it. This keeps integration continuous and avoids long-lived branches.
 - **Feature flags** — Unfinished or unreleased features are gated behind a simple toggle (e.g. `if (featureFlags.bookingWizard)`). Flags are removed once the feature is fully shipped and stable. This lets `main` stay deployable at all times.
+- **Instructor role** — Instructors have their own dashboard at `/instructor/*` with schedule, attendance, and profile views. Three roles total: `customer`, `admin`, `instructor`.
 - **No `develop` branch** — Maintaining two long-lived branches adds sync overhead with no benefit for a single-dev or small team. All active work lives on `main` behind flags.
 - **Releases** — A release is simply a tag on `main` (e.g. `v1.0.0`). No release branches needed. Rollbacks are done by flipping a feature flag off or reverting a commit, not by reverting merge commits across branches.
 - **No overengineering** — Build what's needed, not what might be needed later. No abstraction layers "just in case." Refactor when there's a concrete need, not preemptively.

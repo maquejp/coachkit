@@ -226,6 +226,14 @@
 - [x] Track subscription purchased event
 - [x] Track contact form submitted event
 
+### 3.9 Multi-language Setup
+
+- [ ] Research and select i18n library (react-i18next or similar)
+- [ ] Externalize all user-facing strings into locale files
+- [ ] Set up language detection and switching
+- [ ] Configure primary language per deployment via environment
+- [ ] Write tests for language switching
+
 ---
 
 ## Phase 4: Frontend — Authentication
@@ -379,6 +387,16 @@
 - [x] Build analytics page with Umami iframe/integration
 - [x] Show conversion rate, popular classes, peak booking times
 - [x] Write tests for analytics page
+
+### 6.12 Instructor Dashboard
+
+- [x] Add instructor role to auth types and mock fixtures
+- [x] Wire instructor routes under `/instructor/*` with RoleGuard
+- [x] Build instructor dashboard — upcoming classes, quick stats
+- [x] Build instructor schedule view — weekly timetable of own classes
+- [x] Build instructor attendance marking — mark students present for own sessions
+- [x] Build instructor profile editing — bio, photo, contact info
+- [x] Write tests for instructor dashboard pages
 
 ---
 
@@ -607,6 +625,7 @@ main                    # Always deployable. Feature-flagged if incomplete.
 ├── feat/customer-panel      # Dashboard, bookings, subscriptions, profile
 ├── feat/admin-panel         # Dashboard, schedule, classes, locations, customers,
 │                            # attendance, instructors, waitlist, reporting
+├── feat/instructor-panel    # Instructor dashboard: schedule, attendance, profile
 ├── feat/backend-scaffold    # Laravel project + Docker + docker-compose
 ├── feat/database            # Migrations + seed scripts
 ├── feat/api-auth            # Auth endpoints + guest flow

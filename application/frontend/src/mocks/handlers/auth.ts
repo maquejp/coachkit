@@ -1,5 +1,12 @@
 import { http, HttpResponse } from 'msw';
-import { allUsers, adminUser } from '@/mocks/fixtures';
+import { allUsers } from '@/mocks/fixtures';
+
+function userFromToken(request: Request) {
+  const auth = request.headers.get('Authorization') ?? '';
+  const token = auth.replace('Bearer ', '');
+  const id = token.replace('mock-token-', '');
+  return allUsers.find((u) => u.id === id) ?? null;
+}
 
 export const authHandlers = [
   http.post('/api/auth/login', async ({ request }) => {
@@ -21,8 +28,10 @@ export const authHandlers = [
     );
   }),
 
-  http.get('/api/auth/me', () => {
-    return HttpResponse.json({ success: true, data: adminUser });
+  http.get('/api/auth/me', ({ request }) => {
+    const user = userFromToken(request);
+    if (!user) return HttpResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    return HttpResponse.json({ success: true, data: user });
   }),
 
   http.post('/api/auth/logout', () => {
@@ -39,7 +48,9 @@ export const authHandlers = [
 
   http.put('/api/profile', async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json({ success: true, data: { ...adminUser, ...body } });
+    const user = userFromToken(request);
+    if (!user) return HttpResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    return HttpResponse.json({ success: true, data: { ...user, ...body } });
   }),
 
   http.put('/api/profile/password', async () => {

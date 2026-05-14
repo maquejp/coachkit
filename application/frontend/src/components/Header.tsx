@@ -57,7 +57,15 @@ export default function Header() {
           {isAuth ? (
             <div className="flex items-center gap-2">
               <button
-                onClick={() => navigate(user.role === 'admin' ? '/admin' : '/dashboard')}
+                onClick={() =>
+                  navigate(
+                    user.role === 'admin'
+                      ? '/admin'
+                      : user.role === 'instructor'
+                        ? '/instructor'
+                        : '/dashboard',
+                  )
+                }
                 className="flex items-center rounded-full p-1 text-sm transition-colors hover:bg-gray-100"
                 title={user.fullName ?? user.email}
               >

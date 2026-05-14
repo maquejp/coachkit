@@ -1,0 +1,119 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import SEO from '@/components/SEO';
+import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Spinner } from '@/components/ui/Spinner';
+import { useAuthStore } from '@/stores/auth';
+import { fetchInstructorSchedule } from '@/api/instructor';
+import type { InstructorScheduleItem } from '@/api/instructor';
+import type { ClassType, InstructorUser } from '@/types';
+
+const DAYS = [
+  { num: 1, name: 'Monday' },
+  { num: 2, name: 'Tuesday' },
+  { num: 3, name: 'Wednesday' },
+  { num: 4, name: 'Thursday' },
+  { num: 5, name: 'Friday' },
+  { num: 6, name: 'Saturday' },
+  { num: 7, name: 'Sunday' },
+];
+
+function formatTime(time: string) {
+  const [h, m] = time.split(':');
+  const hour = Number(h);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const h12 = hour % 12 || 12;
+  return `${h12}:${m} ${ampm}`;
+}
+
+export default function InstructorSchedulePage() {
+  const user = useAuthStore((s) => s.user) as InstructorUser | null;
+  const coachId = user?.coachId ?? null;
+
+  const [schedules, setSchedules] = useState<InstructorScheduleItem[]>([]);
+  const [classTypes, setClassTypes] = useState<ClassType[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!coachId) return;
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      try {
+        const [sched, cts] = await Promise.all([
+          fetchInstructorSchedule(coachId),
+          fetchAllClassTypes(),
+        ]);
+        if (!cancelled) {
+          setSchedules(sched);
+          setClassTypes(cts);
+        }
+      } catch {
+        // non-fatal
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [coachId]);
+
+  if (loading) return <Spinner centered size="lg" />;
+
+  return (
+    <>
+      <SEO title="My Schedule" description="View your weekly teaching schedule." />
+
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">My Schedule</h1>
+        <p className="mt-1 text-gray-500">Your weekly class schedule.</p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {DAYS.map((day) => {
+          const daySlots = schedules.filter((s) => s.dayOfWeek === day.num);
+          return (
+            <Card key={day.num}>
+              <h3 className="mb-3 text-sm font-semibold text-gray-900">{day.name}</h3>
+              {daySlots.length === 0 ? (
+                <p className="py-4 text-center text-xs text-gray-400">No classes</p>
+              ) : (
+                <div className="space-y-2">
+                  {daySlots.map((slot) => {
+                    const ct = classTypes.find((c) => c.id === slot.classTypeId);
+                    return (
+                      <Link
+                        key={slot.id}
+                        to={`/instructor/attendance?scheduleId=${slot.id}`}
+                        className="block rounded-lg bg-gray-50 p-2 transition-colors hover:bg-primary-50"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <div
+                            className="h-2.5 w-2.5 rounded-full shrink-0"
+                            style={{ backgroundColor: ct?.color ?? '#ccc' }}
+                          />
+                          <span className="text-sm font-medium text-gray-900">
+                            {ct?.name ?? 'Class'}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-xs text-gray-500">
+                          {formatTime(slot.startTime)} – {formatTime(slot.endTime)}
+                        </p>
+                        <Badge color="green" className="mt-1">
+                          {slot.maxCapacity} spots
+                        </Badge>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </Card>
+          );
+        })}
+      </div>
+    </>
+  );
+}

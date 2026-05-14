@@ -1,10 +1,12 @@
-import type { AdminUser, CustomerUser } from '@/types';
+import type { AdminUser, CustomerUser, InstructorUser } from '@/types';
 
 export const adminUser: AdminUser = {
   id: 'user-001',
   email: 'admin@coachkit.test',
   role: 'admin',
   fullName: 'Admin CoachKit',
+  firstName: 'Admin',
+  lastName: 'CoachKit',
   emailVerifiedAt: '2025-01-01T00:00:00Z',
   createdAt: '2025-01-01T00:00:00Z',
   updatedAt: '2025-01-01T00:00:00Z',
@@ -133,4 +135,67 @@ export const customerUsers: CustomerUser[] = [
   },
 ];
 
-export const allUsers = [adminUser, ...customerUsers];
+export const instructorUsers: InstructorUser[] = [
+  {
+    id: 'user-012',
+    email: 'alex@coachkit.test',
+    role: 'instructor',
+    fullName: 'Alex Rivera',
+    firstName: 'Alex',
+    lastName: 'Rivera',
+    phone: '+1-555-2001',
+    photoUrl: null,
+    bio: 'Yoga & Mindfulness — 10+ years guiding students.',
+    coachId: 'coach-001',
+    emailVerifiedAt: '2025-01-01T00:00:00Z',
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+  {
+    id: 'user-013',
+    email: 'jordan@coachkit.test',
+    role: 'instructor',
+    fullName: 'Jordan Chen',
+    firstName: 'Jordan',
+    lastName: 'Chen',
+    phone: '+1-555-2002',
+    photoUrl: null,
+    bio: 'HIIT & Strength Training — Former athlete turned coach.',
+    coachId: 'coach-002',
+    emailVerifiedAt: '2025-01-01T00:00:00Z',
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+  {
+    id: 'user-014',
+    email: 'priya@coachkit.test',
+    role: 'instructor',
+    fullName: 'Priya Sharma',
+    firstName: 'Priya',
+    lastName: 'Sharma',
+    phone: null,
+    photoUrl: null,
+    bio: 'Pilates & Flexibility — Certified in multiple movement disciplines.',
+    coachId: 'coach-003',
+    emailVerifiedAt: '2025-01-10T00:00:00Z',
+    createdAt: '2025-01-10T00:00:00Z',
+    updatedAt: '2025-01-10T00:00:00Z',
+  },
+  {
+    id: 'user-015',
+    email: 'marcus@coachkit.test',
+    role: 'instructor',
+    fullName: 'Marcus Webb',
+    firstName: 'Marcus',
+    lastName: 'Webb',
+    phone: '+1-555-2004',
+    photoUrl: null,
+    bio: 'Boxing & Cardio — Professional boxer with a passion for teaching.',
+    coachId: 'coach-004',
+    emailVerifiedAt: '2025-02-01T00:00:00Z',
+    createdAt: '2025-02-01T00:00:00Z',
+    updatedAt: '2025-02-01T00:00:00Z',
+  },
+];
+
+export const allUsers = [adminUser, ...customerUsers, ...instructorUsers];

@@ -15,6 +15,7 @@ import { attendanceAdminHandlers } from './handlers/attendanceAdmin';
 import { waitlistAdminHandlers } from './handlers/waitlistAdmin';
 import { reportsAdminHandlers } from './handlers/reportsAdmin';
 import { analyticsHandlers } from './handlers/analytics';
+import { instructorHandlers } from './handlers/instructor';
 
 export const handlers = [
   ...locationHandlers,
@@ -34,4 +35,5 @@ export const handlers = [
   ...waitlistAdminHandlers,
   ...reportsAdminHandlers,
   ...analyticsHandlers,
+  ...instructorHandlers,
 ];

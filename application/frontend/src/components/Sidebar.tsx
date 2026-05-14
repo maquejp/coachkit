@@ -16,6 +16,13 @@ const customerItems: SidebarItem[] = [
   { label: 'Profile', to: '/dashboard/profile', icon: '\u263A' },
 ];
 
+const instructorItems: SidebarItem[] = [
+  { label: 'Dashboard', to: '/instructor', icon: '\u2302' },
+  { label: 'My Schedule', to: '/instructor/schedule', icon: '\u2611' },
+  { label: 'Attendance', to: '/instructor/attendance', icon: '\u2713' },
+  { label: 'Profile', to: '/instructor/profile', icon: '\u263A' },
+];
+
 const adminItems: (SidebarItem & { defaultOpen?: boolean })[] = [
   { label: 'Dashboard', to: '/admin', icon: '\u2302' },
   {
@@ -46,9 +53,19 @@ export default function Sidebar() {
     adminItems.filter((i) => i.defaultOpen).map((i) => i.label),
   );
 
-  const isAdmin = user?.role === 'admin';
-  const items = isAdmin ? adminItems : customerItems;
-  const title = isAdmin ? 'Admin' : 'Menu';
+  const role = user?.role;
+  let items: SidebarItem[];
+  let title: string;
+  if (role === 'admin') {
+    items = adminItems;
+    title = 'Admin';
+  } else if (role === 'instructor') {
+    items = instructorItems;
+    title = 'Instructor';
+  } else {
+    items = customerItems;
+    title = 'Menu';
+  }
 
   function toggleGroup(label: string) {
     setOpenGroups((prev) =>

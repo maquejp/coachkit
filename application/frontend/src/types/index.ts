@@ -1,5 +1,5 @@
 export type { ApiResponse, PaginatedResponse } from './api';
-export type { User, AdminUser, CustomerUser, UserRole } from './user';
+export type { User, AdminUser, CustomerUser, InstructorUser, UserRole } from './user';
 export type { Location } from './location';
 export type { Coach } from './coach';
 export type { ClassType, Intensity } from './class';

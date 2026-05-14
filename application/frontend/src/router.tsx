@@ -30,6 +30,10 @@ import AdminInstructorDetailPage from '@/admin/InstructorDetailPage';
 import AdminWaitlistPage from '@/admin/WaitlistPage';
 import AdminReportsPage from '@/admin/ReportsPage';
 import AdminAnalyticsPage from '@/admin/AnalyticsPage';
+import InstructorDashboardPage from '@/instructor/DashboardPage';
+import InstructorSchedulePage from '@/instructor/SchedulePage';
+import InstructorAttendancePage from '@/instructor/AttendancePage';
+import InstructorProfilePage from '@/instructor/ProfilePage';
 import Placeholder from '@/components/ui/Placeholder';
 
 export const router = createBrowserRouter([
@@ -85,6 +89,20 @@ export const router = createBrowserRouter([
       { path: 'admin/reports', element: <AdminReportsPage /> },
       { path: 'admin/analytics', element: <AdminAnalyticsPage /> },
       { path: 'admin/settings', element: <Placeholder title="Admin Settings" /> },
+    ],
+  },
+  {
+    path: '/',
+    element: (
+      <RoleGuard role="instructor">
+        <AuthLayout />
+      </RoleGuard>
+    ),
+    children: [
+      { index: true, path: 'instructor', element: <InstructorDashboardPage /> },
+      { path: 'instructor/schedule', element: <InstructorSchedulePage /> },
+      { path: 'instructor/attendance', element: <InstructorAttendancePage /> },
+      { path: 'instructor/profile', element: <InstructorProfilePage /> },
     ],
   },
 ]);

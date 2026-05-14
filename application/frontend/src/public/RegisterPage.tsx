@@ -17,7 +17,14 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (token && user) {
-      navigate(user.role === 'admin' ? '/admin' : '/dashboard', { replace: true });
+      navigate(
+        user.role === 'admin'
+          ? '/admin'
+          : user.role === 'instructor'
+            ? '/instructor'
+            : '/dashboard',
+        { replace: true },
+      );
     }
   }, [token, user, navigate]);
   const [lastName, setLastName] = useState('');

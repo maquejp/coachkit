@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'customer';
+export type UserRole = 'admin' | 'customer' | 'instructor';
 
 export interface User {
   id: string;
@@ -12,6 +12,8 @@ export interface User {
 export interface AdminUser extends User {
   role: 'admin';
   fullName: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface CustomerUser extends User {
@@ -20,4 +22,15 @@ export interface CustomerUser extends User {
   lastName: string;
   phone: string | null;
   avatarUrl: string | null;
+}
+
+export interface InstructorUser extends User {
+  role: 'instructor';
+  fullName: string;
+  firstName: string;
+  lastName: string;
+  phone: string | null;
+  photoUrl: string | null;
+  bio: string;
+  coachId: string;
 }
