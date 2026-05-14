@@ -584,9 +584,16 @@
 
 ### 14.2 E2E Tests (Playwright)
 
-### 14.3 API Tests (PHPUnit)
+### 14.3 Error Handling
 
-### 14.4 Performance Tests
+- [x] Add route-level error boundary (`errorElement`) with friendly error page
+- [x] Add 404 detection in error page
+- [x] Add defensive rendering (null/undefined checks) in all data-driven UI components
+- [x] Add i18n support for error page messages (EN + FR)
+
+### 14.4 API Tests (PHPUnit)
+
+### 14.5 Performance Tests
 
 - [ ] Dashboard load time < 2s (initial load)
 - [ ] Booking wizard responsiveness under concurrent booking simulation

@@ -49,6 +49,7 @@ A full-featured appointment and event booking SaaS platform built with React + T
 - **Multi-language** — i18n approach (react-i18next or similar). All user-facing strings externalized. Primary language set per deployment via configuration.
 - **SEO & Metadata** — Per-page meta titles, descriptions, Open Graph tags. JSON-LD structured data for LocalBusiness. Sitemap.xml, robots.txt, canonical URLs.
 - **Analytics** — Umami (self-hosted, privacy-friendly). Tracks page views, booking confirmed, waitlist joined, subscription purchased, contact form submitted. Embedded dashboard at `/admin/analytics`.
+- **Error Handling** — Route-level error boundary (`errorElement`) catches all uncaught exceptions and renders a friendly error page with a "Back to home" link. 404 pages handled separately. Defensive rendering on all data-driven UI (null/undefined checks before `.map`, `.length`, etc.).
 - **GDPR & Legal** — Cookie consent banner (explicit opt-in for non-essential cookies). Privacy policy page. Terms of Use and Sale page. Account deletion flow. Data retention with auto-deletion. Unsubscribe link in all emails.
 
 ## Tech Stack
