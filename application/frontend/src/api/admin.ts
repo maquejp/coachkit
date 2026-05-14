@@ -481,3 +481,25 @@ export async function fetchSessionUsage() {
   );
   return data.data;
 }
+
+/* ─── Instructors / Coaches ─── */
+
+export type Coach = import('@/types').Coach;
+
+export async function createCoach(item: Omit<Coach, 'id' | 'createdAt' | 'updatedAt'>) {
+  const { data } = await apiClient.post<{ success: boolean; data: Coach }>('/coaches', item);
+  return data.data;
+}
+
+export async function updateCoach(
+  id: string,
+  item: Partial<Omit<Coach, 'id' | 'createdAt' | 'updatedAt'>>,
+) {
+  const { data } = await apiClient.put<{ success: boolean; data: Coach }>(`/coaches/${id}`, item);
+  return data.data;
+}
+
+export async function deleteCoach(id: string) {
+  const { data } = await apiClient.delete<{ success: boolean; data: null }>(`/coaches/${id}`);
+  return data.data;
+}
