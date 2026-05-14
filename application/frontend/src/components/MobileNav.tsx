@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/Button';
 import Logo from './Logo';
 
 interface MobileNavProps {
@@ -9,6 +10,8 @@ interface MobileNavProps {
 }
 
 export default function MobileNav({ open, onClose, links }: MobileNavProps) {
+  const navigate = useNavigate();
+
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
     return () => {
@@ -17,6 +20,11 @@ export default function MobileNav({ open, onClose, links }: MobileNavProps) {
   }, [open]);
 
   if (!open) return null;
+
+  function handleNav(to: string) {
+    onClose();
+    navigate(to);
+  }
 
   return (
     <div className="fixed inset-0 z-40 md:hidden">
@@ -49,6 +57,17 @@ export default function MobileNav({ open, onClose, links }: MobileNavProps) {
               {link.label}
             </Link>
           ))}
+          <hr className="my-2 border-gray-200" />
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => handleNav('/login')}
+          >
+            Sign In
+          </Button>
+          <Button className="w-full" onClick={() => handleNav('/register')}>
+            Get Started
+          </Button>
         </nav>
       </div>
     </div>

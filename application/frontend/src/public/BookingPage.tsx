@@ -42,6 +42,7 @@ function classTypeToIntensity(ct: ClassType): 'beginner' | 'intermediate' | 'adv
 
 export default function BookingPage() {
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
   const setAuth = useAuthStore((s) => s.setAuth);
   const token = useAuthStore((s) => s.token);
 
@@ -105,7 +106,12 @@ export default function BookingPage() {
     setSelectedSlot(slot);
     setFormData((prev) => ({ ...prev, timeSlotId: slot.id }));
     setErrorMsg('');
-    setStep('info');
+    if (token && user) {
+      setFormData((prev) => ({ ...prev, guestName: user.fullName ?? '', guestEmail: user.email }));
+      setStep('confirm');
+    } else {
+      setStep('info');
+    }
   }
 
   async function handleInfoSubmit(e: React.FormEvent) {

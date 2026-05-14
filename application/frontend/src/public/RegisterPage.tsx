@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/Button';
@@ -10,8 +10,16 @@ import { registerApi } from '@/api/auth';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const token = useAuthStore((s) => s.token);
+  const user = useAuthStore((s) => s.user);
   const setAuth = useAuthStore((s) => s.setAuth);
   const [firstName, setFirstName] = useState('');
+
+  useEffect(() => {
+    if (token && user) {
+      navigate(user.role === 'admin' ? '/admin' : '/dashboard', { replace: true });
+    }
+  }, [token, user, navigate]);
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');

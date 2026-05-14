@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import SEO from '@/components/SEO';
 import HeroSection from '@/components/HeroSection';
 import FeatureCard from '@/components/FeatureCard';
@@ -130,6 +131,8 @@ const galleryImages = [
 ];
 
 export default function HomePage() {
+  const navigate = useNavigate();
+
   return (
     <>
       <SEO
@@ -141,7 +144,9 @@ export default function HomePage() {
         title="Your First Session, On Us."
         subtitle="Try any class for free — no commitment, no credit card. Smart scheduling, member management, and analytics for fitness studios and wellness businesses."
         ctaLabel="Claim Free Session"
+        onCtaClick={() => navigate('/book')}
         secondaryCtaLabel="View Classes"
+        onSecondaryCtaClick={() => navigate('/classes')}
       />
 
       <section className="mx-auto max-w-7xl px-4 py-20">
@@ -204,7 +209,7 @@ export default function HomePage() {
         <h2 className="mb-10 text-center text-3xl font-bold text-gray-900">Pricing</h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {pricingPlans.map((p) => (
-            <PricingCard key={p.planName} {...p} />
+            <PricingCard key={p.planName} {...p} onCta={() => navigate('/pricing')} />
           ))}
         </div>
       </section>

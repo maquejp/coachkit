@@ -216,7 +216,7 @@ export default function PricingPage() {
                   <ul className="mt-2 space-y-0.5">
                     {p.features.map((f, i) => (
                       <li key={i} className="flex items-center gap-1 text-xs text-gray-600">
-                        <span className="text-primary-500">&check;</span> {f}
+                        <span className="text-primary-500">{'\u2713'}</span> {f}
                       </li>
                     ))}
                   </ul>
