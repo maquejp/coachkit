@@ -1,28 +1,26 @@
+import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 
 export default function JSONLD() {
+  const { t } = useTranslation();
+
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    name: 'CoachKit',
-    description:
-      'Smart scheduling, member management, and analytics for fitness studios and wellness businesses.',
+    name: t('jsonld.businessName'),
+    description: t('jsonld.description'),
     url: 'https://coachkit.app',
-    telephone: '+1-555-0100',
-    email: 'hello@coachkit.app',
+    telephone: t('jsonld.telephone'),
+    email: t('jsonld.email'),
     address: {
       '@type': 'PostalAddress',
-      streetAddress: '123 Main Street',
-      addressLocality: 'Portland',
-      addressRegion: 'OR',
-      postalCode: '97201',
-      addressCountry: 'US',
+      streetAddress: t('jsonld.streetAddress'),
+      addressLocality: t('jsonld.city'),
+      addressRegion: t('jsonld.region'),
+      postalCode: t('jsonld.postalCode'),
+      addressCountry: t('jsonld.country'),
     },
-    sameAs: [
-      'https://facebook.com/coachkit',
-      'https://instagram.com/coachkit',
-      'https://twitter.com/coachkit',
-    ],
+    sameAs: [t('jsonld.facebookUrl'), t('jsonld.instagramUrl'), t('jsonld.twitterUrl')],
   };
 
   return (

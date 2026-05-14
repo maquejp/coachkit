@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Spinner } from '@/components/ui/Spinner';
@@ -14,13 +15,14 @@ function formatTime(time: string) {
   const hour = Number(h);
   const ampm = hour >= 12 ? 'PM' : 'AM';
   const h12 = hour % 12 || 12;
-  return `${h12}:${m} ${ampm}`;
+  return h12 + ':' + m + ' ' + ampm;
 }
 
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 export default function LocationDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation();
   const [location, setLocation] = useState<Location | null>(null);
   const [schedules, setSchedules] = useState<WeeklyScheduleItem[]>([]);
   const [exceptions, setExceptions] = useState<ScheduleExceptionItem[]>([]);
@@ -76,12 +78,12 @@ export default function LocationDetailPage() {
   if (!location) {
     return (
       <div className="py-12 text-center">
-        <p className="text-gray-500">Location not found.</p>
+        <p className="text-gray-500">{t('adminLocationDetail.locationNotFound')}</p>
         <Link
           to="/admin/locations"
           className="mt-2 inline-block text-sm text-primary-600 hover:underline"
         >
-          &larr; Back to Locations
+          {t('adminLocationDetail.backToLocations')}
         </Link>
       </div>
     );
@@ -95,11 +97,14 @@ export default function LocationDetailPage() {
 
   return (
     <>
-      <SEO title={location.name} description={`Manage ${location.name}.`} />
+      <SEO
+        title={location.name}
+        description={t('seo.adminLocationsTitle') + ' - ' + location.name}
+      />
 
       <div className="mb-6">
         <Link to="/admin/locations" className="text-sm text-primary-600 hover:underline">
-          &larr; Back to Locations
+          {t('adminLocationDetail.backToLocations')}
         </Link>
       </div>
 
@@ -111,19 +116,23 @@ export default function LocationDetailPage() {
           </p>
         </div>
         <Badge color={location.isActive ? 'green' : 'gray'}>
-          {location.isActive ? 'Active' : 'Inactive'}
+          {location.isActive ? t('common.active') : t('common.inactive')}
         </Badge>
       </div>
 
       <div className="mb-8 grid gap-6 md:grid-cols-2">
         <Card>
-          <h2 className="mb-3 text-sm font-semibold text-gray-900">Contact</h2>
+          <h2 className="mb-3 text-sm font-semibold text-gray-900">
+            {t('adminLocationDetail.contact')}
+          </h2>
           <div className="space-y-2 text-sm text-gray-600">
             <p>
-              <span className="font-medium text-gray-700">Phone:</span> {location.phone}
+              <span className="font-medium text-gray-700">{t('adminLocationDetail.phone')}</span>{' '}
+              {location.phone}
             </p>
             <p>
-              <span className="font-medium text-gray-700">Email:</span> {location.email}
+              <span className="font-medium text-gray-700">{t('adminLocationDetail.email')}</span>{' '}
+              {location.email}
             </p>
             {location.mapLink && (
               <p>
@@ -133,30 +142,40 @@ export default function LocationDetailPage() {
                   rel="noopener noreferrer"
                   className="text-primary-600 hover:underline"
                 >
-                  Open in Maps &rarr;
+                  {t('adminLocationDetail.openInMaps')}
                 </a>
               </p>
             )}
           </div>
         </Card>
         <Card>
-          <h2 className="mb-3 text-sm font-semibold text-gray-900">Summary</h2>
+          <h2 className="mb-3 text-sm font-semibold text-gray-900">
+            {t('adminLocationDetail.summary')}
+          </h2>
           <div className="space-y-2 text-sm text-gray-600">
             <p>
-              <span className="font-medium text-gray-700">Weekly Slots:</span> {schedules.length}
+              <span className="font-medium text-gray-700">
+                {t('adminLocationDetail.weeklySlots')}
+              </span>{' '}
+              {schedules.length}
             </p>
             <p>
-              <span className="font-medium text-gray-700">Exceptions:</span> {exceptions.length}
+              <span className="font-medium text-gray-700">
+                {t('adminLocationDetail.exceptions')}
+              </span>{' '}
+              {exceptions.length}
             </p>
           </div>
         </Card>
       </div>
 
       <Card className="mb-8">
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">Weekly Schedule</h2>
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">
+          {t('adminLocationDetail.weeklySchedule')}
+        </h2>
         {schedules.length === 0 ? (
           <div className="py-8 text-center text-sm text-gray-400">
-            No schedule slots for this location.
+            {t('adminLocationDetail.noSlots')}
           </div>
         ) : (
           <div className="space-y-4">
@@ -178,13 +197,13 @@ export default function LocationDetailPage() {
                               style={{ backgroundColor: ct?.color ?? '#ccc' }}
                             />
                             <span className="font-medium text-gray-900">
-                              {ct?.name ?? 'Unknown'}
+                              {ct?.name ?? t('common.classes')}
                             </span>
                             <span className="text-gray-500">
-                              {formatTime(slot.startTime)}–{formatTime(slot.endTime)}
+                              {formatTime(slot.startTime)}-{formatTime(slot.endTime)}
                             </span>
                             <span className="ml-auto text-xs text-gray-400">
-                              Cap: {slot.maxCapacity}
+                              {t('adminLocationDetail.capacity', { count: slot.maxCapacity })}
                             </span>
                           </div>
                         );
@@ -198,10 +217,12 @@ export default function LocationDetailPage() {
       </Card>
 
       <Card>
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">Schedule Exceptions</h2>
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">
+          {t('adminLocationDetail.scheduleExceptions')}
+        </h2>
         {exceptions.length === 0 ? (
           <div className="py-8 text-center text-sm text-gray-400">
-            No exceptions for this location.
+            {t('adminLocationDetail.noExceptions')}
           </div>
         ) : (
           <div className="space-y-2">
@@ -215,7 +236,7 @@ export default function LocationDetailPage() {
                   <span className="ml-2 text-gray-500">{ex.reason}</span>
                 </div>
                 <Badge color={ex.isClosed ? 'accent' : 'warm'}>
-                  {ex.isClosed ? 'Closed' : 'Modified Hours'}
+                  {ex.isClosed ? t('adminSchedule.closed') : t('adminSchedule.modified')}
                 </Badge>
               </div>
             ))}

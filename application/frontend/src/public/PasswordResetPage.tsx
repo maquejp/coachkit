@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -10,6 +11,7 @@ import apiClient from '@/api/client';
 type Step = 'request' | 'sent' | 'reset';
 
 export default function PasswordResetPage() {
+  const { t } = useTranslation();
   const [step, setStep] = useState<Step>('request');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
@@ -25,7 +27,7 @@ export default function PasswordResetPage() {
       await apiClient.post('/auth/password-reset-request', { email });
       setStep('sent');
     } catch {
-      setError('Failed to send reset email. Try again.');
+      setError(t('passwordResetPage.errors.sendFailed'));
     } finally {
       setLoading(false);
     }
@@ -39,7 +41,7 @@ export default function PasswordResetPage() {
       await apiClient.post('/auth/password-reset', { email, code, password });
       setStep('reset');
     } catch {
-      setError('Reset failed. The code may be invalid or expired.');
+      setError(t('passwordResetPage.errors.resetFailed'));
     } finally {
       setLoading(false);
     }
@@ -47,33 +49,33 @@ export default function PasswordResetPage() {
 
   return (
     <>
-      <SEO title="Reset Password" description="Reset your CoachKit account password." />
+      <SEO title={t('seo.resetPasswordTitle')} description={t('seo.resetPasswordTitle')} />
       <div className="mx-auto max-w-md px-4 py-20">
         <Card className="p-8">
           {step === 'request' && (
             <>
-              <h1 className="mb-2 text-2xl font-bold text-gray-900">Reset Your Password</h1>
-              <p className="mb-6 text-sm text-gray-500">
-                Enter your email address and we&apos;ll send you a reset code.
-              </p>
+              <h1 className="mb-2 text-2xl font-bold text-gray-900">
+                {t('passwordResetPage.heading')}
+              </h1>
+              <p className="mb-6 text-sm text-gray-500">{t('passwordResetPage.subtitle')}</p>
               <form onSubmit={handleRequest} className="space-y-4">
-                <FormField label="Email" required>
+                <FormField label={t('passwordResetPage.emailLabel')} required>
                   <Input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
+                    placeholder={t('passwordResetPage.emailPlaceholder')}
                     required
                   />
                 </FormField>
                 {error && <p className="text-sm text-red-600">{error}</p>}
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Sending…' : 'Send Reset Code'}
+                  {loading ? t('passwordResetPage.sending') : t('passwordResetPage.sendResetCode')}
                 </Button>
               </form>
               <div className="mt-4 text-center text-sm text-gray-500">
                 <Link to="/login" className="text-primary-600 hover:text-primary-700">
-                  Back to login
+                  {t('passwordResetPage.backToLogin')}
                 </Link>
               </div>
             </>
@@ -96,33 +98,36 @@ export default function PasswordResetPage() {
                   />
                 </svg>
               </div>
-              <h1 className="mb-2 text-2xl font-bold text-gray-900">Check Your Email</h1>
+              <h1 className="mb-2 text-2xl font-bold text-gray-900">
+                {t('passwordResetPage.checkEmail')}
+              </h1>
               <p className="mb-6 text-sm text-gray-500">
-                We sent a reset code to <span className="font-medium text-gray-700">{email}</span>.
-                Enter it below along with your new password.
+                {t('passwordResetPage.resetInstructions', { email })}
               </p>
               <form onSubmit={handleReset} className="space-y-4">
-                <FormField label="Reset Code" required>
+                <FormField label={t('passwordResetPage.resetCode')} required>
                   <Input
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    placeholder="000000"
+                    placeholder={t('passwordResetPage.resetCodePlaceholder')}
                     required
                   />
                 </FormField>
-                <FormField label="New Password" required>
+                <FormField label={t('passwordResetPage.newPassword')} required>
                   <Input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter new password"
+                    placeholder={t('passwordResetPage.newPasswordPlaceholder')}
                     required
                     minLength={8}
                   />
                 </FormField>
                 {error && <p className="text-sm text-red-600">{error}</p>}
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Resetting…' : 'Reset Password'}
+                  {loading
+                    ? t('passwordResetPage.resetting')
+                    : t('passwordResetPage.resetPasswordBtn')}
                 </Button>
               </form>
             </>
@@ -145,12 +150,12 @@ export default function PasswordResetPage() {
                   />
                 </svg>
               </div>
-              <h1 className="mb-2 text-2xl font-bold text-gray-900">Password Reset</h1>
-              <p className="mb-6 text-sm text-gray-500">
-                Your password has been successfully reset.
-              </p>
+              <h1 className="mb-2 text-2xl font-bold text-gray-900">
+                {t('passwordResetPage.successHeading')}
+              </h1>
+              <p className="mb-6 text-sm text-gray-500">{t('passwordResetPage.successText')}</p>
               <Link to="/login">
-                <Button>Back to Login</Button>
+                <Button>{t('passwordResetPage.backToLoginBtn')}</Button>
               </Link>
             </div>
           )}

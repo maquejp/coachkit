@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -27,16 +28,8 @@ import type {
 
 type Tab = 'profile' | 'subscriptions' | 'bookings' | 'attendance' | 'payments';
 
-const TABS: { key: Tab; label: string }[] = [
-  { key: 'profile', label: 'Profile' },
-  { key: 'subscriptions', label: 'Subscriptions' },
-  { key: 'bookings', label: 'Bookings' },
-  { key: 'attendance', label: 'Attendance' },
-  { key: 'payments', label: 'Payments' },
-];
-
 function formatCents(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`;
+  return '$' + (cents / 100).toFixed(2);
 }
 
 function formatDate(d: string) {
@@ -47,6 +40,7 @@ export default function CustomerDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const setAuth = useAuthStore((s) => s.setAuth);
+  const { t } = useTranslation();
 
   const [customer, setCustomer] = useState<CustomerUser | null>(null);
   const [subscriptions, setSubscriptions] = useState<CustomerSubscriptionDetail[]>([]);
@@ -112,12 +106,12 @@ export default function CustomerDetailPage() {
   if (!customer) {
     return (
       <div className="py-12 text-center">
-        <p className="text-gray-500">Customer not found.</p>
+        <p className="text-gray-500">{t('adminCustomerDetail.customerNotFound')}</p>
         <Link
           to="/admin/customers"
           className="mt-2 inline-block text-sm text-primary-600 hover:underline"
         >
-          &larr; Back to Customers
+          {t('adminCustomerDetail.backToCustomers')}
         </Link>
       </div>
     );
@@ -125,13 +119,24 @@ export default function CustomerDetailPage() {
 
   const activeSub = subscriptions.find((s) => s.status === 'active');
 
+  const TABS: { key: Tab; label: string }[] = [
+    { key: 'profile', label: t('adminCustomerDetail.tabs.profile') },
+    { key: 'subscriptions', label: t('adminCustomerDetail.tabs.subscriptions') },
+    { key: 'bookings', label: t('adminCustomerDetail.tabs.bookings') },
+    { key: 'attendance', label: t('adminCustomerDetail.tabs.attendance') },
+    { key: 'payments', label: t('adminCustomerDetail.tabs.payments') },
+  ];
+
   return (
     <>
-      <SEO title={`${customer.firstName} ${customer.lastName}`} description="Customer details." />
+      <SEO
+        title={customer.firstName + ' ' + customer.lastName}
+        description={t('seo.adminCustomersDescription')}
+      />
 
       <div className="mb-6">
         <Link to="/admin/customers" className="text-sm text-primary-600 hover:underline">
-          &larr; Back to Customers
+          {t('adminCustomerDetail.backToCustomers')}
         </Link>
       </div>
 
@@ -150,11 +155,13 @@ export default function CustomerDetailPage() {
         </div>
         <div className="flex items-center gap-3">
           <Badge color={customer.emailVerifiedAt ? 'green' : 'gray'}>
-            {customer.emailVerifiedAt ? 'Verified' : 'Unverified'}
+            {customer.emailVerifiedAt
+              ? t('adminCustomerDetail.verified')
+              : t('adminCustomerDetail.unverified')}
           </Badge>
-          {activeSub && <Badge color="green">Active Subscription</Badge>}
+          {activeSub && <Badge color="green">{t('adminCustomerDetail.activeSubscription')}</Badge>}
           <Button onClick={() => setShowImpersonateConfirm(true)} loading={impersonating}>
-            Impersonate
+            {t('adminCustomerDetail.impersonate')}
           </Button>
         </div>
       </div>
@@ -163,24 +170,28 @@ export default function CustomerDetailPage() {
         <div className="mb-6 flex flex-wrap gap-2">
           {pointCards.map((pc) => (
             <Badge key={pc.id} color="warm">
-              {pc.planName}: {pc.sessionsRemaining} sessions left
+              {t('adminCustomerDetail.sessionsLeft', {
+                planName: pc.planName,
+                count: pc.sessionsRemaining,
+              })}
             </Badge>
           ))}
         </div>
       )}
 
       <div className="mb-6 flex gap-1 border-b border-gray-200">
-        {TABS.map((t) => (
+        {TABS.map((tItem) => (
           <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`px-4 py-2 text-sm font-medium transition-colors ${
-              tab === t.key
+            key={tItem.key}
+            onClick={() => setTab(tItem.key)}
+            className={
+              'px-4 py-2 text-sm font-medium transition-colors ' +
+              (tab === tItem.key
                 ? 'border-b-2 border-primary-600 text-primary-700'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
+                : 'text-gray-500 hover:text-gray-700')
+            }
           >
-            {t.label}
+            {tItem.label}
           </button>
         ))}
       </div>
@@ -188,32 +199,48 @@ export default function CustomerDetailPage() {
       {tab === 'profile' && (
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-gray-900">Contact</h2>
+            <h2 className="mb-3 text-sm font-semibold text-gray-900">
+              {t('adminCustomerDetail.contact')}
+            </h2>
             <div className="space-y-2 text-sm text-gray-600">
               <p>
-                <span className="font-medium text-gray-700">Email:</span> {customer.email}
+                <span className="font-medium text-gray-700">{t('adminCustomerDetail.email')}</span>{' '}
+                {customer.email}
               </p>
               <p>
-                <span className="font-medium text-gray-700">Phone:</span> {customer.phone ?? '—'}
+                <span className="font-medium text-gray-700">{t('adminCustomerDetail.phone')}</span>{' '}
+                {customer.phone ?? '\u2014'}
               </p>
             </div>
           </Card>
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-gray-900">Account</h2>
+            <h2 className="mb-3 text-sm font-semibold text-gray-900">
+              {t('adminCustomerDetail.account')}
+            </h2>
             <div className="space-y-2 text-sm text-gray-600">
               <p>
-                <span className="font-medium text-gray-700">Member since:</span>{' '}
+                <span className="font-medium text-gray-700">
+                  {t('adminCustomerDetail.memberSince')}
+                </span>{' '}
                 {formatDate(customer.createdAt)}
               </p>
               <p>
-                <span className="font-medium text-gray-700">Email verified:</span>{' '}
+                <span className="font-medium text-gray-700">
+                  {t('adminCustomerDetail.emailVerified')}
+                </span>{' '}
                 {customer.emailVerifiedAt ? formatDate(customer.emailVerifiedAt) : 'No'}
               </p>
               <p>
-                <span className="font-medium text-gray-700">Bookings:</span> {bookings.length}
+                <span className="font-medium text-gray-700">
+                  {t('adminCustomerDetail.bookings')}
+                </span>{' '}
+                {bookings.length}
               </p>
               <p>
-                <span className="font-medium text-gray-700">Payments:</span> {payments.length}
+                <span className="font-medium text-gray-700">
+                  {t('adminCustomerDetail.paymentsCount')}
+                </span>{' '}
+                {payments.length}
               </p>
             </div>
           </Card>
@@ -223,7 +250,9 @@ export default function CustomerDetailPage() {
       {tab === 'subscriptions' && (
         <Card>
           {subscriptions.length === 0 ? (
-            <div className="py-8 text-center text-sm text-gray-400">No subscriptions.</div>
+            <div className="py-8 text-center text-sm text-gray-400">
+              {t('adminCustomerDetail.noSubscriptions')}
+            </div>
           ) : (
             <div className="space-y-3">
               {subscriptions.map((s) => (
@@ -234,14 +263,16 @@ export default function CustomerDetailPage() {
                   <div>
                     <p className="font-medium text-gray-900">{s.planName}</p>
                     <p className="text-xs text-gray-500">
-                      Started {formatDate(s.startDate)}
-                      {s.endDate ? ` · Ended ${formatDate(s.endDate)}` : ''}
+                      {t('common.started')} {formatDate(s.startDate)}
+                      {s.endDate
+                        ? ' \u00B7 ' + t('common.renews') + ' ' + formatDate(s.endDate)
+                        : ''}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-gray-500">
                       {s.sessionsUsed}
-                      {s.sessionsLimit ? ` / ${s.sessionsLimit}` : ''} sessions
+                      {s.sessionsLimit ? ' / ' + s.sessionsLimit : ''} sessions
                     </span>
                     <Badge
                       color={
@@ -265,7 +296,9 @@ export default function CustomerDetailPage() {
       {tab === 'bookings' && (
         <Card>
           {bookings.length === 0 ? (
-            <div className="py-8 text-center text-sm text-gray-400">No bookings.</div>
+            <div className="py-8 text-center text-sm text-gray-400">
+              {t('adminCustomerDetail.noBookings')}
+            </div>
           ) : (
             <div className="space-y-2">
               {bookings.map((b) => (
@@ -306,7 +339,9 @@ export default function CustomerDetailPage() {
       {tab === 'attendance' && (
         <Card>
           {attendance.length === 0 ? (
-            <div className="py-8 text-center text-sm text-gray-400">No attendance records.</div>
+            <div className="py-8 text-center text-sm text-gray-400">
+              {t('adminCustomerDetail.noAttendance')}
+            </div>
           ) : (
             <div className="space-y-2">
               {attendance.map((a) => (
@@ -316,7 +351,9 @@ export default function CustomerDetailPage() {
                 >
                   <div>
                     <p className="font-medium text-gray-900">{a.date}</p>
-                    <p className="text-xs text-gray-500">Check-in: {a.checkInTime}</p>
+                    <p className="text-xs text-gray-500">
+                      {t('adminAttendance.checkInLabel') || 'Check-in: ' + a.checkInTime}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -328,7 +365,9 @@ export default function CustomerDetailPage() {
       {tab === 'payments' && (
         <Card>
           {payments.length === 0 ? (
-            <div className="py-8 text-center text-sm text-gray-400">No payments.</div>
+            <div className="py-8 text-center text-sm text-gray-400">
+              {t('adminCustomerDetail.noPayments')}
+            </div>
           ) : (
             <div className="space-y-2">
               {payments.map((p) => (
@@ -339,7 +378,7 @@ export default function CustomerDetailPage() {
                   <div>
                     <p className="font-medium text-gray-900">{p.description}</p>
                     <p className="text-xs text-gray-500">
-                      {formatDate(p.createdAt)} &middot; {p.provider}
+                      {formatDate(p.createdAt)} {'\u00B7'} {p.provider}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -370,22 +409,21 @@ export default function CustomerDetailPage() {
       <Modal
         open={showImpersonateConfirm}
         onClose={() => setShowImpersonateConfirm(false)}
-        title="Impersonate Customer"
+        title={t('adminCustomerDetail.impersonateTitle')}
         size="sm"
       >
         <p className="text-sm text-gray-600">
-          You will be logged in as{' '}
-          <strong>
-            {customer.firstName} {customer.lastName}
-          </strong>{' '}
-          and redirected to the customer dashboard. Your current session will be replaced.
+          {t('adminCustomerDetail.impersonateBody', {
+            firstName: customer.firstName,
+            lastName: customer.lastName,
+          })}
         </p>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setShowImpersonateConfirm(false)}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button onClick={handleImpersonate} loading={impersonating}>
-            Impersonate
+            {t('adminCustomerDetail.impersonate')}
           </Button>
         </div>
       </Modal>

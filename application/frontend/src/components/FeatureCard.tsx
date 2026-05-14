@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface FeatureCardProps {
   icon: ReactNode;
@@ -16,6 +17,8 @@ export default function FeatureCard({
   linkTo,
   linkLabel,
 }: FeatureCardProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 transition-shadow hover:shadow-card-hover">
       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100 text-primary-600">
@@ -28,7 +31,7 @@ export default function FeatureCard({
           to={linkTo}
           className="mt-4 inline-block text-sm font-medium text-primary-600 hover:text-primary-700"
         >
-          {linkLabel ?? 'Learn more'} &rarr;
+          {linkLabel ?? t('featureCard.learnMore')} &rarr;
         </Link>
       )}
     </div>

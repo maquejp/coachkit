@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Spinner } from '@/components/ui/Spinner';
@@ -14,13 +15,14 @@ function formatTime(time: string) {
   const hour = Number(h);
   const ampm = hour >= 12 ? 'PM' : 'AM';
   const h12 = hour % 12 || 12;
-  return `${h12}:${m} ${ampm}`;
+  return h12 + ':' + m + ' ' + ampm;
 }
 
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 export default function InstructorDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation();
   const [coach, setCoach] = useState<Coach | null>(null);
   const [schedules, setSchedules] = useState<WeeklyScheduleItem[]>([]);
   const [classTypes, setClassTypes] = useState<ClassType[]>([]);
@@ -58,12 +60,12 @@ export default function InstructorDetailPage() {
   if (!coach) {
     return (
       <div className="py-12 text-center">
-        <p className="text-gray-500">Instructor not found.</p>
+        <p className="text-gray-500">{t('adminInstructorDetail.instructorNotFound')}</p>
         <Link
           to="/admin/instructors"
           className="mt-2 inline-block text-sm text-primary-600 hover:underline"
         >
-          &larr; Back to Instructors
+          {t('adminInstructorDetail.backToInstructors')}
         </Link>
       </div>
     );
@@ -79,11 +81,11 @@ export default function InstructorDetailPage() {
 
   return (
     <>
-      <SEO title={coach.name} description={`Manage ${coach.name}.`} />
+      <SEO title={coach.name} description={t('seo.adminInstructorsDescription')} />
 
       <div className="mb-6">
         <Link to="/admin/instructors" className="text-sm text-primary-600 hover:underline">
-          &larr; Back to Instructors
+          {t('adminInstructorDetail.backToInstructors')}
         </Link>
       </div>
 
@@ -101,36 +103,47 @@ export default function InstructorDetailPage() {
           </div>
         </div>
         <Badge color={coach.isActive ? 'green' : 'gray'}>
-          {coach.isActive ? 'Active' : 'Inactive'}
+          {coach.isActive ? t('common.active') : t('common.inactive')}
         </Badge>
       </div>
 
       <div className="mb-8 grid gap-6 md:grid-cols-2">
         <Card>
-          <h2 className="mb-3 text-sm font-semibold text-gray-900">Bio</h2>
+          <h2 className="mb-3 text-sm font-semibold text-gray-900">
+            {t('adminInstructorDetail.bio')}
+          </h2>
           <p className="text-sm text-gray-600">{coach.bio}</p>
         </Card>
         <Card>
-          <h2 className="mb-3 text-sm font-semibold text-gray-900">Contact</h2>
+          <h2 className="mb-3 text-sm font-semibold text-gray-900">
+            {t('adminInstructorDetail.contact')}
+          </h2>
           <div className="space-y-2 text-sm text-gray-600">
             <p>
-              <span className="font-medium text-gray-700">Email:</span> {coach.email}
+              <span className="font-medium text-gray-700">{t('adminInstructorDetail.email')}</span>{' '}
+              {coach.email}
             </p>
             <p>
-              <span className="font-medium text-gray-700">Phone:</span> {coach.phone ?? '—'}
+              <span className="font-medium text-gray-700">{t('adminInstructorDetail.phone')}</span>{' '}
+              {coach.phone ?? '\u2014'}
             </p>
             <p>
-              <span className="font-medium text-gray-700">Weekly Slots:</span> {schedules.length}
+              <span className="font-medium text-gray-700">
+                {t('adminInstructorDetail.weeklySlots')}
+              </span>{' '}
+              {schedules.length}
             </p>
           </div>
         </Card>
       </div>
 
       <Card>
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">Schedule</h2>
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">
+          {t('adminInstructorDetail.schedule')}
+        </h2>
         {!hasSchedule ? (
           <div className="py-8 text-center text-sm text-gray-400">
-            No scheduled classes for this instructor.
+            {t('adminInstructorDetail.noSchedule')}
           </div>
         ) : (
           <div className="space-y-4">
@@ -152,10 +165,10 @@ export default function InstructorDetailPage() {
                               style={{ backgroundColor: ct?.color ?? '#ccc' }}
                             />
                             <span className="font-medium text-gray-900">
-                              {ct?.name ?? 'Unknown'}
+                              {ct?.name ?? t('common.classes')}
                             </span>
                             <span className="text-gray-500">
-                              {formatTime(slot.startTime)}–{formatTime(slot.endTime)}
+                              {formatTime(slot.startTime)}-{formatTime(slot.endTime)}
                             </span>
                           </div>
                         );

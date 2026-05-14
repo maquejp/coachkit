@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -44,6 +45,7 @@ function isUpcoming(b: Booking) {
 
 export default function BookingsPage() {
   const user = useAuthStore((s) => s.user);
+  const { t } = useTranslation();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('upcoming');
@@ -117,7 +119,7 @@ export default function BookingsPage() {
         className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-50 pb-3 last:border-0 last:pb-0"
       >
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-gray-900">{ct?.name ?? 'Class'}</p>
+          <p className="text-sm font-medium text-gray-900">{ct?.name ?? t('common.classes')}</p>
           <p className="text-xs text-gray-500">
             {formatDate(b.date)}
             {slot ? ` · ${slot.startTime}—${slot.endTime}` : ''}
@@ -129,10 +131,10 @@ export default function BookingsPage() {
           {b.status === 'confirmed' && !past && (
             <>
               <Button size="sm" variant="outline" onClick={() => openReschedule(b)}>
-                Reschedule
+                {t('customerBookings.reschedule')}
               </Button>
               <Button size="sm" variant="ghost" onClick={() => setCancelTarget(b)}>
-                Cancel
+                {t('customerBookings.cancel')}
               </Button>
             </>
           )}
@@ -146,11 +148,11 @@ export default function BookingsPage() {
   const tabs = [
     {
       id: 'upcoming',
-      label: `Upcoming (${upcoming.length})`,
+      label: t('customerBookings.upcoming', { count: upcoming.length }),
       content:
         upcoming.length === 0 ? (
           <div className="py-12 text-center text-sm text-gray-400">
-            <p>No upcoming bookings.</p>
+            <p>{t('customerBookings.noUpcoming')}</p>
           </div>
         ) : (
           <div className="space-y-3">{upcoming.map(renderBookingRow)}</div>
@@ -158,11 +160,11 @@ export default function BookingsPage() {
     },
     {
       id: 'history',
-      label: `History (${history.length})`,
+      label: t('customerBookings.history', { count: history.length }),
       content:
         history.length === 0 ? (
           <div className="py-12 text-center text-sm text-gray-400">
-            <p>No booking history.</p>
+            <p>{t('customerBookings.noHistory')}</p>
           </div>
         ) : (
           <div className="space-y-3">{history.map(renderBookingRow)}</div>
@@ -172,11 +174,14 @@ export default function BookingsPage() {
 
   return (
     <>
-      <SEO title="My Bookings" description="Manage your class bookings." />
+      <SEO
+        title={t('seo.customerBookingsTitle')}
+        description={t('seo.customerBookingsDescription')}
+      />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">My Bookings</h1>
-        <p className="mt-1 text-gray-500">View and manage your class bookings.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('customerBookings.heading')}</h1>
+        <p className="mt-1 text-gray-500">{t('customerBookings.subtitle')}</p>
       </div>
 
       <Card>
@@ -186,18 +191,16 @@ export default function BookingsPage() {
       <Modal
         open={!!cancelTarget}
         onClose={() => setCancelTarget(null)}
-        title="Cancel Booking"
+        title={t('customerBookings.cancelTitle')}
         size="sm"
       >
-        <p className="text-sm text-gray-600">
-          Are you sure you want to cancel this booking? This action cannot be undone.
-        </p>
+        <p className="text-sm text-gray-600">{t('customerBookings.cancelBody')}</p>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setCancelTarget(null)}>
-            Keep
+            {t('common.keep')}
           </Button>
           <Button variant="accent" loading={cancelling} onClick={handleCancel}>
-            Yes, Cancel
+            {t('common.yesCancel')}
           </Button>
         </div>
       </Modal>
@@ -208,11 +211,11 @@ export default function BookingsPage() {
           setRescheduleTarget(null);
           setNewDate('');
         }}
-        title="Reschedule Booking"
+        title={t('customerBookings.rescheduleTitle')}
         size="sm"
       >
         <label htmlFor="new-date" className="block text-sm font-medium text-gray-700">
-          New Date
+          {t('customerBookings.newDate')}
         </label>
         <input
           id="new-date"
@@ -229,10 +232,10 @@ export default function BookingsPage() {
               setNewDate('');
             }}
           >
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button loading={rescheduling} onClick={handleReschedule} disabled={!newDate}>
-            Confirm
+            {t('common.confirm')}
           </Button>
         </div>
       </Modal>

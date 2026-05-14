@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -20,16 +21,6 @@ import type {
   SubscriptionPlan,
   PointCardPlan,
 } from '@/types';
-
-const DAY_LABELS: Record<number, string> = {
-  1: 'Monday',
-  2: 'Tuesday',
-  3: 'Wednesday',
-  4: 'Thursday',
-  5: 'Friday',
-  6: 'Saturday',
-  7: 'Sunday',
-};
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('en-US', {
@@ -74,12 +65,26 @@ function statusBadgeColor(status: string) {
 
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user);
+  const { t } = useTranslation();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [subscriptions, setSubscriptions] = useState<CustomerSubscription[]>([]);
   const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>([]);
   const [pointCards, setPointCards] = useState<PointCardPurchase[]>([]);
   const [pointCardPlans, setPointCardPlans] = useState<PointCardPlan[]>([]);
   const [loading, setLoading] = useState(true);
+
+  function dayLabel(dayOfWeek: number): string {
+    const map: Record<number, string> = {
+      1: 'monday',
+      2: 'tuesday',
+      3: 'wednesday',
+      4: 'thursday',
+      5: 'friday',
+      6: 'saturday',
+      7: 'sunday',
+    };
+    return t(`bookingPage.days.${map[dayOfWeek]}`);
+  }
 
   useEffect(() => {
     if (!user) return;
@@ -120,40 +125,45 @@ export default function DashboardPage() {
 
   return (
     <>
-      <SEO title="Dashboard" description="Your CoachKit dashboard." />
+      <SEO
+        title={t('seo.customerDashboardTitle')}
+        description={t('seo.customerDashboardDescription')}
+      />
 
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
-          Welcome back
+          {t('customerDashboard.welcomeBack')}
           {user && 'role' in user && (user as { firstName?: string }).firstName
             ? `, ${(user as { firstName: string }).firstName}`
             : ''}
         </h1>
-        <p className="mt-1 text-gray-500">Here&apos;s an overview of your account.</p>
+        <p className="mt-1 text-gray-500">{t('customerDashboard.overview')}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card
           header={
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-gray-900">Upcoming Bookings</span>
+              <span className="font-semibold text-gray-900">
+                {t('customerDashboard.upcomingBookings')}
+              </span>
               <Link
                 to="/dashboard/bookings"
                 className="text-sm text-primary-600 hover:text-primary-700"
               >
-                View all
+                {t('common.viewAll')}
               </Link>
             </div>
           }
         >
           {upcomingBookings.length === 0 ? (
             <div className="py-8 text-center text-sm text-gray-400">
-              <p>No upcoming bookings.</p>
+              <p>{t('customerDashboard.noUpcomingBookings')}</p>
               <Link
                 to="/book"
                 className="mt-1 inline-block text-primary-600 hover:text-primary-700"
               >
-                Book a class
+                {t('customerDashboard.bookAClass')}
               </Link>
             </div>
           ) : (
@@ -168,10 +178,12 @@ export default function DashboardPage() {
                     className="flex items-center justify-between border-b border-gray-50 pb-2 last:border-0 last:pb-0"
                   >
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{ct?.name ?? 'Class'}</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {ct?.name ?? t('common.classes')}
+                      </p>
                       <p className="text-xs text-gray-500">
                         {slot
-                          ? `${DAY_LABELS[slot.dayOfWeek]}, ${slot.startTime} — ${slot.endTime}`
+                          ? `${dayLabel(slot.dayOfWeek)}, ${slot.startTime} — ${slot.endTime}`
                           : b.date}
                         {loc ? ` · ${loc.name}` : ''}
                       </p>
@@ -187,12 +199,14 @@ export default function DashboardPage() {
         <Card
           header={
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-gray-900">Subscription</span>
+              <span className="font-semibold text-gray-900">
+                {t('customerDashboard.subscriptionCard')}
+              </span>
               <Link
                 to="/dashboard/subscription"
                 className="text-sm text-primary-600 hover:text-primary-700"
               >
-                Manage
+                {t('customerDashboard.manage')}
               </Link>
             </div>
           }
@@ -200,25 +214,25 @@ export default function DashboardPage() {
           {activeSub && activeSubPlan ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Plan</span>
+                <span className="text-sm text-gray-500">{t('common.plan')}</span>
                 <span className="font-medium text-gray-900">{activeSubPlan.name}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Status</span>
+                <span className="text-sm text-gray-500">{t('common.status')}</span>
                 <Badge color={statusBadgeColor(activeSub.status)}>{activeSub.status}</Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Started</span>
+                <span className="text-sm text-gray-500">{t('common.started')}</span>
                 <span className="text-sm text-gray-900">{formatDate(activeSub.startDate)}</span>
               </div>
               {activeSub.endDate && (
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">Renews</span>
+                  <span className="text-sm text-gray-500">{t('common.renews')}</span>
                   <span className="text-sm text-gray-900">{formatDate(activeSub.endDate)}</span>
                 </div>
               )}
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Price</span>
+                <span className="text-sm text-gray-500">{t('common.price')}</span>
                 <span className="font-medium text-gray-900">
                   {formatCents(activeSubPlan.priceCents)}/{activeSubPlan.interval}
                 </span>
@@ -226,22 +240,22 @@ export default function DashboardPage() {
             </div>
           ) : subscriptions.length > 0 ? (
             <div className="py-8 text-center text-sm text-gray-400">
-              <p>Your subscription is {subscriptions[0].status}.</p>
+              <p>{t('customerDashboard.yourSubscription', { status: subscriptions[0].status })}</p>
               <Link
                 to="/pricing"
                 className="mt-1 inline-block text-primary-600 hover:text-primary-700"
               >
-                View plans
+                {t('common.viewPlans')}
               </Link>
             </div>
           ) : (
             <div className="py-8 text-center text-sm text-gray-400">
-              <p>No active subscription.</p>
+              <p>{t('common.noSubscription')}</p>
               <Link
                 to="/pricing"
                 className="mt-1 inline-block text-primary-600 hover:text-primary-700"
               >
-                View plans
+                {t('common.viewPlans')}
               </Link>
             </div>
           )}
@@ -250,21 +264,23 @@ export default function DashboardPage() {
         <Card
           header={
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-gray-900">Point Cards</span>
+              <span className="font-semibold text-gray-900">
+                {t('customerDashboard.pointCards')}
+              </span>
               <Link to="/pricing" className="text-sm text-primary-600 hover:text-primary-700">
-                Buy more
+                {t('customerDashboard.buyMore')}
               </Link>
             </div>
           }
         >
           {pointCards.length === 0 ? (
             <div className="py-8 text-center text-sm text-gray-400">
-              <p>No point cards.</p>
+              <p>{t('customerDashboard.noPointCards')}</p>
               <Link
                 to="/pricing"
                 className="mt-1 inline-block text-primary-600 hover:text-primary-700"
               >
-                View packs
+                {t('customerDashboard.viewPacks')}
               </Link>
             </div>
           ) : (
@@ -278,15 +294,18 @@ export default function DashboardPage() {
                   >
                     <div>
                       <p className="text-sm font-medium text-gray-900">
-                        {plan?.name ?? 'Point Card'}
+                        {plan?.name ?? t('customerDashboard.pointCards')}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {pc.sessionsRemaining} session{pc.sessionsRemaining !== 1 ? 's' : ''}{' '}
-                        remaining
-                        {pc.expiresAt ? ` · Expires ${formatDate(pc.expiresAt)}` : ''}
+                        {t('customerDashboard.sessionsRemaining', { count: pc.sessionsRemaining })}
+                        {pc.expiresAt
+                          ? ` · ${t('common.expires')} ${formatDate(pc.expiresAt)}`
+                          : ''}
                       </p>
                     </div>
-                    <Badge color="secondary">{pc.sessionsRemaining} left</Badge>
+                    <Badge color="secondary">
+                      {t('customerDashboard.sessionsLeft', { count: pc.sessionsRemaining })}
+                    </Badge>
                   </div>
                 );
               })}
@@ -297,13 +316,15 @@ export default function DashboardPage() {
         <Card
           header={
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-gray-900">Recent Payments</span>
+              <span className="font-semibold text-gray-900">
+                {t('customerDashboard.recentPayments')}
+              </span>
             </div>
           }
         >
           {myPayments.length === 0 ? (
             <div className="py-8 text-center text-sm text-gray-400">
-              <p>No payment history.</p>
+              <p>{t('customerDashboard.noPayments')}</p>
             </div>
           ) : (
             <div className="space-y-3">

@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/stores/auth';
 import { logoutApi } from '@/api/auth';
 import Logo from './Logo';
 import MobileNav from './MobileNav';
+import LanguageSwitcher from './LanguageSwitcher';
 
-const navLinks = [
-  { to: '/', label: 'Home' },
-  { to: '/classes', label: 'Classes' },
-  { to: '/pricing', label: 'Pricing' },
-  { to: '/about', label: 'About' },
-  { to: '/contact', label: 'Contact' },
+const navLinkDefs = [
+  { to: '/', i18nKey: 'common.home' },
+  { to: '/classes', i18nKey: 'common.classes' },
+  { to: '/pricing', i18nKey: 'common.pricing' },
+  { to: '/about', i18nKey: 'common.about' },
+  { to: '/contact', i18nKey: 'common.contact' },
 ];
 
 function initials(name: string) {
@@ -22,12 +24,14 @@ function initials(name: string) {
 }
 
 export default function Header() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const token = useAuthStore((s) => s.token);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const isAuth = !!token && !!user;
+  const navLinks = navLinkDefs.map((link) => ({ to: link.to, label: t(link.i18nKey) }));
 
   async function handleLogout() {
     try {
@@ -54,6 +58,7 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+          <LanguageSwitcher />
           {isAuth ? (
             <div className="flex items-center gap-2">
               <button
@@ -76,7 +81,7 @@ export default function Header() {
               <button
                 onClick={handleLogout}
                 className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
-                title="Sign Out"
+                title={t('header.signOutTitle')}
               >
                 <svg
                   className="h-4 w-4"
@@ -96,10 +101,10 @@ export default function Header() {
           ) : (
             <>
               <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>
-                Sign In
+                {t('common.signIn')}
               </Button>
               <Button size="sm" onClick={() => navigate('/register')}>
-                Get Started
+                {t('common.getStarted')}
               </Button>
             </>
           )}

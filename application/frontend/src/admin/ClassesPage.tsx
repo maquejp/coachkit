@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -21,6 +22,7 @@ const emptyForm = {
 };
 
 export default function ClassesPage() {
+  const { t } = useTranslation();
   const [classTypes, setClassTypes] = useState<ClassType[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -106,19 +108,21 @@ export default function ClassesPage() {
 
   return (
     <>
-      <SEO title="Class Management" description="Manage class types." />
+      <SEO title={t('seo.adminClassesTitle')} description={t('seo.adminClassesDescription')} />
 
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Classes</h1>
-          <p className="mt-1 text-gray-500">Manage class types and pricing.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('adminClasses.heading')}</h1>
+          <p className="mt-1 text-gray-500">{t('adminClasses.subtitle')}</p>
         </div>
-        <Button onClick={openCreate}>Add Class</Button>
+        <Button onClick={openCreate}>{t('adminClasses.addClass')}</Button>
       </div>
 
       {classTypes.length === 0 ? (
         <Card>
-          <div className="py-12 text-center text-sm text-gray-400">No class types found.</div>
+          <div className="py-12 text-center text-sm text-gray-400">
+            {t('adminClasses.noClasses')}
+          </div>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -133,20 +137,20 @@ export default function ClassesPage() {
                   </div>
                 </div>
                 <Badge color={ct.isActive ? 'green' : 'gray'}>
-                  {ct.isActive ? 'Active' : 'Inactive'}
+                  {ct.isActive ? t('common.active') : t('common.inactive')}
                 </Badge>
               </div>
               <p className="mt-2 text-sm text-gray-600 line-clamp-2">{ct.description}</p>
               <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 text-xs text-gray-500">
-                <span>Capacity: {ct.capacity}</span>
+                <span>{t('adminClasses.capacity', { count: ct.capacity })}</span>
                 <span>{formatCents(ct.defaultPriceCents)}</span>
               </div>
               <div className="mt-3 flex gap-2 border-t border-gray-100 pt-3">
                 <Button size="sm" variant="outline" onClick={() => openEdit(ct)}>
-                  Edit
+                  {t('common.edit')}
                 </Button>
                 <Button size="sm" variant="ghost" onClick={() => setDeleting(ct)}>
-                  Delete
+                  {t('common.delete')}
                 </Button>
               </div>
             </Card>
@@ -160,18 +164,18 @@ export default function ClassesPage() {
           setCreating(false);
           setEditing(null);
         }}
-        title={creating ? 'Add Class Type' : 'Edit Class Type'}
+        title={creating ? t('adminClasses.addTitle') : t('adminClasses.editTitle')}
         size="md"
       >
         <form onSubmit={handleSave} className="space-y-4">
-          <FormField label="Name" required>
+          <FormField label={t('adminClasses.name')} required>
             <Input
               value={form.name}
               onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
               required
             />
           </FormField>
-          <FormField label="Description" required>
+          <FormField label={t('adminClasses.description')} required>
             <textarea
               className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-gray-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
               rows={3}
@@ -181,7 +185,7 @@ export default function ClassesPage() {
             />
           </FormField>
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="Color" required>
+            <FormField label={t('adminClasses.color')} required>
               <div className="flex items-center gap-2">
                 <input
                   type="color"
@@ -196,7 +200,7 @@ export default function ClassesPage() {
                 />
               </div>
             </FormField>
-            <FormField label="Duration (min)" required>
+            <FormField label={t('adminClasses.duration')} required>
               <Input
                 type="number"
                 min={5}
@@ -210,7 +214,7 @@ export default function ClassesPage() {
             </FormField>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="Max Capacity" required>
+            <FormField label={t('adminClasses.maxCapacity')} required>
               <Input
                 type="number"
                 min={1}
@@ -219,7 +223,7 @@ export default function ClassesPage() {
                 required
               />
             </FormField>
-            <FormField label="Default Price ($)" required>
+            <FormField label={t('adminClasses.defaultPrice')} required>
               <Input
                 type="number"
                 min={0}
@@ -235,7 +239,7 @@ export default function ClassesPage() {
               />
             </FormField>
           </div>
-          <FormField label="Status">
+          <FormField label={t('adminClasses.status')}>
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -243,7 +247,7 @@ export default function ClassesPage() {
                 onChange={(e) => setForm((p) => ({ ...p, isActive: e.target.checked }))}
                 className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               />
-              Active
+              {t('adminClasses.active')}
             </label>
           </FormField>
           <div className="flex justify-end gap-2">
@@ -254,10 +258,10 @@ export default function ClassesPage() {
                 setEditing(null);
               }}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={saving}>
-              {editing ? 'Save' : 'Create'}
+              {editing ? t('common.save') : t('common.create')}
             </Button>
           </div>
         </form>
@@ -266,19 +270,18 @@ export default function ClassesPage() {
       <Modal
         open={!!deleting}
         onClose={() => setDeleting(null)}
-        title="Delete Class Type"
+        title={t('adminClasses.deleteTitle')}
         size="sm"
       >
         <p className="text-sm text-gray-600">
-          Are you sure you want to delete <strong>{deleting?.name}</strong>? This action cannot be
-          undone.
+          {t('adminClasses.deleteBody', { name: deleting?.name })}
         </p>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setDeleting(null)}>
-            Keep
+            {t('adminClasses.keep')}
           </Button>
           <Button variant="accent" loading={saving} onClick={handleDelete}>
-            Yes, Delete
+            {t('adminClasses.yesDelete')}
           </Button>
         </div>
       </Modal>

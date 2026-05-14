@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/auth';
 
 interface SidebarItem {
@@ -10,42 +11,43 @@ interface SidebarItem {
 }
 
 const customerItems: SidebarItem[] = [
-  { label: 'Dashboard', to: '/dashboard', icon: '\u2302' },
-  { label: 'My Bookings', to: '/dashboard/bookings', icon: '\u2611' },
-  { label: 'My Subscription', to: '/dashboard/subscription', icon: '\u2606' },
-  { label: 'Profile', to: '/dashboard/profile', icon: '\u263A' },
+  { label: 'common.dashboard', to: '/dashboard', icon: '\u2302' },
+  { label: 'sidebar.myBookings', to: '/dashboard/bookings', icon: '\u2611' },
+  { label: 'sidebar.mySubscription', to: '/dashboard/subscription', icon: '\u2606' },
+  { label: 'common.profile', to: '/dashboard/profile', icon: '\u263A' },
 ];
 
 const instructorItems: SidebarItem[] = [
-  { label: 'Dashboard', to: '/instructor', icon: '\u2302' },
-  { label: 'My Schedule', to: '/instructor/schedule', icon: '\u2611' },
-  { label: 'Attendance', to: '/instructor/attendance', icon: '\u2713' },
-  { label: 'Profile', to: '/instructor/profile', icon: '\u263A' },
+  { label: 'common.dashboard', to: '/instructor', icon: '\u2302' },
+  { label: 'sidebar.mySchedule', to: '/instructor/schedule', icon: '\u2611' },
+  { label: 'common.attendance', to: '/instructor/attendance', icon: '\u2713' },
+  { label: 'common.profile', to: '/instructor/profile', icon: '\u263A' },
 ];
 
 const adminItems: (SidebarItem & { defaultOpen?: boolean })[] = [
-  { label: 'Dashboard', to: '/admin', icon: '\u2302' },
+  { label: 'common.dashboard', to: '/admin', icon: '\u2302' },
   {
-    label: 'Management',
+    label: 'sidebar.management',
     icon: '\u2630',
     defaultOpen: true,
     children: [
-      { label: 'Classes', to: '/admin/classes' },
-      { label: 'Instructors', to: '/admin/instructors' },
-      { label: 'Schedule', to: '/admin/schedule' },
-      { label: 'Pricing', to: '/admin/pricing' },
-      { label: 'Locations', to: '/admin/locations' },
-      { label: 'Customers', to: '/admin/customers' },
-      { label: 'Attendance', to: '/admin/attendance' },
-      { label: 'Waitlist', to: '/admin/waitlist' },
-      { label: 'Reports', to: '/admin/reports' },
+      { label: 'common.classes', to: '/admin/classes' },
+      { label: 'common.instructors', to: '/admin/instructors' },
+      { label: 'common.schedule', to: '/admin/schedule' },
+      { label: 'common.pricing', to: '/admin/pricing' },
+      { label: 'common.locations', to: '/admin/locations' },
+      { label: 'common.customers', to: '/admin/customers' },
+      { label: 'common.attendance', to: '/admin/attendance' },
+      { label: 'common.waitlist', to: '/admin/waitlist' },
+      { label: 'common.reports', to: '/admin/reports' },
     ],
   },
-  { label: 'Analytics', to: '/admin/analytics', icon: '\u2261' },
-  { label: 'Settings', to: '/admin/settings', icon: '\u2699' },
+  { label: 'common.analytics', to: '/admin/analytics', icon: '\u2261' },
+  { label: 'common.settings', to: '/admin/settings', icon: '\u2699' },
 ];
 
 export default function Sidebar() {
+  const { t } = useTranslation();
   const location = useLocation();
   const user = useAuthStore((s) => s.user);
   const [collapsed, setCollapsed] = useState(false);
@@ -58,13 +60,13 @@ export default function Sidebar() {
   let title: string;
   if (role === 'admin') {
     items = adminItems;
-    title = 'Admin';
+    title = t('sidebar.adminTitle');
   } else if (role === 'instructor') {
     items = instructorItems;
-    title = 'Instructor';
+    title = t('sidebar.instructorTitle');
   } else {
     items = customerItems;
-    title = 'Menu';
+    title = t('sidebar.menuTitle');
   }
 
   function toggleGroup(label: string) {
@@ -118,7 +120,7 @@ export default function Sidebar() {
                   {item.icon && <span className="w-5 text-center text-base">{item.icon}</span>}
                   {!collapsed && (
                     <>
-                      <span className="flex-1 text-left font-medium">{item.label}</span>
+                      <span className="flex-1 text-left font-medium">{t(item.label)}</span>
                       <svg
                         className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`}
                         fill="none"
@@ -147,7 +149,7 @@ export default function Sidebar() {
                             : 'text-gray-500 hover:text-gray-700'
                         }`}
                       >
-                        {child.label}
+                        {t(child.label)}
                       </Link>
                     ))}
                   </div>
@@ -167,7 +169,7 @@ export default function Sidebar() {
               }`}
             >
               {item.icon && <span className="w-5 text-center text-base">{item.icon}</span>}
-              {!collapsed && <span className="font-medium">{item.label}</span>}
+              {!collapsed && <span className="font-medium">{t(item.label)}</span>}
             </Link>
           );
         })}

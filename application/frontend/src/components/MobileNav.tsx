@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/Button';
 import Logo from './Logo';
 
@@ -10,6 +11,7 @@ interface MobileNavProps {
 }
 
 export default function MobileNav({ open, onClose, links }: MobileNavProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,10 +65,10 @@ export default function MobileNav({ open, onClose, links }: MobileNavProps) {
             className="w-full justify-start"
             onClick={() => handleNav('/login')}
           >
-            Sign In
+            {t('common.signIn')}
           </Button>
           <Button className="w-full" onClick={() => handleNav('/register')}>
-            Get Started
+            {t('common.getStarted')}
           </Button>
         </nav>
       </div>

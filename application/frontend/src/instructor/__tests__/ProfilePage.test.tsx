@@ -55,6 +55,11 @@ const server = setupServer(
     });
   }),
 
+  http.put('/api/profile', async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json({ success: true, data: body });
+  }),
+
   http.put('/api/profile/password', () => {
     return HttpResponse.json({ success: true, data: null });
   }),

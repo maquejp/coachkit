@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -23,16 +24,6 @@ interface FormData {
   guestEmail: string;
 }
 
-const DAY_LABELS: Record<number, string> = {
-  1: 'Monday',
-  2: 'Tuesday',
-  3: 'Wednesday',
-  4: 'Thursday',
-  5: 'Friday',
-  6: 'Saturday',
-  7: 'Sunday',
-};
-
 function classTypeToIntensity(ct: ClassType): 'beginner' | 'intermediate' | 'advanced' {
   const d = ct.durationMinutes;
   if (d <= 35) return 'beginner';
@@ -41,10 +32,21 @@ function classTypeToIntensity(ct: ClassType): 'beginner' | 'intermediate' | 'adv
 }
 
 export default function BookingPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const setAuth = useAuthStore((s) => s.setAuth);
   const token = useAuthStore((s) => s.token);
+
+  const DAY_LABELS: Record<number, string> = {
+    1: t('bookingPage.days.monday'),
+    2: t('bookingPage.days.tuesday'),
+    3: t('bookingPage.days.wednesday'),
+    4: t('bookingPage.days.thursday'),
+    5: t('bookingPage.days.friday'),
+    6: t('bookingPage.days.saturday'),
+    7: t('bookingPage.days.sunday'),
+  };
 
   const [step, setStep] = useState<Step>('class');
   const [selectedClass, setSelectedClass] = useState<ClassType | null>(null);
@@ -123,14 +125,12 @@ export default function BookingPage() {
     try {
       const res = await guestCheckClaimApi(formData.guestEmail);
       if (res.data.claimed) {
-        setErrorMsg(
-          'This email has already used a free session. Please log in to book additional classes.',
-        );
+        setErrorMsg(t('bookingPage.errors.freeSessionUsed'));
         return;
       }
       setStep('confirm');
     } catch {
-      setErrorMsg('Unable to verify email. Please try again.');
+      setErrorMsg(t('bookingPage.errors.verifyEmail'));
     } finally {
       setCheckingClaim(false);
     }
@@ -165,7 +165,7 @@ export default function BookingPage() {
       });
       setStep('success');
     } catch {
-      setErrorMsg('We could not complete your booking. Please try again.');
+      setErrorMsg(t('bookingPage.errors.generic'));
       setStep('error');
     } finally {
       setConfirming(false);
@@ -176,11 +176,11 @@ export default function BookingPage() {
     e.preventDefault();
     setActivationError('');
     if (activationPassword.length < 6) {
-      setActivationError('Password must be at least 6 characters.');
+      setActivationError(t('bookingPage.errors.passwordLength'));
       return;
     }
     if (activationPassword !== activationPasswordConfirm) {
-      setActivationError('Passwords do not match.');
+      setActivationError(t('bookingPage.errors.passwordMismatch'));
       return;
     }
     setActivating(true);
@@ -195,7 +195,7 @@ export default function BookingPage() {
       setAuth(res.data.user, res.data.token);
       navigate('/dashboard');
     } catch {
-      setActivationError('Could not create account. Please try again.');
+      setActivationError(t('bookingPage.errors.createAccount'));
     } finally {
       setActivating(false);
     }
@@ -231,16 +231,16 @@ export default function BookingPage() {
   return (
     <>
       <SEO
-        title="Book a Class"
-        description="Book your next fitness class at CoachKit. Choose your class, day, and time slot."
+        title={t('seo.bookingTitle')}
+        description={t('seo.bookingDescription')}
         canonical="https://coachkit.app/book"
       />
 
       <div className="mx-auto max-w-3xl px-4 py-16">
         <div className="mb-10 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Book a Class</h1>
-            <p className="mt-1 text-gray-600">Reserve your spot in just a few steps.</p>
+            <h1 className="text-3xl font-bold text-gray-900">{t('bookingPage.heading')}</h1>
+            <p className="mt-1 text-gray-600">{t('bookingPage.subtitle')}</p>
           </div>
           {step !== 'success' && (
             <div className="flex items-center gap-1 text-sm text-gray-500">
@@ -269,7 +269,9 @@ export default function BookingPage() {
 
         {step === 'class' && (
           <section>
-            <h2 className="mb-6 text-xl font-semibold text-gray-900">Choose a Class Type</h2>
+            <h2 className="mb-6 text-xl font-semibold text-gray-900">
+              {t('bookingPage.chooseClassType')}
+            </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {activeTypes.map((ct) => {
                 const intensity = classTypeToIntensity(ct);
@@ -300,9 +302,9 @@ export default function BookingPage() {
               })}
             </div>
             <p className="mt-6 text-center text-sm text-gray-500">
-              Not sure what to choose?{' '}
+              {t('bookingPage.notSure')}{' '}
               <Link to={viewClassesLink} className="text-primary-600 hover:text-primary-700">
-                View all classes
+                {t('bookingPage.viewAllClasses')}
               </Link>
             </p>
           </section>
@@ -314,12 +316,12 @@ export default function BookingPage() {
               onClick={() => setStep('class')}
               className="mb-4 text-sm text-primary-600 hover:text-primary-700"
             >
-              &larr; Change class type
+              {t('bookingPage.changeClassType')}
             </button>
             <h2 className="mb-2 text-xl font-semibold text-gray-900">
-              Select a Day — {selectedClass.name}
+              {t('bookingPage.selectDay', { className: selectedClass.name })}
             </h2>
-            <p className="mb-6 text-sm text-gray-500">Pick a day that works for you.</p>
+            <p className="mb-6 text-sm text-gray-500">{t('bookingPage.pickDay')}</p>
             <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
               {availableDays.map((day) => {
                 const slots = activeSchedule.filter(
@@ -347,10 +349,12 @@ export default function BookingPage() {
                     }`}
                   >
                     <h3 className="font-semibold text-gray-900">{DAY_LABELS[day]}</h3>
-                    <p className="mt-1 text-sm text-gray-500">{slots.length} time slot(s)</p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      {t('bookingPage.timeSlots', { count: slots.length })}
+                    </p>
                     {isFull ? (
                       <Badge color="accent" className="mt-2">
-                        Full
+                        {t('bookingPage.full')}
                       </Badge>
                     ) : (
                       <div className="mt-2">
@@ -361,8 +365,10 @@ export default function BookingPage() {
                           />
                         </div>
                         <p className="mt-1 text-xs text-gray-400">
-                          {slots.reduce((sum, s) => sum + s.maxCapacity, 0) - existingBookings}{' '}
-                          spots remaining
+                          {t('bookingPage.spotsRemaining', {
+                            count:
+                              slots.reduce((sum, s) => sum + s.maxCapacity, 0) - existingBookings,
+                          })}
                         </p>
                       </div>
                     )}
@@ -379,12 +385,12 @@ export default function BookingPage() {
               onClick={() => setStep('day')}
               className="mb-4 text-sm text-primary-600 hover:text-primary-700"
             >
-              &larr; Change day
+              {t('bookingPage.changeDay')}
             </button>
             <h2 className="mb-2 text-xl font-semibold text-gray-900">
-              Choose a Time — {DAY_LABELS[selectedDay]}
+              {t('bookingPage.chooseTime', { day: DAY_LABELS[selectedDay] })}
             </h2>
-            <p className="mb-6 text-sm text-gray-500">Select your preferred time slot.</p>
+            <p className="mb-6 text-sm text-gray-500">{t('bookingPage.selectTime')}</p>
             <div className="space-y-3">
               {timeSlots.map((slot) => {
                 const location = locations.find((l) => l.id === slot.locationId);
@@ -400,14 +406,18 @@ export default function BookingPage() {
                         <span className="text-lg font-semibold text-gray-900">
                           {slot.startTime}
                         </span>
-                        <span className="mx-2 text-gray-400">to</span>
+                        <span className="mx-2 text-gray-400">{t('bookingPage.to')}</span>
                         <span className="text-lg font-semibold text-gray-900">{slot.endTime}</span>
                       </div>
-                      <Badge color="green">{slot.maxCapacity} spots</Badge>
+                      <Badge color="green">
+                        {t('bookingPage.spots', { count: slot.maxCapacity })}
+                      </Badge>
                     </div>
                     <div className="mt-2 flex items-center gap-4 text-sm text-gray-500">
                       {location && <span>{location.name}</span>}
-                      {coach && <span>with {coach.name}</span>}
+                      {coach && (
+                        <span>{t('bookingPage.withInstructor', { name: coach.name })}</span>
+                      )}
                     </div>
                   </button>
                 );
@@ -422,25 +432,25 @@ export default function BookingPage() {
               onClick={() => setStep('time')}
               className="mb-4 text-sm text-primary-600 hover:text-primary-700"
             >
-              &larr; Change time slot
+              {t('bookingPage.changeTimeSlot')}
             </button>
-            <h2 className="mb-2 text-xl font-semibold text-gray-900">Your Information</h2>
-            <p className="mb-6 text-sm text-gray-500">
-              Enter your details to complete the booking.
-            </p>
+            <h2 className="mb-2 text-xl font-semibold text-gray-900">
+              {t('bookingPage.yourInformation')}
+            </h2>
+            <p className="mb-6 text-sm text-gray-500">{t('bookingPage.enterDetails')}</p>
             <Card className="p-6">
               <form onSubmit={handleInfoSubmit} className="space-y-4">
-                <FormField label="Full Name" required>
+                <FormField label={t('bookingPage.fullName')} required>
                   <Input
                     value={formData.guestName}
                     onChange={(e) =>
                       setFormData((prev) => ({ ...prev, guestName: e.target.value }))
                     }
-                    placeholder="Jane Doe"
+                    placeholder={t('bookingPage.namePlaceholder')}
                     required
                   />
                 </FormField>
-                <FormField label="Email Address" required error={errorMsg}>
+                <FormField label={t('bookingPage.emailAddress')} required error={errorMsg}>
                   <Input
                     type="email"
                     value={formData.guestEmail}
@@ -448,14 +458,14 @@ export default function BookingPage() {
                       setFormData((prev) => ({ ...prev, guestEmail: e.target.value }));
                       setErrorMsg('');
                     }}
-                    placeholder="jane@example.com"
+                    placeholder={t('bookingPage.emailPlaceholder')}
                     error={!!errorMsg}
                     required
                   />
                 </FormField>
                 <div className="rounded-lg bg-gray-50 p-4 text-sm text-gray-500">
-                  <p className="font-medium text-gray-700">First session free!</p>
-                  <p className="mt-1">No credit card required. Your first class is on us.</p>
+                  <p className="font-medium text-gray-700">{t('bookingPage.firstSessionFree')}</p>
+                  <p className="mt-1">{t('bookingPage.noCreditCard')}</p>
                 </div>
                 <div className="flex gap-3">
                   <Button
@@ -464,15 +474,15 @@ export default function BookingPage() {
                       !formData.guestName.trim() || !formData.guestEmail.trim() || checkingClaim
                     }
                   >
-                    {checkingClaim ? 'Checking…' : 'Continue to Review'}
+                    {checkingClaim ? t('bookingPage.checking') : t('bookingPage.continueToReview')}
                   </Button>
                 </div>
               </form>
               <div className="mt-6 border-t border-gray-200 pt-4">
                 <p className="text-sm text-gray-500">
-                  Already have an account?{' '}
+                  {t('bookingPage.alreadyHaveAccount')}{' '}
                   <Link to="/login" className="text-primary-600 hover:text-primary-700">
-                    Log in
+                    {t('bookingPage.logIn')}
                   </Link>
                 </p>
               </div>
@@ -486,54 +496,56 @@ export default function BookingPage() {
               onClick={() => setStep('info')}
               className="mb-4 text-sm text-primary-600 hover:text-primary-700"
             >
-              &larr; Edit information
+              {t('bookingPage.editInformation')}
             </button>
-            <h2 className="mb-6 text-xl font-semibold text-gray-900">Confirm Your Booking</h2>
+            <h2 className="mb-6 text-xl font-semibold text-gray-900">
+              {t('bookingPage.confirmBooking')}
+            </h2>
             <Card className="p-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-sm text-gray-500">Class</span>
+                  <span className="text-sm text-gray-500">{t('bookingPage.class')}</span>
                   <span className="font-medium text-gray-900">{selectedClass.name}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-sm text-gray-500">Day</span>
+                  <span className="text-sm text-gray-500">{t('bookingPage.day')}</span>
                   <span className="font-medium text-gray-900">
                     {selectedDay ? DAY_LABELS[selectedDay] : ''}
                   </span>
                 </div>
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-sm text-gray-500">Time</span>
+                  <span className="text-sm text-gray-500">{t('bookingPage.time')}</span>
                   <span className="font-medium text-gray-900">
                     {selectedSlot.startTime} — {selectedSlot.endTime}
                   </span>
                 </div>
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-sm text-gray-500">Location</span>
+                  <span className="text-sm text-gray-500">{t('bookingPage.location')}</span>
                   <span className="font-medium text-gray-900">
                     {locations.find((l) => l.id === selectedSlot.locationId)?.name ?? '—'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-sm text-gray-500">Instructor</span>
+                  <span className="text-sm text-gray-500">{t('bookingPage.instructor')}</span>
                   <span className="font-medium text-gray-900">
                     {coaches.find((c) => c.id === selectedSlot.coachId)?.name ?? '—'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-sm text-gray-500">Name</span>
+                  <span className="text-sm text-gray-500">{t('common.name')}</span>
                   <span className="font-medium text-gray-900">{formData.guestName}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">Email</span>
+                  <span className="text-sm text-gray-500">{t('common.email')}</span>
                   <span className="font-medium text-gray-900">{formData.guestEmail}</span>
                 </div>
               </div>
               <div className="mt-6 flex gap-3">
                 <Button onClick={confirmBooking} disabled={confirming}>
-                  {confirming ? 'Confirming…' : 'Confirm Booking'}
+                  {confirming ? t('bookingPage.confirming') : t('bookingPage.confirmBookingBtn')}
                 </Button>
                 <Button variant="outline" onClick={() => setStep('info')} disabled={confirming}>
-                  Edit
+                  {t('bookingPage.edit')}
                 </Button>
               </div>
             </Card>
@@ -557,29 +569,30 @@ export default function BookingPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Booking Confirmed!</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {t('bookingPage.bookingConfirmed')}
+            </h2>
             <p className="mt-2 text-gray-600">
-              Your spot is reserved. We&apos;ve sent a confirmation to{' '}
-              <span className="font-medium text-gray-900">{formData.guestEmail}</span>.
+              {t('bookingPage.confirmationText', { email: formData.guestEmail })}
             </p>
             <Card className="mx-auto mt-8 max-w-sm p-6 text-left">
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Booking ID</span>
+                  <span className="text-gray-500">{t('bookingPage.bookingId')}</span>
                   <span className="font-mono font-medium text-gray-900">{bookingId}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Class</span>
+                  <span className="text-gray-500">{t('bookingPage.class')}</span>
                   <span className="font-medium text-gray-900">{selectedClass?.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Day</span>
+                  <span className="text-gray-500">{t('bookingPage.day')}</span>
                   <span className="font-medium text-gray-900">
                     {selectedDay ? DAY_LABELS[selectedDay] : ''}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Time</span>
+                  <span className="text-gray-500">{t('bookingPage.time')}</span>
                   <span className="font-medium text-gray-900">
                     {selectedSlot?.startTime} — {selectedSlot?.endTime}
                   </span>
@@ -589,12 +602,12 @@ export default function BookingPage() {
 
             {!token && (
               <Card className="mx-auto mt-8 max-w-sm p-6 text-left">
-                <h3 className="text-lg font-semibold text-gray-900">Create Your Free Account</h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  Manage your bookings and get exclusive perks.
-                </p>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {t('bookingPage.createFreeAccount')}
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">{t('bookingPage.accountSubtitle')}</p>
                 <form onSubmit={handleActivationSubmit} className="mt-4 space-y-4">
-                  <FormField label="Password" required error={activationError}>
+                  <FormField label={t('common.password')} required error={activationError}>
                     <Input
                       type="password"
                       value={activationPassword}
@@ -602,12 +615,12 @@ export default function BookingPage() {
                         setActivationPassword(e.target.value);
                         setActivationError('');
                       }}
-                      placeholder="At least 6 characters"
+                      placeholder={t('bookingPage.atLeast6Chars')}
                       error={!!activationError}
                       required
                     />
                   </FormField>
-                  <FormField label="Confirm Password" required>
+                  <FormField label={t('common.confirmPassword')} required>
                     <Input
                       type="password"
                       value={activationPasswordConfirm}
@@ -615,25 +628,25 @@ export default function BookingPage() {
                         setActivationPasswordConfirm(e.target.value);
                         setActivationError('');
                       }}
-                      placeholder="Repeat your password"
+                      placeholder={t('bookingPage.repeatPassword')}
                       required
                     />
                   </FormField>
                   {activationError && <p className="text-sm text-red-600">{activationError}</p>}
                   <Button type="submit" className="w-full" disabled={activating}>
-                    {activating ? 'Creating Account…' : 'Create Account'}
+                    {activating ? t('bookingPage.creatingAccount') : t('bookingPage.createAccount')}
                   </Button>
                 </form>
                 <p className="mt-4 text-center text-xs text-gray-400">
-                  You can also create an account later from your dashboard.
+                  {t('bookingPage.accountLater')}
                 </p>
               </Card>
             )}
 
             <div className="mt-8 flex justify-center gap-3">
-              <Button onClick={resetFlow}>Book Another Class</Button>
+              <Button onClick={resetFlow}>{t('bookingPage.bookAnotherClass')}</Button>
               <Link to="/">
-                <Button variant="outline">Back to Home</Button>
+                <Button variant="outline">{t('bookingPage.backToHome')}</Button>
               </Link>
             </div>
           </section>
@@ -656,14 +669,14 @@ export default function BookingPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Something Went Wrong</h2>
-            <p className="mt-2 text-gray-600">
-              {errorMsg || 'We could not complete your booking. Please try again.'}
-            </p>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {t('bookingPage.somethingWentWrong')}
+            </h2>
+            <p className="mt-2 text-gray-600">{errorMsg || t('bookingPage.errors.generic')}</p>
             <div className="mt-8 flex justify-center gap-3">
-              <Button onClick={handleErrorRetry}>Try Again</Button>
+              <Button onClick={handleErrorRetry}>{t('bookingPage.tryAgain')}</Button>
               <Link to="/">
-                <Button variant="outline">Back to Home</Button>
+                <Button variant="outline">{t('bookingPage.backToHome')}</Button>
               </Link>
             </div>
           </section>

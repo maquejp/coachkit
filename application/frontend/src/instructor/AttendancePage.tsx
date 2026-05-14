@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
@@ -12,6 +13,7 @@ import type { InstructorScheduleItem, InstructorBooking } from '@/api/instructor
 import type { InstructorUser } from '@/types';
 
 export default function InstructorAttendancePage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user) as InstructorUser | null;
   const coachId = user?.coachId ?? null;
 
@@ -70,15 +72,18 @@ export default function InstructorAttendancePage() {
 
   return (
     <>
-      <SEO title="Mark Attendance" description="Mark attendance for your classes." />
+      <SEO
+        title={t('seo.instructorAttendanceTitle')}
+        description={t('seo.instructorAttendanceDescription')}
+      />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Mark Attendance</h1>
-        <p className="mt-1 text-gray-500">Take attendance for your classes.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('instructorAttendance.heading')}</h1>
+        <p className="mt-1 text-gray-500">{t('instructorAttendance.subtitle')}</p>
       </div>
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
-        <FormField label="Select Class">
+        <FormField label={t('instructorAttendance.selectClass')}>
           <select
             className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
             value={scheduleIdParam}
@@ -86,7 +91,7 @@ export default function InstructorAttendancePage() {
               setSearchParams({ scheduleId: e.target.value });
             }}
           >
-            <option value="">Choose a class...</option>
+            <option value="">{t('instructorAttendance.chooseClass')}</option>
             {schedules.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.classTypeId} — {s.startTime} ({s.dayOfWeek})
@@ -94,7 +99,7 @@ export default function InstructorAttendancePage() {
             ))}
           </select>
         </FormField>
-        <FormField label="Date">
+        <FormField label={t('instructorAttendance.date')}>
           <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
         </FormField>
       </div>
@@ -103,13 +108,16 @@ export default function InstructorAttendancePage() {
         <Card>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">
-              Students ({confirmedBookings.length} unmarked, {attendedBookings.length} attended)
+              {t('instructorAttendance.students', {
+                unmarked: confirmedBookings.length,
+                attended: attendedBookings.length,
+              })}
             </h2>
           </div>
 
           {bookings.length === 0 ? (
             <div className="py-8 text-center text-sm text-gray-400">
-              No bookings for this class on this date.
+              {t('instructorAttendance.noBookings')}
             </div>
           ) : (
             <div className="space-y-2">
@@ -138,9 +146,11 @@ export default function InstructorAttendancePage() {
                     </div>
                   </div>
                   {b.status === 'confirmed' ? (
-                    <Button size="sm">Mark Present</Button>
+                    <Button size="sm">{t('instructorAttendance.markPresent')}</Button>
                   ) : b.status === 'attended' ? (
-                    <span className="text-xs font-medium text-green-600">Attended</span>
+                    <span className="text-xs font-medium text-green-600">
+                      {t('instructorAttendance.attended')}
+                    </span>
                   ) : null}
                 </div>
               ))}

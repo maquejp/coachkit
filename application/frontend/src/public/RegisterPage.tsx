@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -9,6 +10,7 @@ import { useAuthStore } from '@/stores/auth';
 import { registerApi } from '@/api/auth';
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const token = useAuthStore((s) => s.token);
   const user = useAuthStore((s) => s.user);
@@ -50,10 +52,10 @@ export default function RegisterPage() {
         setAuth(res.data.user, res.data.token);
         navigate('/dashboard');
       } else {
-        setError(res.error ?? 'Registration failed');
+        setError(res.error ?? t('registerPage.errors.generic'));
       }
     } catch {
-      setError('Registration failed. Please try again.');
+      setError(t('registerPage.errors.generic'));
     } finally {
       setLoading(false);
     }
@@ -61,56 +63,54 @@ export default function RegisterPage() {
 
   return (
     <>
-      <SEO title="Sign Up" description="Create your CoachKit account." />
+      <SEO title={t('seo.registerTitle')} description={t('seo.registerTitle')} />
       <div className="mx-auto max-w-md px-4 py-20">
         <Card className="p-8">
-          <h1 className="mb-2 text-2xl font-bold text-gray-900">Create Your Account</h1>
-          <p className="mb-6 text-sm text-gray-500">
-            Join CoachKit and start your fitness journey.
-          </p>
+          <h1 className="mb-2 text-2xl font-bold text-gray-900">{t('registerPage.heading')}</h1>
+          <p className="mb-6 text-sm text-gray-500">{t('registerPage.subtitle')}</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <FormField label="First Name" required>
+              <FormField label={t('registerPage.firstName')} required>
                 <Input
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="Jane"
+                  placeholder={t('registerPage.firstNamePlaceholder')}
                   required
                 />
               </FormField>
-              <FormField label="Last Name" required>
+              <FormField label={t('registerPage.lastName')} required>
                 <Input
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Doe"
+                  placeholder={t('registerPage.lastNamePlaceholder')}
                   required
                 />
               </FormField>
             </div>
-            <FormField label="Email" required>
+            <FormField label={t('registerPage.emailLabel')} required>
               <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="jane@example.com"
+                placeholder={t('registerPage.emailPlaceholder')}
                 required
               />
             </FormField>
-            <FormField label="Phone">
+            <FormField label={t('registerPage.phoneLabel')}>
               <Input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="+1 (555) 000-0000"
+                placeholder={t('registerPage.phonePlaceholder')}
               />
             </FormField>
-            <FormField label="Password" required>
+            <FormField label={t('registerPage.passwordLabel')} required>
               <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Create a password"
+                placeholder={t('registerPage.passwordPlaceholder')}
                 required
                 minLength={8}
               />
@@ -123,14 +123,14 @@ export default function RegisterPage() {
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating account…' : 'Sign Up'}
+              {loading ? t('registerPage.creatingAccount') : t('registerPage.signUpBtn')}
             </Button>
           </form>
 
           <div className="mt-6 border-t border-gray-100 pt-4 text-center text-sm text-gray-500">
-            Already have an account?{' '}
+            {t('registerPage.hasAccount')}{' '}
             <Link to="/login" className="font-medium text-primary-600 hover:text-primary-700">
-              Log in
+              {t('registerPage.logInLink')}
             </Link>
           </div>
         </Card>

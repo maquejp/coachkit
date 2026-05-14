@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
@@ -6,6 +7,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Spinner } from '@/components/ui/Spinner';
 import { useAuthStore } from '@/stores/auth';
 import { fetchInstructorSchedule } from '@/api/instructor';
+import { fetchAllClassTypes } from '@/api/admin';
 import type { InstructorScheduleItem } from '@/api/instructor';
 import type { ClassType, InstructorUser } from '@/types';
 
@@ -28,6 +30,7 @@ function formatTime(time: string) {
 }
 
 export default function InstructorSchedulePage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user) as InstructorUser | null;
   const coachId = user?.coachId ?? null;
 
@@ -65,11 +68,14 @@ export default function InstructorSchedulePage() {
 
   return (
     <>
-      <SEO title="My Schedule" description="View your weekly teaching schedule." />
+      <SEO
+        title={t('seo.instructorScheduleTitle')}
+        description={t('seo.instructorScheduleDescription')}
+      />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">My Schedule</h1>
-        <p className="mt-1 text-gray-500">Your weekly class schedule.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('instructorSchedule.heading')}</h1>
+        <p className="mt-1 text-gray-500">{t('instructorSchedule.subtitle')}</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -79,7 +85,9 @@ export default function InstructorSchedulePage() {
             <Card key={day.num}>
               <h3 className="mb-3 text-sm font-semibold text-gray-900">{day.name}</h3>
               {daySlots.length === 0 ? (
-                <p className="py-4 text-center text-xs text-gray-400">No classes</p>
+                <p className="py-4 text-center text-xs text-gray-400">
+                  {t('instructorSchedule.noClasses')}
+                </p>
               ) : (
                 <div className="space-y-2">
                   {daySlots.map((slot) => {
@@ -103,7 +111,7 @@ export default function InstructorSchedulePage() {
                           {formatTime(slot.startTime)} – {formatTime(slot.endTime)}
                         </p>
                         <Badge color="green" className="mt-1">
-                          {slot.maxCapacity} spots
+                          {t('instructorSchedule.spots', { count: slot.maxCapacity })}
                         </Badge>
                       </Link>
                     );

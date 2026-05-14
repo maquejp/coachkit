@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
@@ -9,6 +10,7 @@ import type { InstructorBooking, InstructorStats as Stats } from '@/api/instruct
 import type { InstructorUser } from '@/types';
 
 export default function InstructorDashboardPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user) as InstructorUser | null;
   const coachId = user?.coachId ?? null;
 
@@ -46,25 +48,30 @@ export default function InstructorDashboardPage() {
 
   return (
     <>
-      <SEO title="Instructor Dashboard" description="Your teaching dashboard." />
+      <SEO
+        title={t('seo.instructorDashboardTitle')}
+        description={t('seo.instructorDashboardDescription')}
+      />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Welcome, {user?.firstName}</h1>
-        <p className="mt-1 text-gray-500">Here's your teaching overview.</p>
+        <h1 className="text-2xl font-bold text-gray-900">
+          {t('instructorDashboard.welcome', { name: user?.firstName })}
+        </h1>
+        <p className="mt-1 text-gray-500">{t('instructorDashboard.subtitle')}</p>
       </div>
 
       {stats && (
         <div className="mb-8 grid gap-4 sm:grid-cols-3">
           <Card>
-            <p className="text-sm text-gray-500">Upcoming Classes</p>
+            <p className="text-sm text-gray-500">{t('instructorDashboard.upcomingClasses')}</p>
             <p className="mt-1 text-3xl font-bold text-gray-900">{stats.upcomingClasses}</p>
           </Card>
           <Card>
-            <p className="text-sm text-gray-500">Classes This Week</p>
+            <p className="text-sm text-gray-500">{t('instructorDashboard.classesThisWeek')}</p>
             <p className="mt-1 text-3xl font-bold text-gray-900">{stats.classesThisWeek}</p>
           </Card>
           <Card>
-            <p className="text-sm text-gray-500">Total Students</p>
+            <p className="text-sm text-gray-500">{t('instructorDashboard.totalStudents')}</p>
             <p className="mt-1 text-3xl font-bold text-gray-900">{stats.totalStudents}</p>
           </Card>
         </div>
@@ -72,16 +79,20 @@ export default function InstructorDashboardPage() {
 
       <Card>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Upcoming Bookings</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            {t('instructorDashboard.upcomingBookings')}
+          </h2>
           <Link
             to="/instructor/schedule"
             className="text-sm text-primary-600 hover:text-primary-700"
           >
-            View Schedule
+            {t('instructorDashboard.viewSchedule')}
           </Link>
         </div>
         {upcoming.length === 0 ? (
-          <div className="py-8 text-center text-sm text-gray-400">No upcoming bookings.</div>
+          <div className="py-8 text-center text-sm text-gray-400">
+            {t('instructorDashboard.noUpcoming')}
+          </div>
         ) : (
           <div className="space-y-2">
             {upcoming.map((b) => (

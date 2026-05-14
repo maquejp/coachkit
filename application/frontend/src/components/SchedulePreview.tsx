@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/Badge';
 
 interface ScheduleClass {
@@ -19,6 +20,8 @@ const intensityColor = {
 };
 
 export default function SchedulePreview({ weekDays }: SchedulePreviewProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="overflow-x-auto">
       <div className="flex gap-3" style={{ minWidth: weekDays.length * 180 }}>
@@ -32,7 +35,9 @@ export default function SchedulePreview({ weekDays }: SchedulePreviewProps) {
               <p className="text-xs text-gray-500">{day.date}</p>
             </div>
             {day.classes.length === 0 ? (
-              <p className="py-6 text-center text-xs text-gray-400">No classes</p>
+              <p className="py-6 text-center text-xs text-gray-400">
+                {t('schedulePreview.noClasses')}
+              </p>
             ) : (
               <div className="space-y-2">
                 {day.classes.map((cls, i) => (

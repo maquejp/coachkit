@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -44,6 +45,7 @@ const emptyPcForm = {
 };
 
 export default function PricingPage() {
+  const { t } = useTranslation();
   const [subPlans, setSubPlans] = useState<SubscriptionPlan[]>([]);
   const [pcPlans, setPcPlans] = useState<PointCardPlan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -174,23 +176,27 @@ export default function PricingPage() {
 
   return (
     <>
-      <SEO title="Pricing Management" description="Manage subscription and point card plans." />
+      <SEO title={t('seo.adminPricingTitle')} description={t('seo.adminPricingDescription')} />
 
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Pricing</h1>
-          <p className="mt-1 text-gray-500">Manage subscription plans and point card packs.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('adminPricing.heading')}</h1>
+          <p className="mt-1 text-gray-500">{t('adminPricing.subtitle')}</p>
         </div>
       </div>
 
       <div className="mb-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Subscription Plans</h2>
-          <Button onClick={openCreateSub}>Add Plan</Button>
+          <h2 className="text-lg font-semibold text-gray-900">
+            {t('adminPricing.subscriptionPlans')}
+          </h2>
+          <Button onClick={openCreateSub}>{t('adminPricing.addPlan')}</Button>
         </div>
         {subPlans.length === 0 ? (
           <Card>
-            <div className="py-8 text-center text-sm text-gray-400">No plans.</div>
+            <div className="py-8 text-center text-sm text-gray-400">
+              {t('adminPricing.noPlans')}
+            </div>
           </Card>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -202,7 +208,7 @@ export default function PricingPage() {
                     <p className="text-sm text-gray-500">{p.description}</p>
                   </div>
                   <Badge color={p.isActive ? 'green' : 'gray'}>
-                    {p.isActive ? 'Active' : 'Inactive'}
+                    {p.isActive ? t('common.active') : t('common.inactive')}
                   </Badge>
                 </div>
                 <p className="mt-2 text-2xl font-bold text-gray-900">
@@ -210,7 +216,9 @@ export default function PricingPage() {
                   <span className="text-sm font-normal text-gray-500">/{p.interval}</span>
                 </p>
                 {p.trialDays > 0 && (
-                  <p className="text-xs text-gray-500">{p.trialDays}-day trial</p>
+                  <p className="text-xs text-gray-500">
+                    {t('adminPricing.trialDays', { count: p.trialDays })}
+                  </p>
                 )}
                 {p.features.length > 0 && (
                   <ul className="mt-2 space-y-0.5">
@@ -223,10 +231,10 @@ export default function PricingPage() {
                 )}
                 <div className="mt-3 flex gap-2 border-t border-gray-100 pt-3">
                   <Button size="sm" variant="outline" onClick={() => openEditSub(p)}>
-                    Edit
+                    {t('common.edit')}
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => setDeleting(p)}>
-                    Delete
+                    {t('common.delete')}
                   </Button>
                 </div>
               </Card>
@@ -237,12 +245,16 @@ export default function PricingPage() {
 
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Point Card Packs</h2>
-          <Button onClick={openCreatePc}>Add Pack</Button>
+          <h2 className="text-lg font-semibold text-gray-900">
+            {t('adminPricing.pointCardPacks')}
+          </h2>
+          <Button onClick={openCreatePc}>{t('adminPricing.addPack')}</Button>
         </div>
         {pcPlans.length === 0 ? (
           <Card>
-            <div className="py-8 text-center text-sm text-gray-400">No packs.</div>
+            <div className="py-8 text-center text-sm text-gray-400">
+              {t('adminPricing.noPacks')}
+            </div>
           </Card>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -254,19 +266,19 @@ export default function PricingPage() {
                     <p className="text-sm text-gray-500">{p.description}</p>
                   </div>
                   <Badge color={p.isActive ? 'green' : 'gray'}>
-                    {p.isActive ? 'Active' : 'Inactive'}
+                    {p.isActive ? t('common.active') : t('common.inactive')}
                   </Badge>
                 </div>
                 <p className="mt-2 text-2xl font-bold text-gray-900">{formatCents(p.priceCents)}</p>
                 <p className="text-xs text-gray-500">
-                  {p.sessionsCount} sessions · {p.validityDays} day validity
+                  {t('adminPricing.packInfo', { sessions: p.sessionsCount, days: p.validityDays })}
                 </p>
                 <div className="mt-3 flex gap-2 border-t border-gray-100 pt-3">
                   <Button size="sm" variant="outline" onClick={() => openEditPc(p)}>
-                    Edit
+                    {t('common.edit')}
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => setDeleting(p)}>
-                    Delete
+                    {t('common.delete')}
                   </Button>
                 </div>
               </Card>
@@ -281,18 +293,18 @@ export default function PricingPage() {
           setCreating(null);
           setEditing(null);
         }}
-        title={editing ? 'Edit Subscription Plan' : 'Add Subscription Plan'}
+        title={editing ? t('adminPricing.editPlanTitle') : t('adminPricing.addPlanTitle')}
         size="md"
       >
         <form onSubmit={handleSaveSub} className="space-y-4">
-          <FormField label="Name" required>
+          <FormField label={t('adminPricing.name')} required>
             <Input
               value={subForm.name}
               onChange={(e) => setSubForm((p) => ({ ...p, name: e.target.value }))}
               required
             />
           </FormField>
-          <FormField label="Description" required>
+          <FormField label={t('adminPricing.description')} required>
             <Input
               value={subForm.description}
               onChange={(e) => setSubForm((p) => ({ ...p, description: e.target.value }))}
@@ -300,7 +312,7 @@ export default function PricingPage() {
             />
           </FormField>
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="Price ($)" required>
+            <FormField label={t('adminPricing.price')} required>
               <Input
                 type="number"
                 min={0}
@@ -315,19 +327,19 @@ export default function PricingPage() {
                 required
               />
             </FormField>
-            <FormField label="Billing Interval" required>
+            <FormField label={t('adminPricing.billingInterval')} required>
               <Select
                 value={subForm.interval}
                 onChange={(e) =>
                   setSubForm((p) => ({ ...p, interval: e.target.value as 'monthly' | 'yearly' }))
                 }
               >
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
+                <option value="monthly">{t('adminPricing.monthly')}</option>
+                <option value="yearly">{t('adminPricing.yearly')}</option>
               </Select>
             </FormField>
           </div>
-          <FormField label="Trial Days">
+          <FormField label={t('adminPricing.trialDays')}>
             <Input
               type="number"
               min={0}
@@ -335,16 +347,16 @@ export default function PricingPage() {
               onChange={(e) => setSubForm((p) => ({ ...p, trialDays: Number(e.target.value) }))}
             />
           </FormField>
-          <FormField label="Features (one per line)">
+          <FormField label={t('adminPricing.features')}>
             <textarea
               className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
               rows={4}
               value={featuresText}
               onChange={(e) => setFeaturesText(e.target.value)}
-              placeholder="Unlimited classes&#10;Priority booking&#10;Free guest pass"
+              placeholder={t('adminPricing.featuresPlaceholder')}
             />
           </FormField>
-          <FormField label="Status">
+          <FormField label={t('adminPricing.status')}>
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -352,7 +364,7 @@ export default function PricingPage() {
                 onChange={(e) => setSubForm((p) => ({ ...p, isActive: e.target.checked }))}
                 className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               />
-              Active
+              {t('adminPricing.active')}
             </label>
           </FormField>
           <div className="flex justify-end gap-2">
@@ -363,10 +375,10 @@ export default function PricingPage() {
                 setEditing(null);
               }}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={saving}>
-              {editing ? 'Save' : 'Create'}
+              {editing ? t('common.save') : t('common.create')}
             </Button>
           </div>
         </form>
@@ -378,18 +390,18 @@ export default function PricingPage() {
           setCreating(null);
           setEditing(null);
         }}
-        title={editing ? 'Edit Point Card Pack' : 'Add Point Card Pack'}
+        title={editing ? t('adminPricing.editPackTitle') : t('adminPricing.addPackTitle')}
         size="md"
       >
         <form onSubmit={handleSavePc} className="space-y-4">
-          <FormField label="Name" required>
+          <FormField label={t('adminPricing.name')} required>
             <Input
               value={pcForm.name}
               onChange={(e) => setPcForm((p) => ({ ...p, name: e.target.value }))}
               required
             />
           </FormField>
-          <FormField label="Description" required>
+          <FormField label={t('adminPricing.description')} required>
             <Input
               value={pcForm.description}
               onChange={(e) => setPcForm((p) => ({ ...p, description: e.target.value }))}
@@ -397,7 +409,7 @@ export default function PricingPage() {
             />
           </FormField>
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="Price ($)" required>
+            <FormField label={t('adminPricing.price')} required>
               <Input
                 type="number"
                 min={0}
@@ -409,7 +421,7 @@ export default function PricingPage() {
                 required
               />
             </FormField>
-            <FormField label="Sessions" required>
+            <FormField label={t('adminPricing.sessions')} required>
               <Input
                 type="number"
                 min={1}
@@ -421,7 +433,7 @@ export default function PricingPage() {
               />
             </FormField>
           </div>
-          <FormField label="Validity (days)" required>
+          <FormField label={t('adminPricing.validityDays')} required>
             <Input
               type="number"
               min={1}
@@ -430,7 +442,7 @@ export default function PricingPage() {
               required
             />
           </FormField>
-          <FormField label="Status">
+          <FormField label={t('adminPricing.status')}>
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -438,7 +450,7 @@ export default function PricingPage() {
                 onChange={(e) => setPcForm((p) => ({ ...p, isActive: e.target.checked }))}
                 className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               />
-              Active
+              {t('adminPricing.active')}
             </label>
           </FormField>
           <div className="flex justify-end gap-2">
@@ -449,25 +461,30 @@ export default function PricingPage() {
                 setEditing(null);
               }}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={saving}>
-              {editing ? 'Save' : 'Create'}
+              {editing ? t('common.save') : t('common.create')}
             </Button>
           </div>
         </form>
       </Modal>
 
-      <Modal open={!!deleting} onClose={() => setDeleting(null)} title="Delete Plan" size="sm">
+      <Modal
+        open={!!deleting}
+        onClose={() => setDeleting(null)}
+        title={t('adminPricing.deleteTitle')}
+        size="sm"
+      >
         <p className="text-sm text-gray-600">
-          Are you sure you want to delete <strong>{deleting?.name}</strong>? This cannot be undone.
+          {t('adminPricing.deleteBody', { name: deleting?.name })}
         </p>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setDeleting(null)}>
-            Keep
+            {t('common.keep')}
           </Button>
           <Button variant="accent" loading={saving} onClick={handleDelete}>
-            Yes, Delete
+            {t('common.yesDelete')}
           </Button>
         </div>
       </Modal>

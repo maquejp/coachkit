@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -12,11 +13,12 @@ import type { CustomerUser, PaginatedResult } from '@/api/admin';
 const PAGE_SIZES = [5, 10, 20, 50];
 
 function SortIcon({ sortBy, sortDir, field }: { sortBy: string; sortDir: string; field: string }) {
-  if (sortBy !== field) return <span className="ml-1 text-gray-300">&#8597;</span>;
-  return <span className="ml-1 text-primary-600">{sortDir === 'asc' ? '&#8593;' : '&#8595;'}</span>;
+  if (sortBy !== field) return <span className="ml-1 text-gray-300">{'\u2195'}</span>;
+  return <span className="ml-1 text-primary-600">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>;
 }
 
 export default function CustomersPage() {
+  const { t } = useTranslation();
   const [result, setResult] = useState<PaginatedResult<CustomerUser> | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -54,13 +56,15 @@ export default function CustomersPage() {
 
   return (
     <>
-      <SEO title="Customer Management" description="Manage customers." />
+      <SEO title={t('seo.adminCustomersTitle')} description={t('seo.adminCustomersDescription')} />
 
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Customers</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('adminCustomers.heading')}</h1>
           <p className="mt-1 text-gray-500">
-            {result ? `${result.total} total customers` : 'Manage customers.'}
+            {result
+              ? t('adminCustomers.totalCustomers', { count: result.total })
+              : t('seo.adminCustomersDescription')}
           </p>
         </div>
       </div>
@@ -68,7 +72,7 @@ export default function CustomersPage() {
       <Card className="mb-4">
         <div className="flex flex-wrap items-center gap-3">
           <Input
-            placeholder="Search by name or email..."
+            placeholder={t('common.searchPlaceholder')}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -97,7 +101,9 @@ export default function CustomersPage() {
         <Spinner centered size="lg" />
       ) : !result || result.items.length === 0 ? (
         <Card>
-          <div className="py-12 text-center text-sm text-gray-400">No customers found.</div>
+          <div className="py-12 text-center text-sm text-gray-400">
+            {t('adminCustomers.noCustomers')}
+          </div>
         </Card>
       ) : (
         <>
@@ -109,25 +115,29 @@ export default function CustomersPage() {
                     className="cursor-pointer px-4 py-3 font-medium text-gray-500"
                     onClick={() => handleSort('firstName')}
                   >
-                    Name
+                    {t('adminCustomers.name')}
                     <SortIcon sortBy={sortBy} sortDir={sortDir} field="firstName" />
                   </th>
                   <th
                     className="cursor-pointer px-4 py-3 font-medium text-gray-500"
                     onClick={() => handleSort('email')}
                   >
-                    Email
+                    {t('adminCustomers.email')}
                     <SortIcon sortBy={sortBy} sortDir={sortDir} field="email" />
                   </th>
-                  <th className="px-4 py-3 font-medium text-gray-500">Phone</th>
+                  <th className="px-4 py-3 font-medium text-gray-500">
+                    {t('adminCustomers.phone')}
+                  </th>
                   <th
                     className="cursor-pointer px-4 py-3 font-medium text-gray-500"
                     onClick={() => handleSort('createdAt')}
                   >
-                    Member Since
+                    {t('adminCustomers.memberSince')}
                     <SortIcon sortBy={sortBy} sortDir={sortDir} field="createdAt" />
                   </th>
-                  <th className="px-4 py-3 font-medium text-gray-500">Verified</th>
+                  <th className="px-4 py-3 font-medium text-gray-500">
+                    {t('adminCustomers.verified')}
+                  </th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
@@ -139,28 +149,28 @@ export default function CustomersPage() {
                   >
                     <td className="px-4 py-3">
                       <Link
-                        to={`/admin/customers/${u.id}`}
+                        to={'/admin/customers/' + u.id}
                         className="font-medium text-gray-900 hover:text-primary-600"
                       >
                         {u.firstName} {u.lastName}
                       </Link>
                     </td>
                     <td className="px-4 py-3 text-gray-600">{u.email}</td>
-                    <td className="px-4 py-3 text-gray-600">{u.phone ?? '—'}</td>
+                    <td className="px-4 py-3 text-gray-600">{u.phone ?? '\u2014'}</td>
                     <td className="px-4 py-3 text-gray-600">
                       {new Date(u.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3">
                       <Badge color={u.emailVerifiedAt ? 'green' : 'gray'}>
-                        {u.emailVerifiedAt ? 'Verified' : 'Unverified'}
+                        {u.emailVerifiedAt ? t('common.verified') : t('common.unverified')}
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-right">
                       <Link
-                        to={`/admin/customers/${u.id}`}
+                        to={'/admin/customers/' + u.id}
                         className="text-sm text-primary-600 hover:underline"
                       >
-                        View
+                        {t('adminCustomers.view')}
                       </Link>
                     </td>
                   </tr>
@@ -172,7 +182,10 @@ export default function CustomersPage() {
           {result.totalPages > 1 && (
             <div className="mt-4 flex items-center justify-between">
               <p className="text-sm text-gray-500">
-                Page {result.page} of {result.totalPages}
+                {t('adminCustomers.pagination', {
+                  page: result.page,
+                  totalPages: result.totalPages,
+                })}
               </p>
               <div className="flex gap-2">
                 <button
@@ -180,14 +193,14 @@ export default function CustomersPage() {
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  Previous
+                  {t('common.previous')}
                 </button>
                 <button
                   disabled={page >= result.totalPages}
                   onClick={() => setPage((p) => p + 1)}
                   className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  Next
+                  {t('common.next')}
                 </button>
               </div>
             </div>

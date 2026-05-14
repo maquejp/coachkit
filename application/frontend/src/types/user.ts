@@ -7,6 +7,7 @@ export interface User {
   emailVerifiedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  language?: string;
 }
 
 export interface AdminUser extends User {

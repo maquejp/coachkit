@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -64,6 +65,7 @@ const emptySlotForm: SlotForm = {
 };
 
 export default function SchedulePage() {
+  const { t } = useTranslation();
   const [schedules, setSchedules] = useState<WeeklyScheduleItem[]>([]);
   const [exceptions, setExceptions] = useState<ScheduleExceptionItem[]>([]);
   const [classTypes, setClassTypes] = useState<ClassType[]>([]);
@@ -229,12 +231,12 @@ export default function SchedulePage() {
 
   return (
     <>
-      <SEO title="Schedule Management" description="Manage weekly class schedule." />
+      <SEO title={t('seo.adminScheduleTitle')} description={t('seo.adminScheduleDescription')} />
 
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Schedule</h1>
-          <p className="mt-1 text-gray-500">Manage weekly class timetable and exceptions.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('adminSchedule.heading')}</h1>
+          <p className="mt-1 text-gray-500">{t('adminSchedule.subtitle')}</p>
         </div>
         <div className="flex items-center gap-3">
           <Select
@@ -242,7 +244,7 @@ export default function SchedulePage() {
             onChange={(e) => setFilterLocId(e.target.value)}
             className="w-48"
           >
-            <option value="">All Locations</option>
+            <option value="">{t('adminSchedule.allLocations')}</option>
             {activeLocations.map((l) => (
               <option key={l.id} value={l.id}>
                 {l.name}
@@ -255,10 +257,10 @@ export default function SchedulePage() {
       <Card className="overflow-x-auto">
         <div className="min-w-[900px]">
           <div className="grid grid-cols-[80px_repeat(7,1fr)] border-b border-gray-200 bg-gray-50">
-            <div className="p-2 text-xs font-medium text-gray-500">Time</div>
+            <div className="p-2 text-xs font-medium text-gray-500">{t('adminSchedule.time')}</div>
             {DAYS.map((d) => (
               <div key={d} className="p-2 text-center text-xs font-medium text-gray-500">
-                {d}
+                {t('bookingPage.days.' + d.toLowerCase())}
               </div>
             ))}
           </div>
@@ -288,7 +290,7 @@ export default function SchedulePage() {
                         }
                         className="flex h-full w-full items-center justify-center rounded text-xs text-gray-300 opacity-0 transition-opacity hover:bg-primary-50 hover:text-primary-400 hover:opacity-100"
                       >
-                        + Add
+                        {t('adminSchedule.addSlot')}
                       </button>
                     ) : (
                       <div className="space-y-0.5">
@@ -300,7 +302,7 @@ export default function SchedulePage() {
                               onClick={() => setEditingSlot(slot)}
                               className="w-full rounded bg-primary-100 px-1 py-0.5 text-left text-xs text-primary-800 transition-colors hover:bg-primary-200"
                             >
-                              <span className="font-medium">{ct?.name ?? 'Class'}</span>
+                              <span className="font-medium">{ct?.name ?? t('common.classes')}</span>
                               <span className="ml-1 text-primary-600">
                                 {formatTime(slot.startTime)}–{formatTime(slot.endTime)}
                               </span>
@@ -320,14 +322,20 @@ export default function SchedulePage() {
       <div className="mt-8">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Schedule Exceptions</h2>
-            <p className="text-sm text-gray-500">Holidays, closures, and modified hours.</p>
+            <h2 className="text-lg font-semibold text-gray-900">
+              {t('adminSchedule.scheduleExceptions')}
+            </h2>
+            <p className="text-sm text-gray-500">{t('adminSchedule.exceptionsSubtitle')}</p>
           </div>
-          <Button onClick={() => setCreatingException(true)}>Add Exception</Button>
+          <Button onClick={() => setCreatingException(true)}>
+            {t('adminSchedule.addException')}
+          </Button>
         </div>
         {filteredExceptions.length === 0 ? (
           <Card>
-            <div className="py-8 text-center text-sm text-gray-400">No exceptions set.</div>
+            <div className="py-8 text-center text-sm text-gray-400">
+              {t('adminSchedule.noExceptions')}
+            </div>
           </Card>
         ) : (
           <div className="space-y-2">
@@ -341,17 +349,17 @@ export default function SchedulePage() {
                         {ex.date} — {ex.reason}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {loc ? loc.name : 'Unknown location'}
+                        {loc ? loc.name : t('adminSchedule.unknownLocation')}
                         {ex.isClosed
-                          ? ' · Closed'
+                          ? ` · ${t('adminSchedule.closed')}`
                           : ` · ${formatTime(ex.openTime ?? '')}–${formatTime(ex.closeTime ?? '')}`}
                       </p>
                     </div>
                     <Badge color={ex.isClosed ? 'accent' : 'warm'}>
-                      {ex.isClosed ? 'Closed' : 'Modified'}
+                      {ex.isClosed ? t('adminSchedule.closed') : t('adminSchedule.modified')}
                     </Badge>
                     <Button size="sm" variant="ghost" onClick={() => handleDeleteException(ex.id)}>
-                      Remove
+                      {t('adminSchedule.remove')}
                     </Button>
                   </div>
                 </Card>
@@ -364,11 +372,11 @@ export default function SchedulePage() {
       <Modal
         open={!!creatingSlot}
         onClose={() => setCreatingSlot(null)}
-        title="Create Schedule Slot"
+        title={t('adminSchedule.createSlotTitle')}
         size="md"
       >
         <form onSubmit={handleCreateSlot} className="space-y-4">
-          <FormField label="Class Type" required>
+          <FormField label={t('adminSchedule.classType')} required>
             <Select
               value={creatingSlot?.classTypeId ?? ''}
               onChange={(e) =>
@@ -376,7 +384,7 @@ export default function SchedulePage() {
               }
               required
             >
-              <option value="">Select class</option>
+              <option value="">{t('adminSchedule.selectClass')}</option>
               {classTypes
                 .filter((c) => c.isActive)
                 .map((c) => (
@@ -386,7 +394,7 @@ export default function SchedulePage() {
                 ))}
             </Select>
           </FormField>
-          <FormField label="Coach" required>
+          <FormField label={t('adminSchedule.coach')} required>
             <Select
               value={creatingSlot?.coachId ?? ''}
               onChange={(e) =>
@@ -394,7 +402,7 @@ export default function SchedulePage() {
               }
               required
             >
-              <option value="">Select coach</option>
+              <option value="">{t('adminSchedule.selectCoach')}</option>
               {coaches
                 .filter((c) => c.isActive)
                 .map((c) => (
@@ -404,7 +412,7 @@ export default function SchedulePage() {
                 ))}
             </Select>
           </FormField>
-          <FormField label="Location" required>
+          <FormField label={t('adminSchedule.locationField')} required>
             <Select
               value={creatingSlot?.locationId || filterLocId || ''}
               onChange={(e) =>
@@ -412,7 +420,7 @@ export default function SchedulePage() {
               }
               required
             >
-              <option value="">Select location</option>
+              <option value="">{t('adminSchedule.selectLocation')}</option>
               {activeLocations.map((l) => (
                 <option key={l.id} value={l.id}>
                   {l.name}
@@ -421,7 +429,7 @@ export default function SchedulePage() {
             </Select>
           </FormField>
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="Start Time" required>
+            <FormField label={t('adminSchedule.startTime')} required>
               <Input
                 type="time"
                 value={creatingSlot?.startTime ?? '07:00'}
@@ -431,7 +439,7 @@ export default function SchedulePage() {
                 required
               />
             </FormField>
-            <FormField label="End Time" required>
+            <FormField label={t('adminSchedule.endTime')} required>
               <Input
                 type="time"
                 value={creatingSlot?.endTime ?? '08:00'}
@@ -442,7 +450,7 @@ export default function SchedulePage() {
               />
             </FormField>
           </div>
-          <FormField label="Max Capacity" required>
+          <FormField label={t('adminSchedule.maxCapacity')} required>
             <Input
               type="number"
               min={1}
@@ -457,10 +465,10 @@ export default function SchedulePage() {
           </FormField>
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setCreatingSlot(null)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={saving}>
-              Create
+              {t('common.create')}
             </Button>
           </div>
         </form>
@@ -469,11 +477,11 @@ export default function SchedulePage() {
       <Modal
         open={!!editingSlot}
         onClose={() => setEditingSlot(null)}
-        title="Edit Schedule Slot"
+        title={t('adminSchedule.editSlotTitle')}
         size="md"
       >
         <form onSubmit={handleUpdateSlot} className="space-y-4">
-          <FormField label="Class Type" required>
+          <FormField label={t('adminSchedule.classType')} required>
             <Select
               value={editingSlot?.classTypeId ?? ''}
               onChange={(e) =>
@@ -481,7 +489,7 @@ export default function SchedulePage() {
               }
               required
             >
-              <option value="">Select class</option>
+              <option value="">{t('adminSchedule.selectClass')}</option>
               {classTypes
                 .filter((c) => c.isActive)
                 .map((c) => (
@@ -491,7 +499,7 @@ export default function SchedulePage() {
                 ))}
             </Select>
           </FormField>
-          <FormField label="Coach" required>
+          <FormField label={t('adminSchedule.coach')} required>
             <Select
               value={editingSlot?.coachId ?? ''}
               onChange={(e) =>
@@ -499,7 +507,7 @@ export default function SchedulePage() {
               }
               required
             >
-              <option value="">Select coach</option>
+              <option value="">{t('adminSchedule.selectCoach')}</option>
               {coaches
                 .filter((c) => c.isActive)
                 .map((c) => (
@@ -509,7 +517,7 @@ export default function SchedulePage() {
                 ))}
             </Select>
           </FormField>
-          <FormField label="Location" required>
+          <FormField label={t('adminSchedule.locationField')} required>
             <Select
               value={editingSlot?.locationId ?? ''}
               onChange={(e) =>
@@ -517,7 +525,7 @@ export default function SchedulePage() {
               }
               required
             >
-              <option value="">Select location</option>
+              <option value="">{t('adminSchedule.selectLocation')}</option>
               {activeLocations.map((l) => (
                 <option key={l.id} value={l.id}>
                   {l.name}
@@ -526,7 +534,7 @@ export default function SchedulePage() {
             </Select>
           </FormField>
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="Start Time" required>
+            <FormField label={t('adminSchedule.startTime')} required>
               <Input
                 type="time"
                 value={editingSlot?.startTime ?? ''}
@@ -536,7 +544,7 @@ export default function SchedulePage() {
                 required
               />
             </FormField>
-            <FormField label="End Time" required>
+            <FormField label={t('adminSchedule.endTime')} required>
               <Input
                 type="time"
                 value={editingSlot?.endTime ?? ''}
@@ -547,7 +555,7 @@ export default function SchedulePage() {
               />
             </FormField>
           </div>
-          <FormField label="Max Capacity" required>
+          <FormField label={t('adminSchedule.maxCapacity')} required>
             <Input
               type="number"
               min={1}
@@ -569,14 +577,14 @@ export default function SchedulePage() {
                 setEditingSlot(null);
               }}
             >
-              Delete Slot
+              {t('adminSchedule.deleteSlotBtn')}
             </Button>
             <div className="flex gap-2">
               <Button variant="ghost" onClick={() => setEditingSlot(null)}>
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button type="submit" loading={saving}>
-                Save
+                {t('common.save')}
               </Button>
             </div>
           </div>
@@ -586,18 +594,16 @@ export default function SchedulePage() {
       <Modal
         open={!!deletingSlot}
         onClose={() => setDeletingSlot(null)}
-        title="Delete Schedule Slot"
+        title={t('adminSchedule.deleteSlotTitle')}
         size="sm"
       >
-        <p className="text-sm text-gray-600">
-          Are you sure you want to delete this schedule slot? This action cannot be undone.
-        </p>
+        <p className="text-sm text-gray-600">{t('adminSchedule.deleteSlotBody')}</p>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setDeletingSlot(null)}>
-            Keep
+            {t('common.keep')}
           </Button>
           <Button variant="accent" loading={saving} onClick={handleDeleteSlot}>
-            Yes, Delete
+            {t('common.yesDelete')}
           </Button>
         </div>
       </Modal>
@@ -605,11 +611,11 @@ export default function SchedulePage() {
       <Modal
         open={creatingException}
         onClose={() => setCreatingException(false)}
-        title="Add Schedule Exception"
+        title={t('adminSchedule.addExceptionTitle')}
         size="md"
       >
         <form onSubmit={handleCreateException} className="space-y-4">
-          <FormField label="Date" required>
+          <FormField label={t('adminSchedule.date')} required>
             <Input
               type="date"
               value={exDate}
@@ -617,13 +623,13 @@ export default function SchedulePage() {
               required
             />
           </FormField>
-          <FormField label="Location" required>
+          <FormField label={t('adminSchedule.locationField')} required>
             <Select
               value={exLocationId || filterLocId || ''}
               onChange={(e) => setExLocationId(e.target.value)}
               required
             >
-              <option value="">Select location</option>
+              <option value="">{t('adminSchedule.selectLocation')}</option>
               {activeLocations.map((l) => (
                 <option key={l.id} value={l.id}>
                   {l.name}
@@ -631,18 +637,18 @@ export default function SchedulePage() {
               ))}
             </Select>
           </FormField>
-          <FormField label="Type">
+          <FormField label={t('adminSchedule.type')}>
             <Select
               value={exIsClosed ? 'closed' : 'modified'}
               onChange={(e) => setExIsClosed(e.target.value === 'closed')}
             >
-              <option value="closed">Closed (full day)</option>
-              <option value="modified">Modified hours</option>
+              <option value="closed">{t('adminSchedule.closedFullDay')}</option>
+              <option value="modified">{t('adminSchedule.modifiedHours')}</option>
             </Select>
           </FormField>
           {!exIsClosed && (
             <div className="grid grid-cols-2 gap-4">
-              <FormField label="Open Time" required>
+              <FormField label={t('adminSchedule.openTime')} required>
                 <Input
                   type="time"
                   value={exOpenTime}
@@ -650,7 +656,7 @@ export default function SchedulePage() {
                   required
                 />
               </FormField>
-              <FormField label="Close Time" required>
+              <FormField label={t('adminSchedule.closeTime')} required>
                 <Input
                   type="time"
                   value={exCloseTime}
@@ -660,20 +666,20 @@ export default function SchedulePage() {
               </FormField>
             </div>
           )}
-          <FormField label="Reason" required>
+          <FormField label={t('adminSchedule.reason')} required>
             <Input
               value={exReason}
               onChange={(e) => setExReason(e.target.value)}
-              placeholder="e.g. Christmas Day"
+              placeholder={t('adminSchedule.reasonPlaceholder')}
               required
             />
           </FormField>
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setCreatingException(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={saving}>
-              Add Exception
+              {t('adminSchedule.addException')}
             </Button>
           </div>
         </form>

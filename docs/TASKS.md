@@ -228,10 +228,11 @@
 
 ### 3.9 Multi-language Setup
 
-- [ ] Research and select i18n library (react-i18next or similar)
-- [ ] Externalize all user-facing strings into locale files
-- [ ] Set up language detection and switching
-- [ ] Configure primary language per deployment via environment
+- [x] Research and select i18n library (react-i18next or similar)
+- [x] Externalize all user-facing strings into locale files
+- [x] Set up language detection and switching
+- [x] Configure primary language per deployment via environment
+- [x] Store language preference in user profile (persisted across sessions)
 - [ ] Write tests for language switching
 
 ---

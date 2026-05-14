@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -43,6 +44,7 @@ function statusBadgeColor(status: string) {
 
 export default function SubscriptionPage() {
   const user = useAuthStore((s) => s.user);
+  const { t } = useTranslation();
   const [subscriptions, setSubscriptions] = useState<CustomerSubscription[]>([]);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,16 +105,25 @@ export default function SubscriptionPage() {
 
   return (
     <>
-      <SEO title="My Subscription" description="Manage your subscription." />
+      <SEO
+        title={t('seo.customerSubscriptionTitle')}
+        description={t('seo.customerSubscriptionDescription')}
+      />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">My Subscription</h1>
-        <p className="mt-1 text-gray-500">Manage your plan and view usage.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('customerSubscription.heading')}</h1>
+        <p className="mt-1 text-gray-500">{t('customerSubscription.subtitle')}</p>
       </div>
 
       {activeSub && activePlan ? (
         <div className="space-y-6">
-          <Card header={<span className="font-semibold text-gray-900">Current Plan</span>}>
+          <Card
+            header={
+              <span className="font-semibold text-gray-900">
+                {t('customerSubscription.currentPlan')}
+              </span>
+            }
+          >
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -124,24 +135,24 @@ export default function SubscriptionPage() {
 
               <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
                 <div>
-                  <p className="text-xs text-gray-500">Price</p>
+                  <p className="text-xs text-gray-500">{t('common.price')}</p>
                   <p className="font-medium text-gray-900">
                     {formatCents(activePlan.priceCents)}/{activePlan.interval}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Started</p>
+                  <p className="text-xs text-gray-500">{t('common.started')}</p>
                   <p className="font-medium text-gray-900">{formatDate(activeSub.startDate)}</p>
                 </div>
                 {activeSub.endDate && (
                   <div>
-                    <p className="text-xs text-gray-500">Renewal</p>
+                    <p className="text-xs text-gray-500">{t('customerSubscription.renewal')}</p>
                     <p className="font-medium text-gray-900">{formatDate(activeSub.endDate)}</p>
                   </div>
                 )}
                 {activeSub.trialEnd && (
                   <div>
-                    <p className="text-xs text-gray-500">Trial ends</p>
+                    <p className="text-xs text-gray-500">{t('customerSubscription.trialEnds')}</p>
                     <p className="font-medium text-gray-900">{formatDate(activeSub.trialEnd)}</p>
                   </div>
                 )}
@@ -149,7 +160,9 @@ export default function SubscriptionPage() {
 
               {activePlan.features.length > 0 && (
                 <div className="border-t border-gray-100 pt-4">
-                  <p className="mb-2 text-xs font-medium uppercase text-gray-500">Features</p>
+                  <p className="mb-2 text-xs font-medium uppercase text-gray-500">
+                    {t('customerSubscription.features')}
+                  </p>
                   <ul className="space-y-1">
                     {activePlan.features.map((f, i) => (
                       <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
@@ -162,31 +175,42 @@ export default function SubscriptionPage() {
 
               <div className="flex gap-2 border-t border-gray-100 pt-4">
                 <Button variant="outline" onClick={() => setShowChangePlan(true)}>
-                  Change Plan
+                  {t('customerSubscription.changePlan')}
                 </Button>
                 <Button variant="ghost" onClick={() => setCancelTarget(activeSub)}>
-                  Cancel Subscription
+                  {t('customerSubscription.cancelSubscription')}
                 </Button>
               </div>
             </div>
           </Card>
 
-          <Card header={<span className="font-semibold text-gray-900">Session Usage</span>}>
+          <Card
+            header={
+              <span className="font-semibold text-gray-900">
+                {t('customerSubscription.sessionUsage')}
+              </span>
+            }
+          >
             {activeSub.sessionsLimit === null ? (
               <div className="py-4 text-center text-sm text-gray-500">
                 <p className="font-medium text-gray-900">
-                  {activeSub.sessionsUsed} sessions used this period
+                  {t('customerSubscription.sessionsUsed', { count: activeSub.sessionsUsed })}
                 </p>
-                <p className="mt-1">Unlimited plan — no session cap.</p>
+                <p className="mt-1">{t('customerSubscription.unlimitedPlan')}</p>
               </div>
             ) : (
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-500">
-                    {activeSub.sessionsUsed} of {activeSub.sessionsLimit} used
+                    {t('customerSubscription.ofUsed', {
+                      used: activeSub.sessionsUsed,
+                      total: activeSub.sessionsLimit,
+                    })}
                   </span>
                   <span className="font-medium text-gray-900">
-                    {activeSub.sessionsLimit - activeSub.sessionsUsed} remaining
+                    {t('customerSubscription.remaining', {
+                      count: activeSub.sessionsLimit - activeSub.sessionsUsed,
+                    })}
                   </span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
@@ -204,22 +228,24 @@ export default function SubscriptionPage() {
       ) : subscriptions.length > 0 ? (
         <Card>
           <div className="py-12 text-center text-sm text-gray-400">
-            <p>Your subscription is {subscriptions[0].status}.</p>
+            <p>{t('customerSubscription.yourSubscription', { status: subscriptions[0].status })}</p>
             <p className="mt-1">
-              Started {formatDate(subscriptions[0].startDate)}
-              {subscriptions[0].endDate ? ` · Ended ${formatDate(subscriptions[0].endDate)}` : ''}
+              {t('common.started')} {formatDate(subscriptions[0].startDate)}
+              {subscriptions[0].endDate
+                ? ` · ${t('common.renews')} ${formatDate(subscriptions[0].endDate)}`
+                : ''}
             </p>
             <Button className="mt-4" onClick={() => (window.location.href = '/pricing')}>
-              View Plans
+              {t('common.viewPlans')}
             </Button>
           </div>
         </Card>
       ) : (
         <Card>
           <div className="py-12 text-center text-sm text-gray-400">
-            <p>No subscription found.</p>
+            <p>{t('customerSubscription.noSubscription')}</p>
             <Button className="mt-4" onClick={() => (window.location.href = '/pricing')}>
-              View Plans
+              {t('common.viewPlans')}
             </Button>
           </div>
         </Card>
@@ -228,19 +254,16 @@ export default function SubscriptionPage() {
       <Modal
         open={!!cancelTarget}
         onClose={() => setCancelTarget(null)}
-        title="Cancel Subscription"
+        title={t('customerSubscription.cancelTitle')}
         size="sm"
       >
-        <p className="text-sm text-gray-600">
-          Are you sure you want to cancel your subscription? You&apos;ll lose access at the end of
-          the current billing period.
-        </p>
+        <p className="text-sm text-gray-600">{t('customerSubscription.cancelBody')}</p>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setCancelTarget(null)}>
-            Keep
+            {t('common.keep')}
           </Button>
           <Button variant="accent" loading={cancelling} onClick={handleCancel}>
-            Yes, Cancel
+            {t('common.yesCancel')}
           </Button>
         </div>
       </Modal>
@@ -248,7 +271,7 @@ export default function SubscriptionPage() {
       <Modal
         open={showChangePlan}
         onClose={() => setShowChangePlan(false)}
-        title="Change Plan"
+        title={t('customerSubscription.changePlanTitle')}
         size="md"
       >
         <div className="space-y-3">
@@ -266,12 +289,14 @@ export default function SubscriptionPage() {
                   </p>
                 </div>
                 <Button size="sm" loading={changingPlan} onClick={() => handleChangePlan(plan.id)}>
-                  Select
+                  {t('customerSubscription.select')}
                 </Button>
               </div>
             ))}
           {plans.filter((p) => p.isActive && p.id !== activeSub?.planId).length === 0 && (
-            <p className="py-4 text-center text-sm text-gray-400">No other plans available.</p>
+            <p className="py-4 text-center text-sm text-gray-400">
+              {t('customerSubscription.noOtherPlans')}
+            </p>
           )}
         </div>
       </Modal>

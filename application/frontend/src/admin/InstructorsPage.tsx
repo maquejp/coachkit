@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -21,6 +22,7 @@ const emptyForm = {
 };
 
 export default function InstructorsPage() {
+  const { t } = useTranslation();
   const [coaches, setCoaches] = useState<Coach[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -109,19 +111,24 @@ export default function InstructorsPage() {
 
   return (
     <>
-      <SEO title="Instructor Management" description="Manage instructors." />
+      <SEO
+        title={t('seo.adminInstructorsTitle')}
+        description={t('seo.adminInstructorsDescription')}
+      />
 
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Instructors</h1>
-          <p className="mt-1 text-gray-500">Manage instructors and their schedules.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('adminInstructors.heading')}</h1>
+          <p className="mt-1 text-gray-500">{t('adminInstructors.subtitle')}</p>
         </div>
-        <Button onClick={openCreate}>Add Instructor</Button>
+        <Button onClick={openCreate}>{t('adminInstructors.addInstructor')}</Button>
       </div>
 
       {coaches.length === 0 ? (
         <Card>
-          <div className="py-12 text-center text-sm text-gray-400">No instructors found.</div>
+          <div className="py-12 text-center text-sm text-gray-400">
+            {t('adminInstructors.noInstructors')}
+          </div>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -137,7 +144,7 @@ export default function InstructorsPage() {
                   </div>
                   <div>
                     <Link
-                      to={`/admin/instructors/${coach.id}`}
+                      to={'/admin/instructors/' + coach.id}
                       className="font-medium text-gray-900 hover:text-primary-600"
                     >
                       {coach.name}
@@ -146,17 +153,17 @@ export default function InstructorsPage() {
                   </div>
                 </div>
                 <Badge color={coach.isActive ? 'green' : 'gray'}>
-                  {coach.isActive ? 'Active' : 'Inactive'}
+                  {coach.isActive ? t('common.active') : t('common.inactive')}
                 </Badge>
               </div>
               <p className="mt-2 line-clamp-2 text-sm text-gray-600">{coach.bio}</p>
               {coach.phone && <p className="mt-1 text-xs text-gray-400">{coach.phone}</p>}
               <div className="mt-3 flex gap-2 border-t border-gray-100 pt-3">
                 <Button size="sm" variant="outline" onClick={() => openEdit(coach)}>
-                  Edit
+                  {t('common.edit')}
                 </Button>
                 <Button size="sm" variant="ghost" onClick={() => setDeleting(coach)}>
-                  Delete
+                  {t('common.delete')}
                 </Button>
               </div>
             </Card>
@@ -170,18 +177,18 @@ export default function InstructorsPage() {
           setCreating(false);
           setEditing(null);
         }}
-        title={creating ? 'Add Instructor' : 'Edit Instructor'}
+        title={creating ? t('adminInstructors.addTitle') : t('adminInstructors.editTitle')}
         size="md"
       >
         <form onSubmit={handleSave} className="space-y-4">
-          <FormField label="Name" required>
+          <FormField label={t('adminInstructors.name')} required>
             <Input
               value={form.name}
               onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
               required
             />
           </FormField>
-          <FormField label="Bio" required>
+          <FormField label={t('adminInstructors.bio')} required>
             <textarea
               className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-gray-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
               rows={3}
@@ -191,7 +198,7 @@ export default function InstructorsPage() {
             />
           </FormField>
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="Email" required>
+            <FormField label={t('adminInstructors.email')} required>
               <Input
                 type="email"
                 value={form.email}
@@ -199,21 +206,21 @@ export default function InstructorsPage() {
                 required
               />
             </FormField>
-            <FormField label="Phone">
+            <FormField label={t('adminInstructors.phone')}>
               <Input
                 value={form.phone}
                 onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
               />
             </FormField>
           </div>
-          <FormField label="Photo URL">
+          <FormField label={t('adminInstructors.photoUrl')}>
             <Input
               value={form.photoUrl}
               onChange={(e) => setForm((p) => ({ ...p, photoUrl: e.target.value }))}
-              placeholder="https://example.com/photo.jpg"
+              placeholder={t('adminInstructors.photoPlaceholder')}
             />
           </FormField>
-          <FormField label="Status">
+          <FormField label={t('adminInstructors.status')}>
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -221,7 +228,7 @@ export default function InstructorsPage() {
                 onChange={(e) => setForm((p) => ({ ...p, isActive: e.target.checked }))}
                 className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               />
-              Active
+              {t('adminInstructors.active')}
             </label>
           </FormField>
           <div className="flex justify-end gap-2">
@@ -232,10 +239,10 @@ export default function InstructorsPage() {
                 setEditing(null);
               }}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={saving}>
-              {editing ? 'Save' : 'Create'}
+              {editing ? t('common.save') : t('common.create')}
             </Button>
           </div>
         </form>
@@ -244,19 +251,18 @@ export default function InstructorsPage() {
       <Modal
         open={!!deleting}
         onClose={() => setDeleting(null)}
-        title="Delete Instructor"
+        title={t('adminInstructors.deleteTitle')}
         size="sm"
       >
         <p className="text-sm text-gray-600">
-          Are you sure you want to delete <strong>{deleting?.name}</strong>? This action cannot be
-          undone.
+          {t('adminInstructors.deleteBody', { name: deleting?.name })}
         </p>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setDeleting(null)}>
-            Keep
+            {t('common.keep')}
           </Button>
           <Button variant="accent" loading={saving} onClick={handleDelete}>
-            Yes, Delete
+            {t('common.yesDelete')}
           </Button>
         </div>
       </Modal>

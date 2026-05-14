@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -9,6 +10,7 @@ import type { CustomerUser } from '@/types';
 
 export default function ProfilePage() {
   const user = useAuthStore((s) => s.user);
+  const { t, i18n } = useTranslation();
   const setAuth = useAuthStore((s) => s.setAuth);
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
@@ -16,6 +18,7 @@ export default function ProfilePage() {
   const [lastName, setLastName] = useState((user as CustomerUser)?.lastName ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
   const [phone, setPhone] = useState((user as CustomerUser)?.phone ?? '');
+  const [language, setLanguage] = useState(user?.language ?? 'en');
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -32,9 +35,10 @@ export default function ProfilePage() {
     setSaving(true);
     setSaveSuccess(false);
     try {
-      const updated = await updateProfileApi({ firstName, lastName, email, phone });
+      const updated = await updateProfileApi({ firstName, lastName, email, phone, language });
       if (updated && user) {
         setAuth({ ...user, ...updated }, localStorage.getItem('auth_token') ?? '');
+        void i18n.changeLanguage(language);
       }
       setSaveSuccess(true);
     } finally {
@@ -45,11 +49,11 @@ export default function ProfilePage() {
   async function handleChangePassword() {
     setPasswordError('');
     if (newPassword !== confirmPassword) {
-      setPasswordError('Passwords do not match.');
+      setPasswordError(t('customerProfile.errors.passwordMismatch'));
       return;
     }
     if (newPassword.length < 6) {
-      setPasswordError('Password must be at least 6 characters.');
+      setPasswordError(t('customerProfile.errors.passwordLength'));
       return;
     }
     setChangingPassword(true);
@@ -59,7 +63,7 @@ export default function ProfilePage() {
       setNewPassword('');
       setConfirmPassword('');
     } catch {
-      setPasswordError('Failed to change password.');
+      setPasswordError(t('customerProfile.errors.changeFailed'));
     } finally {
       setChangingPassword(false);
     }
@@ -78,20 +82,27 @@ export default function ProfilePage() {
 
   return (
     <>
-      <SEO title="Profile" description="Manage your profile." />
+      <SEO
+        title={t('seo.customerProfileTitle')}
+        description={t('seo.customerProfileDescription')}
+      />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
-        <p className="mt-1 text-gray-500">Manage your account details and security.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('customerProfile.heading')}</h1>
+        <p className="mt-1 text-gray-500">{t('customerProfile.subtitle')}</p>
       </div>
 
       <div className="space-y-6 max-w-2xl">
-        <Card header={<span className="font-semibold text-gray-900">Personal Information</span>}>
+        <Card
+          header={
+            <span className="font-semibold text-gray-900">{t('customerProfile.personalInfo')}</span>
+          }
+        >
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">
-                  First Name
+                  {t('customerProfile.firstName')}
                 </label>
                 <input
                   id="first-name"
@@ -103,7 +114,7 @@ export default function ProfilePage() {
               </div>
               <div>
                 <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">
-                  Last Name
+                  {t('customerProfile.lastName')}
                 </label>
                 <input
                   id="last-name"
@@ -116,7 +127,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <label htmlFor="profile-email" className="block text-sm font-medium text-gray-700">
-                Email
+                {t('customerProfile.email')}
               </label>
               <input
                 id="profile-email"
@@ -128,7 +139,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <label htmlFor="profile-phone" className="block text-sm font-medium text-gray-700">
-                Phone
+                {t('customerProfile.phone')}
               </label>
               <input
                 id="profile-phone"
@@ -138,20 +149,42 @@ export default function ProfilePage() {
                 className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
               />
             </div>
+            <div>
+              <label htmlFor="profile-language" className="block text-sm font-medium text-gray-700">
+                {t('customerProfile.language')}
+              </label>
+              <select
+                id="profile-language"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+              >
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+              </select>
+            </div>
             <div className="flex items-center gap-3">
               <Button loading={saving} onClick={handleSaveProfile}>
-                Save Changes
+                {t('common.saveChanges')}
               </Button>
-              {saveSuccess && <span className="text-sm text-green-600">Profile updated.</span>}
+              {saveSuccess && (
+                <span className="text-sm text-green-600">{t('common.profileUpdated')}</span>
+              )}
             </div>
           </div>
         </Card>
 
-        <Card header={<span className="font-semibold text-gray-900">Change Password</span>}>
+        <Card
+          header={
+            <span className="font-semibold text-gray-900">
+              {t('customerProfile.changePassword')}
+            </span>
+          }
+        >
           <div className="space-y-4">
             <div>
               <label htmlFor="current-password" className="block text-sm font-medium text-gray-700">
-                Current Password
+                {t('common.currentPassword')}
               </label>
               <input
                 id="current-password"
@@ -163,7 +196,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <label htmlFor="new-password" className="block text-sm font-medium text-gray-700">
-                New Password
+                {t('common.newPassword')}
               </label>
               <input
                 id="new-password"
@@ -175,7 +208,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
-                Confirm New Password
+                {t('common.confirmNewPassword')}
               </label>
               <input
                 id="confirm-password"
@@ -187,7 +220,7 @@ export default function ProfilePage() {
             </div>
             {passwordError && <p className="text-sm text-red-600">{passwordError}</p>}
             <Button loading={changingPassword} onClick={handleChangePassword}>
-              Update Password
+              {t('common.updatePassword')}
             </Button>
           </div>
         </Card>
@@ -195,13 +228,13 @@ export default function ProfilePage() {
         <Card
           variant="bordered"
           className="border-red-200"
-          header={<span className="font-semibold text-red-700">Danger Zone</span>}
+          header={
+            <span className="font-semibold text-red-700">{t('customerProfile.dangerZone')}</span>
+          }
         >
-          <p className="mb-4 text-sm text-gray-600">
-            Once you delete your account, there is no going back. Please be certain.
-          </p>
+          <p className="mb-4 text-sm text-gray-600">{t('customerProfile.dangerWarning')}</p>
           <Button variant="accent" onClick={() => setShowDelete(true)}>
-            Delete Account
+            {t('customerProfile.deleteAccount')}
           </Button>
         </Card>
       </div>
@@ -209,18 +242,16 @@ export default function ProfilePage() {
       <Modal
         open={showDelete}
         onClose={() => setShowDelete(false)}
-        title="Delete Account"
+        title={t('customerProfile.deleteTitle')}
         size="sm"
       >
-        <p className="text-sm text-gray-600">
-          Are you sure you want to delete your account? All your data will be permanently removed.
-        </p>
+        <p className="text-sm text-gray-600">{t('customerProfile.deleteBody')}</p>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setShowDelete(false)}>
-            Keep Account
+            {t('customerProfile.keepAccount')}
           </Button>
           <Button variant="accent" loading={deleting} onClick={handleDeleteAccount}>
-            Yes, Delete
+            {t('common.yesDelete')}
           </Button>
         </div>
       </Modal>

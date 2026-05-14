@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
@@ -9,6 +10,7 @@ interface ContactFormProps {
 }
 
 export default function ContactForm({ onSubmit }: ContactFormProps) {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -21,19 +23,19 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <FormField label="Name" required>
+      <FormField label={t('contactForm.name')} required>
         <Input value={name} onChange={(e) => setName(e.target.value)} required />
       </FormField>
-      <FormField label="Email" required>
+      <FormField label={t('contactForm.email')} required>
         <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
       </FormField>
-      <FormField label="Phone">
+      <FormField label={t('contactForm.phone')}>
         <Input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
       </FormField>
-      <FormField label="Message" required>
+      <FormField label={t('contactForm.message')} required>
         <Textarea rows={4} value={message} onChange={(e) => setMessage(e.target.value)} required />
       </FormField>
-      <Button type="submit">Send Message</Button>
+      <Button type="submit">{t('contactForm.sendMessage')}</Button>
     </form>
   );
 }

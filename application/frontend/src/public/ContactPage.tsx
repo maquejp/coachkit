@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import ContactForm from '@/components/ContactForm';
 import { locations } from '@/mocks/fixtures';
@@ -7,6 +8,7 @@ import { trackEvent } from '@/lib/analytics';
 const activeLocations = locations.filter((l) => l.isActive);
 
 export default function ContactPage() {
+  const { t } = useTranslation();
   const [submitted, setSubmitted] = useState(false);
 
   function handleSubmit(data: { name: string; email: string; phone: string; message: string }) {
@@ -17,7 +19,10 @@ export default function ContactPage() {
   if (submitted) {
     return (
       <>
-        <SEO title="Message Sent" description="Your message has been received." />
+        <SEO
+          title={t('seo.contactSuccessTitle')}
+          description={t('seo.contactSuccessDescription')}
+        />
         <div className="mx-auto max-w-2xl px-4 py-16 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
             <svg
@@ -34,10 +39,8 @@ export default function ContactPage() {
               />
             </svg>
           </div>
-          <h1 className="mb-2 text-4xl font-bold text-gray-900">Thank You!</h1>
-          <p className="text-gray-600">
-            We&apos;ve received your message and will get back to you within 24 hours.
-          </p>
+          <h1 className="mb-2 text-4xl font-bold text-gray-900">{t('contactPage.thankYou')}</h1>
+          <p className="text-gray-600">{t('contactPage.successMessage')}</p>
         </div>
       </>
     );
@@ -46,20 +49,20 @@ export default function ContactPage() {
   return (
     <>
       <SEO
-        title="Contact Us"
-        description="Have a question? Get in touch with the CoachKit team. We'd love to hear from you."
+        title={t('seo.contactTitle')}
+        description={t('seo.contactDescription')}
         canonical="https://coachkit.app/contact"
       />
       <div className="mx-auto max-w-7xl px-4 py-16">
-        <h1 className="mb-2 text-4xl font-bold text-gray-900">Contact Us</h1>
-        <p className="mb-10 text-gray-600">Have a question? We&apos;d love to hear from you.</p>
+        <h1 className="mb-2 text-4xl font-bold text-gray-900">{t('contactPage.heading')}</h1>
+        <p className="mb-10 text-gray-600">{t('contactPage.subtitle')}</p>
         <div className="grid gap-10 lg:grid-cols-2">
           <div>
-            <h2 className="mb-6 text-xl font-bold text-gray-900">Send us a message</h2>
+            <h2 className="mb-6 text-xl font-bold text-gray-900">{t('contactPage.sendMessage')}</h2>
             <ContactForm onSubmit={handleSubmit} />
           </div>
           <div>
-            <h2 className="mb-6 text-xl font-bold text-gray-900">Visit us</h2>
+            <h2 className="mb-6 text-xl font-bold text-gray-900">{t('contactPage.visitUs')}</h2>
             <div className="space-y-6">
               {activeLocations.map((l) => (
                 <div key={l.id} className="rounded-xl border border-gray-200 bg-white p-6">
@@ -96,7 +99,7 @@ export default function ContactPage() {
                           d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                         />
                       </svg>
-                      View on map
+                      {t('contactPage.viewOnMap')}
                     </a>
                   )}
                 </div>

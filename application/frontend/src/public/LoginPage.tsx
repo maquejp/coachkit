@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -9,6 +10,7 @@ import { useAuthStore } from '@/stores/auth';
 import { loginApi } from '@/api/auth';
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const token = useAuthStore((s) => s.token);
   const user = useAuthStore((s) => s.user);
@@ -41,10 +43,10 @@ export default function LoginPage() {
         setAuth(res.data.user, res.data.token);
         navigate('/dashboard');
       } else {
-        setError(res.error ?? 'Login failed');
+        setError(res.error ?? t('loginPage.errors.generic'));
       }
     } catch {
-      setError('Invalid email or password');
+      setError(t('loginPage.errors.invalidCredentials'));
     } finally {
       setLoading(false);
     }
@@ -52,28 +54,28 @@ export default function LoginPage() {
 
   return (
     <>
-      <SEO title="Log In" description="Log in to your CoachKit account." />
+      <SEO title={t('seo.loginTitle')} description={t('seo.loginTitle')} />
       <div className="mx-auto max-w-md px-4 py-20">
         <Card className="p-8">
-          <h1 className="mb-2 text-2xl font-bold text-gray-900">Welcome Back</h1>
-          <p className="mb-6 text-sm text-gray-500">Log in to your CoachKit account.</p>
+          <h1 className="mb-2 text-2xl font-bold text-gray-900">{t('loginPage.heading')}</h1>
+          <p className="mb-6 text-sm text-gray-500">{t('loginPage.subtitle')}</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <FormField label="Email" required>
+            <FormField label={t('loginPage.emailLabel')} required>
               <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder={t('loginPage.emailPlaceholder')}
                 required
               />
             </FormField>
-            <FormField label="Password" required>
+            <FormField label={t('loginPage.passwordLabel')} required>
               <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder={t('loginPage.passwordPlaceholder')}
                 required
               />
             </FormField>
@@ -85,20 +87,20 @@ export default function LoginPage() {
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Logging in…' : 'Log In'}
+              {loading ? t('loginPage.loggingIn') : t('loginPage.logInBtn')}
             </Button>
           </form>
 
           <div className="mt-6 text-center text-sm">
             <Link to="/password-reset" className="text-primary-600 hover:text-primary-700">
-              Forgot password?
+              {t('loginPage.forgotPassword')}
             </Link>
           </div>
 
           <div className="mt-4 border-t border-gray-100 pt-4 text-center text-sm text-gray-500">
-            Don&apos;t have an account?{' '}
+            {t('loginPage.noAccount')}{' '}
             <Link to="/register" className="font-medium text-primary-600 hover:text-primary-700">
-              Sign up
+              {t('loginPage.signUpLink')}
             </Link>
           </div>
         </Card>

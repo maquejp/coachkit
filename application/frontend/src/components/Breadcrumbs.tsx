@@ -1,22 +1,24 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const labelMap: Record<string, string> = {
-  admin: 'Admin',
-  classes: 'Classes',
-  schedule: 'Schedule',
-  customers: 'Customers',
-  analytics: 'Analytics',
-  settings: 'Settings',
-  dashboard: 'Dashboard',
-  bookings: 'Bookings',
-  subscription: 'Subscription',
-  profile: 'Profile',
-  pricing: 'Pricing',
-  about: 'About',
-  contact: 'Contact',
+  admin: 'breadcrumbs.admin',
+  classes: 'common.classes',
+  schedule: 'common.schedule',
+  customers: 'common.customers',
+  analytics: 'common.analytics',
+  settings: 'common.settings',
+  dashboard: 'common.dashboard',
+  bookings: 'common.bookings',
+  subscription: 'common.subscription',
+  profile: 'common.profile',
+  pricing: 'common.pricing',
+  about: 'common.about',
+  contact: 'common.contact',
 };
 
 export default function Breadcrumbs() {
+  const { t } = useTranslation();
   const location = useLocation();
   const segments = location.pathname.split('/').filter(Boolean);
 
@@ -25,11 +27,12 @@ export default function Breadcrumbs() {
   return (
     <nav className="flex items-center gap-1.5 text-sm text-gray-500">
       <Link to="/" className="hover:text-primary-600">
-        Home
+        {t('common.home')}
       </Link>
       {segments.map((seg, i) => {
         const path = '/' + segments.slice(0, i + 1).join('/');
-        const label = labelMap[seg] ?? seg.charAt(0).toUpperCase() + seg.slice(1);
+        const labelKey = labelMap[seg];
+        const label = labelKey ? t(labelKey) : seg.charAt(0).toUpperCase() + seg.slice(1);
         const isLast = i === segments.length - 1;
 
         return (

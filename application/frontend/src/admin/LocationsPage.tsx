@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -22,6 +23,7 @@ const emptyForm = {
 };
 
 export default function LocationsPage() {
+  const { t } = useTranslation();
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -109,19 +111,21 @@ export default function LocationsPage() {
 
   return (
     <>
-      <SEO title="Location Management" description="Manage studio locations." />
+      <SEO title={t('seo.adminLocationsTitle')} description={t('seo.adminLocationsDescription')} />
 
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Locations</h1>
-          <p className="mt-1 text-gray-500">Manage studio locations and details.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('adminLocations.heading')}</h1>
+          <p className="mt-1 text-gray-500">{t('adminLocations.subtitle')}</p>
         </div>
-        <Button onClick={openCreate}>Add Location</Button>
+        <Button onClick={openCreate}>{t('adminLocations.addLocation')}</Button>
       </div>
 
       {locations.length === 0 ? (
         <Card>
-          <div className="py-12 text-center text-sm text-gray-400">No locations found.</div>
+          <div className="py-12 text-center text-sm text-gray-400">
+            {t('adminLocations.noLocations')}
+          </div>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -138,7 +142,7 @@ export default function LocationsPage() {
                   <p className="truncate text-xs text-gray-500">{loc.address}</p>
                 </div>
                 <Badge color={loc.isActive ? 'green' : 'gray'}>
-                  {loc.isActive ? 'Active' : 'Inactive'}
+                  {loc.isActive ? t('common.active') : t('common.inactive')}
                 </Badge>
               </div>
               <div className="mt-3 space-y-1 text-xs text-gray-500">
@@ -148,10 +152,10 @@ export default function LocationsPage() {
               </div>
               <div className="mt-3 flex gap-2 border-t border-gray-100 pt-3">
                 <Button size="sm" variant="outline" onClick={() => openEdit(loc)}>
-                  Edit
+                  {t('common.edit')}
                 </Button>
                 <Button size="sm" variant="ghost" onClick={() => setDeleting(loc)}>
-                  Delete
+                  {t('common.delete')}
                 </Button>
               </div>
             </Card>
@@ -165,18 +169,18 @@ export default function LocationsPage() {
           setCreating(false);
           setEditing(null);
         }}
-        title={creating ? 'Add Location' : 'Edit Location'}
+        title={creating ? t('adminLocations.addTitle') : t('adminLocations.editTitle')}
         size="md"
       >
         <form onSubmit={handleSave} className="space-y-4">
-          <FormField label="Name" required>
+          <FormField label={t('adminLocations.name')} required>
             <Input
               value={form.name}
               onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
               required
             />
           </FormField>
-          <FormField label="Address" required>
+          <FormField label={t('adminLocations.address')} required>
             <Input
               value={form.address}
               onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
@@ -184,14 +188,14 @@ export default function LocationsPage() {
             />
           </FormField>
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="City" required>
+            <FormField label={t('adminLocations.city')} required>
               <Input
                 value={form.city}
                 onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))}
                 required
               />
             </FormField>
-            <FormField label="Phone" required>
+            <FormField label={t('adminLocations.phone')} required>
               <Input
                 value={form.phone}
                 onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
@@ -200,7 +204,7 @@ export default function LocationsPage() {
             </FormField>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="Email" required>
+            <FormField label={t('adminLocations.email')} required>
               <Input
                 type="email"
                 value={form.email}
@@ -208,15 +212,15 @@ export default function LocationsPage() {
                 required
               />
             </FormField>
-            <FormField label="Maps URL">
+            <FormField label={t('adminLocations.mapsUrl')}>
               <Input
                 value={form.mapLink}
                 onChange={(e) => setForm((p) => ({ ...p, mapLink: e.target.value }))}
-                placeholder="https://maps.example.com/..."
+                placeholder={t('adminLocations.mapsPlaceholder')}
               />
             </FormField>
           </div>
-          <FormField label="Status">
+          <FormField label={t('adminLocations.status')}>
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -224,7 +228,7 @@ export default function LocationsPage() {
                 onChange={(e) => setForm((p) => ({ ...p, isActive: e.target.checked }))}
                 className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               />
-              Active
+              {t('adminLocations.active')}
             </label>
           </FormField>
           <div className="flex justify-end gap-2">
@@ -235,26 +239,30 @@ export default function LocationsPage() {
                 setEditing(null);
               }}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={saving}>
-              {editing ? 'Save' : 'Create'}
+              {editing ? t('common.save') : t('common.create')}
             </Button>
           </div>
         </form>
       </Modal>
 
-      <Modal open={!!deleting} onClose={() => setDeleting(null)} title="Delete Location" size="sm">
+      <Modal
+        open={!!deleting}
+        onClose={() => setDeleting(null)}
+        title={t('adminLocations.deleteTitle')}
+        size="sm"
+      >
         <p className="text-sm text-gray-600">
-          Are you sure you want to delete <strong>{deleting?.name}</strong>? This action cannot be
-          undone.
+          {t('adminLocations.deleteBody', { name: deleting?.name })}
         </p>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setDeleting(null)}>
-            Keep
+            {t('common.keep')}
           </Button>
           <Button variant="accent" loading={saving} onClick={handleDelete}>
-            Yes, Delete
+            {t('common.yesDelete')}
           </Button>
         </div>
       </Modal>

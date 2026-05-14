@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -11,6 +12,7 @@ import type { InstructorProfile as Profile } from '@/api/instructor';
 import type { InstructorUser } from '@/types';
 
 export default function InstructorProfilePage() {
+  const { t, i18n } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
   const coachId = (user as InstructorUser | null)?.coachId ?? null;
@@ -22,6 +24,7 @@ export default function InstructorProfilePage() {
   const [bio, setBio] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [language, setLanguage] = useState(user?.language ?? 'en');
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -71,6 +74,11 @@ export default function InstructorProfilePage() {
         phone: phone || null,
       });
       setProfile(updated);
+      if (user) {
+        const { updateProfileApi } = await import('@/api/customer');
+        await updateProfileApi({ language });
+        void i18n.changeLanguage(language);
+      }
       setSaveSuccess(true);
     } finally {
       setSaving(false);
@@ -80,11 +88,11 @@ export default function InstructorProfilePage() {
   async function handleChangePassword() {
     setPasswordError('');
     if (newPassword !== confirmPassword) {
-      setPasswordError('Passwords do not match.');
+      setPasswordError(t('instructorProfile.errors.passwordMismatch'));
       return;
     }
     if (newPassword.length < 6) {
-      setPasswordError('Password must be at least 6 characters.');
+      setPasswordError(t('instructorProfile.errors.passwordLength'));
       return;
     }
     setChangingPassword(true);
@@ -94,7 +102,7 @@ export default function InstructorProfilePage() {
       setNewPassword('');
       setConfirmPassword('');
     } catch {
-      setPasswordError('Failed to change password.');
+      setPasswordError(t('instructorProfile.errors.changeFailed'));
     } finally {
       setChangingPassword(false);
     }
@@ -116,26 +124,35 @@ export default function InstructorProfilePage() {
   if (!profile) {
     return (
       <div className="py-12 text-center">
-        <p className="text-gray-500">Profile not found.</p>
+        <p className="text-gray-500">{t('instructorProfile.notFound')}</p>
       </div>
     );
   }
 
   return (
     <>
-      <SEO title="My Profile" description="Manage your instructor profile." />
+      <SEO
+        title={t('seo.instructorProfileTitle')}
+        description={t('seo.instructorProfileDescription')}
+      />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
-        <p className="mt-1 text-gray-500">Manage your profile details and security.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('instructorProfile.heading')}</h1>
+        <p className="mt-1 text-gray-500">{t('instructorProfile.subtitle')}</p>
       </div>
 
       <div className="space-y-6 max-w-2xl">
-        <Card header={<span className="font-semibold text-gray-900">Personal Information</span>}>
+        <Card
+          header={
+            <span className="font-semibold text-gray-900">
+              {t('instructorProfile.personalInfo')}
+            </span>
+          }
+        >
           <div className="space-y-4">
             <div>
               <label htmlFor="instructor-name" className="block text-sm font-medium text-gray-700">
-                Full Name
+                {t('instructorProfile.fullName')}
               </label>
               <input
                 id="instructor-name"
@@ -147,7 +164,7 @@ export default function InstructorProfilePage() {
             </div>
             <div>
               <label htmlFor="instructor-email" className="block text-sm font-medium text-gray-700">
-                Email
+                {t('instructorProfile.email')}
               </label>
               <input
                 id="instructor-email"
@@ -159,7 +176,7 @@ export default function InstructorProfilePage() {
             </div>
             <div>
               <label htmlFor="instructor-phone" className="block text-sm font-medium text-gray-700">
-                Phone
+                {t('instructorProfile.phone')}
               </label>
               <input
                 id="instructor-phone"
@@ -171,7 +188,7 @@ export default function InstructorProfilePage() {
             </div>
             <div>
               <label htmlFor="instructor-bio" className="block text-sm font-medium text-gray-700">
-                Biography
+                {t('instructorProfile.biography')}
               </label>
               <textarea
                 id="instructor-bio"
@@ -181,23 +198,48 @@ export default function InstructorProfilePage() {
                 className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
               />
             </div>
+            <div>
+              <label
+                htmlFor="instructor-language"
+                className="block text-sm font-medium text-gray-700"
+              >
+                {t('customerProfile.language')}
+              </label>
+              <select
+                id="instructor-language"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+              >
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+              </select>
+            </div>
             <div className="flex items-center gap-3">
               <Button loading={saving} onClick={handleSaveProfile}>
-                Save Changes
+                {t('common.saveChanges')}
               </Button>
-              {saveSuccess && <span className="text-sm text-green-600">Profile updated.</span>}
+              {saveSuccess && (
+                <span className="text-sm text-green-600">{t('common.profileUpdated')}</span>
+              )}
             </div>
           </div>
         </Card>
 
-        <Card header={<span className="font-semibold text-gray-900">Change Password</span>}>
+        <Card
+          header={
+            <span className="font-semibold text-gray-900">
+              {t('instructorProfile.changePassword')}
+            </span>
+          }
+        >
           <div className="space-y-4">
             <div>
               <label
                 htmlFor="instructor-current-password"
                 className="block text-sm font-medium text-gray-700"
               >
-                Current Password
+                {t('common.currentPassword')}
               </label>
               <input
                 id="instructor-current-password"
@@ -212,7 +254,7 @@ export default function InstructorProfilePage() {
                 htmlFor="instructor-new-password"
                 className="block text-sm font-medium text-gray-700"
               >
-                New Password
+                {t('common.newPassword')}
               </label>
               <input
                 id="instructor-new-password"
@@ -227,7 +269,7 @@ export default function InstructorProfilePage() {
                 htmlFor="instructor-confirm-password"
                 className="block text-sm font-medium text-gray-700"
               >
-                Confirm New Password
+                {t('common.confirmNewPassword')}
               </label>
               <input
                 id="instructor-confirm-password"
@@ -239,7 +281,7 @@ export default function InstructorProfilePage() {
             </div>
             {passwordError && <p className="text-sm text-red-600">{passwordError}</p>}
             <Button loading={changingPassword} onClick={handleChangePassword}>
-              Update Password
+              {t('common.updatePassword')}
             </Button>
           </div>
         </Card>
@@ -247,13 +289,13 @@ export default function InstructorProfilePage() {
         <Card
           variant="bordered"
           className="border-red-200"
-          header={<span className="font-semibold text-red-700">Danger Zone</span>}
+          header={
+            <span className="font-semibold text-red-700">{t('instructorProfile.dangerZone')}</span>
+          }
         >
-          <p className="mb-4 text-sm text-gray-600">
-            Once you delete your account, there is no going back. Please be certain.
-          </p>
+          <p className="mb-4 text-sm text-gray-600">{t('instructorProfile.dangerWarning')}</p>
           <Button variant="accent" onClick={() => setShowDelete(true)}>
-            Delete Account
+            {t('instructorProfile.deleteAccount')}
           </Button>
         </Card>
       </div>
@@ -261,18 +303,16 @@ export default function InstructorProfilePage() {
       <Modal
         open={showDelete}
         onClose={() => setShowDelete(false)}
-        title="Delete Account"
+        title={t('instructorProfile.deleteTitle')}
         size="sm"
       >
-        <p className="text-sm text-gray-600">
-          Are you sure you want to delete your account? All your data will be permanently removed.
-        </p>
+        <p className="text-sm text-gray-600">{t('instructorProfile.deleteBody')}</p>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setShowDelete(false)}>
-            Keep Account
+            {t('instructorProfile.keepAccount')}
           </Button>
           <Button variant="accent" loading={deleting} onClick={handleDeleteAccount}>
-            Yes, Delete
+            {t('common.yesDelete')}
           </Button>
         </div>
       </Modal>

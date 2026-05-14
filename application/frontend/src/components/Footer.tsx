@@ -1,44 +1,51 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Logo from './Logo';
 
-const footerLinks = {
-  Company: [
-    { to: '/about', label: 'About' },
-    { to: '/classes', label: 'Classes' },
-    { to: '/pricing', label: 'Pricing' },
-    { to: '/contact', label: 'Contact' },
-  ],
-  Support: [
-    { to: '/faq', label: 'FAQ' },
-    { to: '/contact', label: 'Help Center' },
-    { to: '/privacy', label: 'Privacy Policy' },
-    { to: '/terms', label: 'Terms of Use' },
-  ],
-};
+const footerSections = [
+  {
+    key: 'footer.company',
+    links: [
+      { to: '/about', labelKey: 'common.about' },
+      { to: '/classes', labelKey: 'common.classes' },
+      { to: '/pricing', labelKey: 'common.pricing' },
+      { to: '/contact', labelKey: 'common.contact' },
+    ],
+  },
+  {
+    key: 'footer.support',
+    links: [
+      { to: '/faq', labelKey: 'common.faq' },
+      { to: '/contact', labelKey: 'common.helpCenter' },
+      { to: '/privacy', labelKey: 'common.privacyPolicy' },
+      { to: '/terms', labelKey: 'common.termsOfUse' },
+    ],
+  },
+];
 
 export default function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="border-t border-gray-200 bg-gray-50">
       <div className="mx-auto max-w-7xl px-4 py-12">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <Logo />
-            <p className="mt-2 text-sm text-gray-500">
-              Empowering fitness studios and wellness businesses with seamless scheduling.
-            </p>
+            <p className="mt-2 text-sm text-gray-500">{t('common.poweredBy')}</p>
           </div>
 
-          {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title}>
-              <h4 className="mb-3 text-sm font-semibold text-gray-900">{title}</h4>
+          {footerSections.map((section) => (
+            <div key={section.key}>
+              <h4 className="mb-3 text-sm font-semibold text-gray-900">{t(section.key)}</h4>
               <ul className="space-y-2">
-                {links.map((link) => (
-                  <li key={link.label}>
+                {section.links.map((link) => (
+                  <li key={link.labelKey}>
                     <Link
                       to={link.to}
                       className="text-sm text-gray-500 transition-colors hover:text-primary-600"
                     >
-                      {link.label}
+                      {t(link.labelKey)}
                     </Link>
                   </li>
                 ))}
@@ -47,7 +54,7 @@ export default function Footer() {
           ))}
 
           <div>
-            <h4 className="mb-3 text-sm font-semibold text-gray-900">Follow Us</h4>
+            <h4 className="mb-3 text-sm font-semibold text-gray-900">{t('common.followUs')}</h4>
             <div className="flex gap-3">
               <a
                 href="#"
@@ -78,7 +85,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 border-t border-gray-200 pt-6 text-center text-sm text-gray-400">
-          &copy; {new Date().getFullYear()} CoachKit. All rights reserved.
+          {t('common.copyright', { year: new Date().getFullYear() })}
         </div>
       </div>
     </footer>

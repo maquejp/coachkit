@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -15,42 +16,45 @@ import type { CheckInBooking, AttendanceReportRecord, SessionUsageEntry } from '
 
 type Tab = 'checkin' | 'history' | 'usage';
 
-const TABS: { key: Tab; label: string }[] = [
-  { key: 'checkin', label: 'Check-In' },
-  { key: 'history', label: 'History' },
-  { key: 'usage', label: 'Usage Report' },
-];
-
 function todayString() {
   return new Date().toISOString().slice(0, 10);
 }
 
 export default function AttendancePage() {
+  const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>('checkin');
+
+  const TABS: { key: Tab; label: string }[] = [
+    { key: 'checkin', label: t('adminAttendance.tabs.checkIn') },
+    { key: 'history', label: t('adminAttendance.tabs.history') },
+    { key: 'usage', label: t('adminAttendance.tabs.usageReport') },
+  ];
 
   return (
     <>
-      <SEO title="Attendance" description="Manage attendance and check-ins." />
+      <SEO
+        title={t('seo.adminAttendanceTitle')}
+        description={t('seo.adminAttendanceDescription')}
+      />
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Attendance</h1>
-        <p className="mt-1 text-gray-500">
-          Check in customers, view history, and track session usage.
-        </p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('adminAttendance.heading')}</h1>
+        <p className="mt-1 text-gray-500">{t('adminAttendance.subtitle')}</p>
       </div>
 
       <div className="mb-6 flex gap-1 border-b border-gray-200">
-        {TABS.map((t) => (
+        {TABS.map((tItem) => (
           <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`px-4 py-2 text-sm font-medium transition-colors ${
-              tab === t.key
+            key={tItem.key}
+            onClick={() => setTab(tItem.key)}
+            className={
+              'px-4 py-2 text-sm font-medium transition-colors ' +
+              (tab === tItem.key
                 ? 'border-b-2 border-primary-600 text-primary-700'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
+                : 'text-gray-500 hover:text-gray-700')
+            }
           >
-            {t.label}
+            {tItem.label}
           </button>
         ))}
       </div>
@@ -63,6 +67,7 @@ export default function AttendancePage() {
 }
 
 function CheckInTab() {
+  const { t } = useTranslation();
   const [date, setDate] = useState(todayString);
   const [bookings, setBookings] = useState<CheckInBooking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -131,7 +136,7 @@ function CheckInTab() {
       ) : Object.keys(grouped).length === 0 ? (
         <Card>
           <div className="py-12 text-center text-sm text-gray-400">
-            No bookings found for this date.
+            {t('adminAttendance.noBookings')}
           </div>
         </Card>
       ) : (
@@ -155,18 +160,22 @@ function CheckInTab() {
                     <div>
                       <p className="font-medium text-gray-900">{b.customerName}</p>
                       {b.guestEmail && (
-                        <p className="text-xs text-gray-500">Guest: {b.guestEmail}</p>
+                        <p className="text-xs text-gray-500">
+                          {t('adminAttendance.guest', { email: b.guestEmail })}
+                        </p>
                       )}
                     </div>
                     {b.checkInTime ? (
-                      <Badge color="green">Checked in at {b.checkInTime}</Badge>
+                      <Badge color="green">
+                        {t('adminAttendance.checkedIn', { time: b.checkInTime })}
+                      </Badge>
                     ) : (
                       <Button
                         size="sm"
                         onClick={() => handleCheckIn(b.id)}
                         loading={checkingIn === b.id}
                       >
-                        Check In
+                        {t('adminAttendance.checkIn')}
                       </Button>
                     )}
                   </div>
@@ -181,6 +190,7 @@ function CheckInTab() {
 }
 
 function HistoryTab() {
+  const { t } = useTranslation();
   const today = todayString();
   const [from, setFrom] = useState(today);
   const [to, setTo] = useState(today);
@@ -217,7 +227,7 @@ function HistoryTab() {
           onChange={(e) => setFrom(e.target.value)}
           className="max-w-40"
         />
-        <span className="self-center text-sm text-gray-500">to</span>
+        <span className="self-center text-sm text-gray-500">{t('adminAttendance.to')}</span>
         <Input
           type="date"
           value={to}
@@ -231,12 +241,14 @@ function HistoryTab() {
       ) : !result || result.records.length === 0 ? (
         <Card>
           <div className="py-12 text-center text-sm text-gray-400">
-            No attendance records found.
+            {t('adminAttendance.noRecords')}
           </div>
         </Card>
       ) : (
         <>
-          <p className="mb-3 text-sm text-gray-500">{result.total} record(s) found.</p>
+          <p className="mb-3 text-sm text-gray-500">
+            {t('adminAttendance.recordsFound', { count: result.total })}
+          </p>
           <div className="space-y-2">
             {result.records.map((r) => (
               <div
@@ -264,6 +276,7 @@ function HistoryTab() {
 }
 
 function UsageTab() {
+  const { t } = useTranslation();
   const [usage, setUsage] = useState<SessionUsageEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -294,7 +307,7 @@ function UsageTab() {
     return (
       <Card>
         <div className="py-12 text-center text-sm text-gray-400">
-          No session usage data available.
+          {t('adminAttendance.noUsageData')}
         </div>
       </Card>
     );
@@ -312,7 +325,7 @@ function UsageTab() {
                   <p className="text-sm font-medium text-gray-900">{u.subscription.planName}</p>
                   <p className="text-xs text-gray-500">
                     {u.subscription.sessionsUsed}
-                    {u.subscription.sessionsLimit ? ` / ${u.subscription.sessionsLimit}` : ''}{' '}
+                    {u.subscription.sessionsLimit ? ' / ' + u.subscription.sessionsLimit : ''}{' '}
                     sessions
                   </p>
                 </div>
@@ -337,7 +350,7 @@ function UsageTab() {
                 <div>
                   <p className="text-sm font-medium text-gray-900">{pc.planName}</p>
                   <p className="text-xs text-gray-500">
-                    {pc.sessionsRemaining} / {pc.totalSessions} remaining &middot; Expires{' '}
+                    {pc.sessionsRemaining} / {pc.totalSessions} remaining {'\u00B7'} Expires{' '}
                     {new Date(pc.expiresAt).toLocaleDateString()}
                   </p>
                 </div>

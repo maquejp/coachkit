@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 
@@ -24,6 +25,8 @@ export default function ClassCard({
   description,
   onBook,
 }: ClassCardProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white transition-shadow hover:shadow-card-hover">
       {imageSrc ? (
@@ -52,7 +55,7 @@ export default function ClassCard({
         {description && <p className="mb-4 text-sm text-gray-600">{description}</p>}
         {onBook && (
           <Button size="sm" className="w-full" onClick={onBook}>
-            Book Now
+            {t('classCard.bookNow')}
           </Button>
         )}
       </div>
