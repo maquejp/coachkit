@@ -3,6 +3,7 @@ import Layout from '@/components/Layout';
 import AuthLayout from '@/components/AuthLayout';
 import AuthGuard from '@/components/AuthGuard';
 import RoleGuard from '@/components/RoleGuard';
+import ErrorPage from '@/components/ErrorPage';
 import HomePage from '@/public/HomePage';
 import ClassesPage from '@/public/ClassesPage';
 import PricingPage from '@/public/PricingPage';
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
       { path: 'classes', element: <ClassesPage /> },
@@ -54,6 +56,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/',
+    errorElement: <ErrorPage />,
     element: (
       <AuthGuard>
         <AuthLayout />
@@ -68,6 +71,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/',
+    errorElement: <ErrorPage />,
     element: (
       <RoleGuard role="admin">
         <AuthLayout />
@@ -93,6 +97,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/',
+    errorElement: <ErrorPage />,
     element: (
       <RoleGuard role="instructor">
         <AuthLayout />

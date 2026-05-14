@@ -217,7 +217,7 @@ export default function PricingPage() {
                     {t('adminPricing.trialDays', { count: p.trialDays })}
                   </p>
                 )}
-                {p.features.length > 0 && (
+                {p.features && p.features.length > 0 && (
                   <ul className="mt-2 space-y-0.5">
                     {p.features.map((f, i) => (
                       <li key={i} className="flex items-center gap-1 text-xs text-gray-600">

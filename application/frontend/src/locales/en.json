@@ -887,6 +887,13 @@
     },
     "schedulePreview": {
       "noClasses": "No classes"
+    },
+    "errorPage": {
+      "defaultTitle": "Something went wrong",
+      "defaultMessage": "An unexpected error occurred. Please try again.",
+      "notFoundTitle": "Page not found",
+      "notFoundMessage": "The page you are looking for does not exist.",
+      "backHome": "Back to home"
     }
   }
 }

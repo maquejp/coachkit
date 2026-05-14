@@ -846,6 +846,13 @@
       "facebookUrl": "https://facebook.com/coachkit",
       "instagramUrl": "https://instagram.com/coachkit",
       "twitterUrl": "https://twitter.com/coachkit"
+    },
+    "errorPage": {
+      "defaultTitle": "Une erreur est survenue",
+      "defaultMessage": "Une erreur inattendue s'est produite. Veuillez réessayer.",
+      "notFoundTitle": "Page introuvable",
+      "notFoundMessage": "La page que vous recherchez n'existe pas.",
+      "backHome": "Retour à l'accueil"
     }
   }
 }
