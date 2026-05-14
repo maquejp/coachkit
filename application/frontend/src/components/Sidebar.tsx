@@ -30,6 +30,8 @@ const adminItems: (SidebarItem & { defaultOpen?: boolean })[] = [
       { label: 'Locations', to: '/admin/locations' },
       { label: 'Customers', to: '/admin/customers' },
       { label: 'Attendance', to: '/admin/attendance' },
+      { label: 'Waitlist', to: '/admin/waitlist' },
+      { label: 'Reports', to: '/admin/reports' },
     ],
   },
   { label: 'Analytics', to: '/admin/analytics', icon: '\u2261' },

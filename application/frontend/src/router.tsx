@@ -27,6 +27,9 @@ import AdminCustomerDetailPage from '@/admin/CustomerDetailPage';
 import AdminAttendancePage from '@/admin/AttendancePage';
 import AdminInstructorsPage from '@/admin/InstructorsPage';
 import AdminInstructorDetailPage from '@/admin/InstructorDetailPage';
+import AdminWaitlistPage from '@/admin/WaitlistPage';
+import AdminReportsPage from '@/admin/ReportsPage';
+import AdminAnalyticsPage from '@/admin/AnalyticsPage';
 import Placeholder from '@/components/ui/Placeholder';
 
 export const router = createBrowserRouter([
@@ -78,7 +81,9 @@ export const router = createBrowserRouter([
       { path: 'admin/attendance', element: <AdminAttendancePage /> },
       { path: 'admin/instructors', element: <AdminInstructorsPage /> },
       { path: 'admin/instructors/:id', element: <AdminInstructorDetailPage /> },
-      { path: 'admin/analytics', element: <Placeholder title="Admin Analytics" /> },
+      { path: 'admin/waitlist', element: <AdminWaitlistPage /> },
+      { path: 'admin/reports', element: <AdminReportsPage /> },
+      { path: 'admin/analytics', element: <AdminAnalyticsPage /> },
       { path: 'admin/settings', element: <Placeholder title="Admin Settings" /> },
     ],
   },

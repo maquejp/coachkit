@@ -360,25 +360,25 @@
 
 ### 6.9 Waitlist Management
 
-- [ ] Build waitlist view per class/date
-- [ ] Build manual promote action
-- [ ] Build notify all action
-- [ ] Write tests for waitlist management
+- [x] Build waitlist view per class/date
+- [x] Build manual promote action
+- [x] Build notify all action
+- [x] Write tests for waitlist management
 
 ### 6.10 Reporting & Export
 
-- [ ] Build customer report (list, export XLS/PDF)
-- [ ] Build attendance report (date range, exportable)
-- [ ] Build subscription report (active, revenue, churn)
-- [ ] Build occupancy report (per class type, per time slot)
-- [ ] Build revenue report (monthly, annual)
-- [ ] Write tests for report generation
+- [x] Build customer report (list, export XLS/PDF)
+- [x] Build attendance report (date range, exportable)
+- [x] Build subscription report (active, revenue, churn)
+- [x] Build occupancy report (per class type, per time slot)
+- [x] Build revenue report (monthly, annual)
+- [x] Write tests for report generation
 
 ### 6.11 Embedded Analytics
 
-- [ ] Build analytics page with Umami iframe/integration
-- [ ] Show conversion rate, popular classes, peak booking times
-- [ ] Write tests for analytics page
+- [x] Build analytics page with Umami iframe/integration
+- [x] Show conversion rate, popular classes, peak booking times
+- [x] Write tests for analytics page
 
 ---
 

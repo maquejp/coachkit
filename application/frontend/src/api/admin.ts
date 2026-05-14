@@ -503,3 +503,176 @@ export async function deleteCoach(id: string) {
   const { data } = await apiClient.delete<{ success: boolean; data: null }>(`/coaches/${id}`);
   return data.data;
 }
+
+/* ─── Waitlist ─── */
+
+export interface EnrichedWaitlistEntry {
+  id: string;
+  userId: string;
+  scheduleId: string;
+  date: string;
+  position: number;
+  status: string;
+  customerName: string;
+  className: string;
+  classColor: string;
+  createdAt: string;
+}
+
+export async function fetchAdminWaitlist(scheduleId?: string, date?: string) {
+  const params: Record<string, string> = {};
+  if (scheduleId) params.scheduleId = scheduleId;
+  if (date) params.date = date;
+  const { data } = await apiClient.get<{ success: boolean; data: EnrichedWaitlistEntry[] }>(
+    '/admin/waitlist',
+    { params },
+  );
+  return data.data;
+}
+
+export async function promoteWaitlistEntry(id: string) {
+  const { data } = await apiClient.post<{ success: boolean; data: EnrichedWaitlistEntry }>(
+    `/admin/waitlist/${id}/promote`,
+  );
+  return data.data;
+}
+
+export async function removeWaitlistEntry(id: string) {
+  const { data } = await apiClient.post<{ success: boolean; data: null }>(
+    `/admin/waitlist/${id}/remove`,
+  );
+  return data.data;
+}
+
+export async function notifyAllWaitlist(scheduleId: string, date: string) {
+  const { data } = await apiClient.post<{
+    success: boolean;
+    data: { notified: number; message: string };
+  }>('/admin/waitlist/notify-all', { scheduleId, date });
+  return data.data;
+}
+
+/* ─── Reports ─── */
+
+export interface CustomerReportRow {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  status: string;
+  subscriptionPlan: string | null;
+  sessionsUsed: number;
+  sessionsLimit: number | null;
+  totalBookings: number;
+  lastBookingDate: string | null;
+  createdAt: string;
+}
+
+export interface AttendanceReportRow {
+  date: string;
+  totalCheckIns: number;
+  uniqueCustomers: number;
+  byClass: { className: string; count: number }[];
+}
+
+export interface SubscriptionReport {
+  totalActive: number;
+  totalCancelled: number;
+  totalExpired: number;
+  monthlyRevenueCents: number;
+  annualRevenueCents: number;
+  churnRate: number;
+  byPlan: { planName: string; active: number; cancelled: number }[];
+}
+
+export interface OccupancyReportRow {
+  className: string;
+  totalSlots: number;
+  totalBookings: number;
+  averageOccupancy: number;
+  peakDay: string;
+  peakTime: string;
+}
+
+export interface RevenueReportRow {
+  month: string;
+  revenueCents: number;
+  subscriptionCents: number;
+  pointCardCents: number;
+  bookingsCents: number;
+  transactions: number;
+}
+
+export async function fetchCustomerReport(params: { from?: string; to?: string }) {
+  const { data } = await apiClient.get<{ success: boolean; data: CustomerReportRow[] }>(
+    '/admin/reports/customers',
+    { params },
+  );
+  return data.data;
+}
+
+export async function fetchAttendanceReportAdmin(params: { from: string; to: string }) {
+  const { data } = await apiClient.get<{ success: boolean; data: AttendanceReportRow[] }>(
+    '/admin/reports/attendance',
+    { params },
+  );
+  return data.data;
+}
+
+export async function fetchSubscriptionReport() {
+  const { data } = await apiClient.get<{ success: boolean; data: SubscriptionReport }>(
+    '/admin/reports/subscriptions',
+  );
+  return data.data;
+}
+
+export async function fetchOccupancyReport(params: { from?: string; to?: string }) {
+  const { data } = await apiClient.get<{ success: boolean; data: OccupancyReportRow[] }>(
+    '/admin/reports/occupancy',
+    { params },
+  );
+  return data.data;
+}
+
+export async function fetchRevenueReport() {
+  const { data } = await apiClient.get<{ success: boolean; data: RevenueReportRow[] }>(
+    '/admin/reports/revenue',
+  );
+  return data.data;
+}
+
+export async function exportReportCsv(reportType: string, params?: Record<string, string>) {
+  const { data } = await apiClient.get<string>(`/admin/reports/${reportType}/export`, {
+    params,
+    responseType: 'blob',
+  });
+  return data;
+}
+
+export async function exportReportPdf(reportType: string, params?: Record<string, string>) {
+  const { data } = await apiClient.get<string>(`/admin/reports/${reportType}/export-pdf`, {
+    params,
+    responseType: 'blob',
+  });
+  return data;
+}
+
+/* ─── Analytics ─── */
+
+export interface AnalyticsData {
+  conversionRate: number;
+  bounceRate: number;
+  avgSessionDuration: number;
+  totalPageViews: number;
+  uniqueVisitors: number;
+  popularClasses: { className: string; bookings: number; revenueCents: number }[];
+  peakBookingTimes: { timeSlot: string; count: number; percentage: number }[];
+  referralSources: { source: string; count: number; percentage: number }[];
+}
+
+export async function fetchAnalytics() {
+  const { data } = await apiClient.get<{ success: boolean; data: AnalyticsData }>(
+    '/admin/analytics',
+  );
+  return data.data;
+}
