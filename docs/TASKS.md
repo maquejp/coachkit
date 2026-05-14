@@ -351,12 +351,12 @@
 - [x] Build session usage report (used vs remaining per customer)
 - [x] Write tests for attendance
 
-### 6.8 Instructor Management
+### 6.8 Instructor Management [x]
 
-- [ ] Build instructors list with CRUD
-- [ ] Build create/edit instructor form (name, bio, photo, email, phone)
-- [ ] Build instructor schedule view
-- [ ] Write tests for instructor management
+- [x] Build instructors list with CRUD
+- [x] Build create/edit instructor form (name, bio, photo, email, phone)
+- [x] Build instructor schedule view
+- [x] Write tests for instructor management
 
 ### 6.9 Waitlist Management
 
