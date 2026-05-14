@@ -10,6 +10,7 @@ import { waitlistHandlers } from './handlers/waitlist';
 import { paymentHandlers } from './handlers/payments';
 import { dashboardHandlers } from './handlers/dashboard';
 import { guestHandlers } from './handlers/guest';
+import { customerHandlers } from './handlers/customers';
 
 export const handlers = [
   ...locationHandlers,
@@ -24,4 +25,5 @@ export const handlers = [
   ...paymentHandlers,
   ...dashboardHandlers,
   ...guestHandlers,
+  ...customerHandlers,
 ];

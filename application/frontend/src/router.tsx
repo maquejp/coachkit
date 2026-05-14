@@ -22,6 +22,8 @@ import AdminClassesPage from '@/admin/ClassesPage';
 import AdminPricingPage from '@/admin/PricingPage';
 import AdminLocationsPage from '@/admin/LocationsPage';
 import AdminLocationDetailPage from '@/admin/LocationDetailPage';
+import AdminCustomersPage from '@/admin/CustomersPage';
+import AdminCustomerDetailPage from '@/admin/CustomerDetailPage';
 import Placeholder from '@/components/ui/Placeholder';
 
 export const router = createBrowserRouter([
@@ -68,7 +70,8 @@ export const router = createBrowserRouter([
       { path: 'admin/pricing', element: <AdminPricingPage /> },
       { path: 'admin/locations', element: <AdminLocationsPage /> },
       { path: 'admin/locations/:id', element: <AdminLocationDetailPage /> },
-      { path: 'admin/customers', element: <Placeholder title="Admin Customers" /> },
+      { path: 'admin/customers', element: <AdminCustomersPage /> },
+      { path: 'admin/customers/:id', element: <AdminCustomerDetailPage /> },
       { path: 'admin/analytics', element: <Placeholder title="Admin Analytics" /> },
       { path: 'admin/settings', element: <Placeholder title="Admin Settings" /> },
     ],

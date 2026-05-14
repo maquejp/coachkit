@@ -276,3 +276,134 @@ export async function deletePointCardPlan(id: string) {
   );
   return data.data;
 }
+
+export interface PaginatedResult<T> {
+  items: T[];
+  total: number;
+  totalPages: number;
+  page: number;
+  pageSize: number;
+}
+
+export type CustomerUser = import('@/types').CustomerUser;
+
+export async function fetchAdminCustomers(params: {
+  search?: string;
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortDir?: 'asc' | 'desc';
+}) {
+  const { data } = await apiClient.get<{ success: boolean; data: PaginatedResult<CustomerUser> }>(
+    '/admin/customers',
+    { params },
+  );
+  return data.data;
+}
+
+export async function fetchAdminCustomer(id: string) {
+  const { data } = await apiClient.get<{ success: boolean; data: CustomerUser }>(
+    `/admin/customers/${id}`,
+  );
+  return data.data;
+}
+
+export interface CustomerSubscriptionDetail {
+  id: string;
+  userId: string;
+  planId: string;
+  status: string;
+  startDate: string;
+  endDate: string | null;
+  trialEnd: string | null;
+  sessionsUsed: number;
+  sessionsLimit: number | null;
+  planName: string;
+}
+
+export async function fetchCustomerSubscriptions(id: string) {
+  const { data } = await apiClient.get<{
+    success: boolean;
+    data: CustomerSubscriptionDetail[];
+  }>(`/admin/customers/${id}/subscriptions`);
+  return data.data;
+}
+
+export interface CustomerPointCardDetail {
+  id: string;
+  userId: string;
+  planId: string;
+  sessionsRemaining: number;
+  expiresAt: string;
+  purchasedAt: string;
+  planName: string;
+}
+
+export async function fetchCustomerPointCards(id: string) {
+  const { data } = await apiClient.get<{
+    success: boolean;
+    data: CustomerPointCardDetail[];
+  }>(`/admin/customers/${id}/point-cards`);
+  return data.data;
+}
+
+export interface CustomerBookingDetail {
+  id: string;
+  userId: string;
+  classTypeId: string;
+  date: string;
+  status: string;
+  className: string;
+  classColor: string;
+}
+
+export async function fetchCustomerBookings(id: string) {
+  const { data } = await apiClient.get<{
+    success: boolean;
+    data: CustomerBookingDetail[];
+  }>(`/admin/customers/${id}/bookings`);
+  return data.data;
+}
+
+export interface CustomerAttendanceDetail {
+  id: string;
+  bookingId: string;
+  userId: string;
+  date: string;
+  checkInTime: string;
+}
+
+export async function fetchCustomerAttendance(id: string) {
+  const { data } = await apiClient.get<{
+    success: boolean;
+    data: CustomerAttendanceDetail[];
+  }>(`/admin/customers/${id}/attendance`);
+  return data.data;
+}
+
+export interface CustomerPaymentDetail {
+  id: string;
+  userId: string;
+  amountCents: number;
+  currency: string;
+  status: string;
+  provider: string;
+  description: string;
+  createdAt: string;
+}
+
+export async function fetchCustomerPayments(id: string) {
+  const { data } = await apiClient.get<{
+    success: boolean;
+    data: CustomerPaymentDetail[];
+  }>(`/admin/customers/${id}/payments`);
+  return data.data;
+}
+
+export async function impersonateCustomer(userId: string) {
+  const { data } = await apiClient.post<{
+    success: boolean;
+    data: { user: CustomerUser; token: string };
+  }>('/admin/impersonate', { userId });
+  return data.data;
+}
