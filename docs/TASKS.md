@@ -411,16 +411,16 @@
 
 ---
 
-## Phase 7: Backend Scaffolding
+## Phase 7: Backend Scaffolding [x]
 
-- [ ] Scaffold Laravel project in `application/backend/`
-- [ ] Configure `.env` for local PostgreSQL
-- [ ] Set up Dockerfile + docker-compose.yml (Laravel + PHP 8 + PostgreSQL + Nginx + Mailpit)
-- [ ] Add Mailpit for email catching in development (SMTP server, web UI at localhost:8025)
-- [ ] Install Sanctum (API auth) or JWT package
-- [ ] Configure CORS for frontend dev server
-- [ ] Set up PHPUnit configuration
-- [ ] Create database migration skeleton
+- [x] Scaffold Laravel project in `application/backend/`
+- [x] Configure `.env` for local PostgreSQL
+- [x] Set up Dockerfile + docker-compose.yml (Laravel + PHP 8 + PostgreSQL + Nginx + Mailpit)
+- [x] Add Mailpit for email catching in development (SMTP server, web UI at localhost:8025)
+- [x] Install Sanctum (API auth) or JWT package
+- [x] Configure CORS for frontend dev server
+- [x] Set up PHPUnit configuration
+- [x] Create database migration skeleton
 
 ---
 
