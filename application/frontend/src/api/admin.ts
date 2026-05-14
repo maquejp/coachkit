@@ -150,10 +150,31 @@ export async function fetchAllCoaches() {
   return data.data;
 }
 
+export type Location = import('@/types').Location;
+
 export async function fetchAllLocations() {
-  const { data } = await apiClient.get<{ success: boolean; data: import('@/types').Location[] }>(
-    '/locations',
+  const { data } = await apiClient.get<{ success: boolean; data: Location[] }>('/locations');
+  return data.data;
+}
+
+export async function createLocation(item: Omit<Location, 'id' | 'createdAt' | 'updatedAt'>) {
+  const { data } = await apiClient.post<{ success: boolean; data: Location }>('/locations', item);
+  return data.data;
+}
+
+export async function updateLocation(
+  id: string,
+  item: Partial<Omit<Location, 'id' | 'createdAt' | 'updatedAt'>>,
+) {
+  const { data } = await apiClient.put<{ success: boolean; data: Location }>(
+    `/locations/${id}`,
+    item,
   );
+  return data.data;
+}
+
+export async function deleteLocation(id: string) {
+  const { data } = await apiClient.delete<{ success: boolean; data: null }>(`/locations/${id}`);
   return data.data;
 }
 
