@@ -19,6 +19,7 @@ import ProfilePage from '@/customer/ProfilePage';
 import AdminDashboardPage from '@/admin/DashboardPage';
 import AdminSchedulePage from '@/admin/SchedulePage';
 import AdminClassesPage from '@/admin/ClassesPage';
+import AdminPricingPage from '@/admin/PricingPage';
 import Placeholder from '@/components/ui/Placeholder';
 
 export const router = createBrowserRouter([
@@ -62,6 +63,7 @@ export const router = createBrowserRouter([
       { path: 'admin', element: <AdminDashboardPage /> },
       { path: 'admin/classes', element: <AdminClassesPage /> },
       { path: 'admin/schedule', element: <AdminSchedulePage /> },
+      { path: 'admin/pricing', element: <AdminPricingPage /> },
       { path: 'admin/customers', element: <Placeholder title="Admin Customers" /> },
       { path: 'admin/analytics', element: <Placeholder title="Admin Analytics" /> },
       { path: 'admin/settings', element: <Placeholder title="Admin Settings" /> },

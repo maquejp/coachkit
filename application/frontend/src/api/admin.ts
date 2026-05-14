@@ -182,3 +182,76 @@ export async function deleteClassType(id: string) {
   const { data } = await apiClient.delete<{ success: boolean; data: null }>(`/class-types/${id}`);
   return data.data;
 }
+
+export type SubscriptionPlan = import('@/types').SubscriptionPlan;
+export type PointCardPlan = import('@/types').PointCardPlan;
+
+export async function fetchSubscriptionPlans() {
+  const { data } = await apiClient.get<{ success: boolean; data: SubscriptionPlan[] }>(
+    '/subscription-plans',
+  );
+  return data.data;
+}
+
+export async function createSubscriptionPlan(
+  item: Omit<SubscriptionPlan, 'id' | 'createdAt' | 'updatedAt'>,
+) {
+  const { data } = await apiClient.post<{ success: boolean; data: SubscriptionPlan }>(
+    '/admin/subscription-plans',
+    item,
+  );
+  return data.data;
+}
+
+export async function updateSubscriptionPlan(
+  id: string,
+  item: Partial<Omit<SubscriptionPlan, 'id' | 'createdAt' | 'updatedAt'>>,
+) {
+  const { data } = await apiClient.put<{ success: boolean; data: SubscriptionPlan }>(
+    `/admin/subscription-plans/${id}`,
+    item,
+  );
+  return data.data;
+}
+
+export async function deleteSubscriptionPlan(id: string) {
+  const { data } = await apiClient.delete<{ success: boolean; data: null }>(
+    `/admin/subscription-plans/${id}`,
+  );
+  return data.data;
+}
+
+export async function fetchPointCardPlans() {
+  const { data } = await apiClient.get<{ success: boolean; data: PointCardPlan[] }>(
+    '/point-card-plans',
+  );
+  return data.data;
+}
+
+export async function createPointCardPlan(
+  item: Omit<PointCardPlan, 'id' | 'createdAt' | 'updatedAt'>,
+) {
+  const { data } = await apiClient.post<{ success: boolean; data: PointCardPlan }>(
+    '/admin/point-card-plans',
+    item,
+  );
+  return data.data;
+}
+
+export async function updatePointCardPlan(
+  id: string,
+  item: Partial<Omit<PointCardPlan, 'id' | 'createdAt' | 'updatedAt'>>,
+) {
+  const { data } = await apiClient.put<{ success: boolean; data: PointCardPlan }>(
+    `/admin/point-card-plans/${id}`,
+    item,
+  );
+  return data.data;
+}
+
+export async function deletePointCardPlan(id: string) {
+  const { data } = await apiClient.delete<{ success: boolean; data: null }>(
+    `/admin/point-card-plans/${id}`,
+  );
+  return data.data;
+}

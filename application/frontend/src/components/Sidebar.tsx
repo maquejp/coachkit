@@ -25,6 +25,7 @@ const adminItems: (SidebarItem & { defaultOpen?: boolean })[] = [
     children: [
       { label: 'Classes', to: '/admin/classes' },
       { label: 'Schedule', to: '/admin/schedule' },
+      { label: 'Pricing', to: '/admin/pricing' },
       { label: 'Customers', to: '/admin/customers' },
     ],
   },

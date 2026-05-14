@@ -9,6 +9,8 @@ import {
 
 const subStore = [...customerSubscriptions];
 const pcStore = [...pointCardPurchases];
+const planStore = [...subscriptionPlans];
+const pcpStore = [...pointCardPlans];
 
 export const subscriptionHandlers = [
   http.get('/api/subscription-plans', () => {
@@ -98,5 +100,73 @@ export const subscriptionHandlers = [
     let result = classTypes.map((ct) => ({ classTypeId: ct.id, priceCents: ct.defaultPriceCents }));
     if (classTypeId) result = result.filter((r) => r.classTypeId === classTypeId);
     return HttpResponse.json({ success: true, data: result });
+  }),
+
+  http.post('/api/admin/subscription-plans', async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    const plan = {
+      id: `sp-${String(planStore.length + 1).padStart(3, '0')}`,
+      ...body,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    } as (typeof planStore)[0];
+    planStore.push(plan);
+    return HttpResponse.json({ success: true, data: plan }, { status: 201 });
+  }),
+
+  http.put('/api/admin/subscription-plans/:id', async ({ params, request }) => {
+    const idx = planStore.findIndex((p) => p.id === params.id);
+    if (idx === -1)
+      return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });
+    const body = (await request.json()) as Record<string, unknown>;
+    planStore[idx] = {
+      ...planStore[idx],
+      ...body,
+      id: planStore[idx].id,
+      updatedAt: new Date().toISOString(),
+    };
+    return HttpResponse.json({ success: true, data: planStore[idx] });
+  }),
+
+  http.delete('/api/admin/subscription-plans/:id', ({ params }) => {
+    const idx = planStore.findIndex((p) => p.id === params.id);
+    if (idx === -1)
+      return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });
+    planStore.splice(idx, 1);
+    return HttpResponse.json({ success: true, data: null });
+  }),
+
+  http.post('/api/admin/point-card-plans', async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    const plan = {
+      id: `pcp-${String(pcpStore.length + 1).padStart(3, '0')}`,
+      ...body,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    } as (typeof pcpStore)[0];
+    pcpStore.push(plan);
+    return HttpResponse.json({ success: true, data: plan }, { status: 201 });
+  }),
+
+  http.put('/api/admin/point-card-plans/:id', async ({ params, request }) => {
+    const idx = pcpStore.findIndex((p) => p.id === params.id);
+    if (idx === -1)
+      return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });
+    const body = (await request.json()) as Record<string, unknown>;
+    pcpStore[idx] = {
+      ...pcpStore[idx],
+      ...body,
+      id: pcpStore[idx].id,
+      updatedAt: new Date().toISOString(),
+    };
+    return HttpResponse.json({ success: true, data: pcpStore[idx] });
+  }),
+
+  http.delete('/api/admin/point-card-plans/:id', ({ params }) => {
+    const idx = pcpStore.findIndex((p) => p.id === params.id);
+    if (idx === -1)
+      return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });
+    pcpStore.splice(idx, 1);
+    return HttpResponse.json({ success: true, data: null });
   }),
 ];
