@@ -23,6 +23,8 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ScheduleExceptionController;
 use App\Http\Controllers\Api\SingleSessionPricingController;
 use App\Http\Controllers\Api\SubscriptionPlanController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\StripeWebhookController;
 use App\Http\Controllers\Api\WaitlistController;
 use App\Http\Controllers\Api\WeeklyScheduleController;
 use Illuminate\Http\Request;
@@ -33,6 +35,8 @@ use Illuminate\Support\Facades\Route;
 | Public Routes (no authentication required)
 |--------------------------------------------------------------------------
 */
+
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -99,6 +103,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Single Session Pricing
     Route::get('/single-session-pricing', [SingleSessionPricingController::class, 'index']);
+
+    // Payments (Stripe)
+    Route::post('/payments/stripe/create-setup-intent', [PaymentController::class, 'createSetupIntent']);
+    Route::post('/payments/stripe/create-payment-intent', [PaymentController::class, 'createPaymentIntent']);
+    Route::post('/payments/stripe/confirm-payment', [PaymentController::class, 'confirmPayment']);
+    Route::get('/payments/history', [PaymentController::class, 'history']);
 
     // Locations
     Route::get('/locations', [LocationController::class, 'index']);

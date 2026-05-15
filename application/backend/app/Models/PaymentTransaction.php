@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PaymentTransaction extends Model
 {
@@ -15,6 +16,26 @@ class PaymentTransaction extends Model
         'stripe_payment_intent_id', 'receipt_url',
         'description', 'metadata',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function subscription(): BelongsTo
+    {
+        return $this->belongsTo(CustomerSubscription::class, 'subscription_id');
+    }
+
+    public function pointCardPurchase(): BelongsTo
+    {
+        return $this->belongsTo(PointCardPurchase::class, 'point_card_purchase_id');
+    }
+
+    public function booking(): BelongsTo
+    {
+        return $this->belongsTo(Booking::class);
+    }
 
     protected function casts(): array
     {

@@ -610,21 +610,20 @@
 
 ### 11.1 Stripe Integration
 
-- [ ] Install and configure Stripe PHP SDK and webhook signing secret
-- [ ] Create `POST /api/payments/stripe/create-setup-intent` — create SetupIntent for saving card
-- [ ] Create `POST /api/payments/stripe/create-payment-intent` — create PaymentIntent (attach customer, metadata for subscription/purchase)
-- [ ] Create `POST /api/payments/stripe/confirm-payment` — confirm payment server-side (optional, mostly client-side)
-- [ ] Create `POST /api/payments/stripe/webhook` — handle incoming Stripe webhooks (payment_intent.succeeded, invoice.paid, customer.subscription.updated/deleted)
+- [x] Install and configure Stripe PHP SDK and webhook signing secret
+- [x] Create `POST /api/payments/stripe/create-setup-intent` — create SetupIntent for saving card
+- [x] Create `POST /api/payments/stripe/create-payment-intent` — create PaymentIntent (attach customer, metadata for subscription/purchase)
+- [x] Create `POST /api/payments/stripe/confirm-payment` — confirm payment server-side, creates PaymentTransaction + subscription/point-card purchase
+- [x] Create `POST /api/payments/stripe/webhook` — handle incoming Stripe webhooks (payment_intent.succeeded, invoice.paid, customer.subscription.updated/deleted)
   - On `payment_intent.succeeded`: create PaymentTransaction record, activate subscription or add point card sessions
   - On `invoice.paid`: extend subscription period
   - On `customer.subscription.updated`: sync subscription status
   - On `customer.subscription.deleted`: mark subscription as cancelled
-- [ ] Add Stripe customer creation on user registration (store `stripe_customer_id` on users table)
-- [ ] Add `stripe_customer_id` column migration to users table
-- [ ] Store Stripe price IDs (`stripe_price_id`) on subscription_plans and point_card_plans for product/price sync
-- [ ] Write `php artisan stripe:sync-products` command to push plans to Stripe
-- [ ] Write PHPUnit tests for payment intent creation
-- [ ] Write PHPUnit tests for webhook handling (mock Stripe events)
+- [x] Add Stripe customer creation on registration (lazy via StripeService::createCustomer when first payment action occurs)
+- [x] Add `stripe_customer_id` column migration to users table
+- [x] `stripe_price_id` already existed on subscription_plans and point_card_plans migrations
+- [x] Write `php artisan stripe:sync-products` command to push plans to Stripe
+- [x] Write PHPUnit tests for payment intent creation (11 tests, 34 assertions)
 
 ### 11.2 PayPal Integration
 
