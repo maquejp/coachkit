@@ -2,10 +2,15 @@
 
 namespace App\Models;
 
+use Database\Factories\FreeSessionClaimFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class FreeSessionClaim extends Model
 {
+    /** @use HasFactory<FreeSessionClaimFactory> */
+    use HasFactory;
+
     protected $table = 'free_session_claims';
 
     protected $fillable = [

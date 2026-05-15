@@ -470,16 +470,26 @@
 
 ---
 
-## Phase 9: API — Authentication
+## Phase 9: API — Authentication [x]
 
 ### 9.1 Auth Endpoints
 
+- [x] Create `POST /api/auth/login` — login with email + password, return Sanctum token + user
+- [x] Create `POST /api/auth/register` — register new customer, return Sanctum token + user
+- [x] Create `GET /api/auth/me` — return authenticated user (camelCase via UserResource)
+- [x] Create `POST /api/auth/logout` — revoke current Sanctum token
+- [x] Create `POST /api/auth/password-reset-request` — placeholder stub
+- [x] Create `POST /api/auth/password-reset` — placeholder stub
+- [x] Configure JSON error rendering for API routes
+- [x] Write PHPUnit tests for all auth endpoints
+
 ### 9.2 Guest Flow
 
-- [ ] Create `POST /api/guest/register` — register after first free session
-- [ ] Create `GET /api/guest/check-email` — check if email already used for free session
-- [ ] Implement one-per-email validation on guest booking
-- [ ] Write tests for guest flow
+- [x] Create `POST /api/guest/register` — register after first free session (validates claim, links user)
+- [x] Create `GET /api/free-session-claims/check?email=` — check if email already used for free session
+- [x] Create `POST /api/free-session-claims` — create new free session claim with one-per-email enforcement
+- [x] Implement one-per-email validation on guest booking (409 on duplicate claim)
+- [x] Write PHPUnit tests for guest flow
 
 ---
 
