@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WeeklySchedule extends Model
@@ -16,6 +17,11 @@ class WeeklySchedule extends Model
         'start_time', 'end_time', 'max_capacity',
         'valid_from', 'valid_until', 'is_active',
     ];
+
+    public function classType(): BelongsTo
+    {
+        return $this->belongsTo(ClassType::class, 'class_type_id');
+    }
 
     protected function casts(): array
     {

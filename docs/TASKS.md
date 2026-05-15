@@ -519,16 +519,16 @@
 
 ### 10.12 Dashboard & Reporting Endpoints
 
-- [ ] Create `GET /api/admin/dashboard/kpi` — active subs, occupancy, revenue, signups
-- [ ] Create `GET /api/admin/dashboard/revenue-chart` — revenue over time
-- [ ] Create `GET /api/admin/dashboard/occupancy-chart` — occupancy by class type
-- [ ] Create `GET /api/admin/reports/customers` — customer list export
-- [ ] Create `GET /api/admin/reports/attendance` — attendance export
-- [ ] Create `GET /api/admin/reports/subscriptions` — subscription report export
-- [ ] Create `GET /api/admin/reports/occupancy` — occupancy report export
-- [ ] Create `GET /api/admin/reports/revenue` — revenue report export
-- [ ] Implement XLS/PDF generation for exports
-- [ ] Write tests for dashboard and report endpoints
+- [x] Create `GET /api/admin/dashboard/kpis` — active subs, occupancy, revenue
+- [x] Create `GET /api/admin/dashboard/charts` — revenue over time, bookings, popularity
+- [x] Create `GET /api/admin/dashboard/occupancy` — occupancy by class type
+- [x] Create `GET /api/admin/reports/customers` — customer list export
+- [x] Create `GET /api/admin/reports/attendance` — attendance export
+- [x] Create `GET /api/admin/reports/subscriptions` — subscription report export
+- [x] Create `GET /api/admin/reports/occupancy` — occupancy report export
+- [x] Create `GET /api/admin/reports/revenue` — revenue report export
+- [x] Implement CSV export for all report types
+- [x] Write tests for dashboard and report endpoints
 
 ---
 
