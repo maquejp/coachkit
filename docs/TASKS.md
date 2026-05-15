@@ -497,25 +497,99 @@
 
 ### 10.1 User Management
 
+- [x] Create `PUT /api/profile` — update profile (firstName, lastName, email, phone)
+- [x] Create `PUT /api/profile/password` — change password with current password validation
+- [x] Create `DELETE /api/profile` — delete own account (soft delete)
+- [x] Create `POST /api/admin/impersonate` — admin login as customer (returns token)
+
 ### 10.2 Location Management
+
+- [x] Create `GET /api/locations` — list all locations
+- [x] Create `POST /api/locations` — create location (admin)
+- [x] Create `PUT /api/locations/{id}` — update location (admin)
+- [x] Create `DELETE /api/locations/{id}` — delete location (admin)
 
 ### 10.3 Instructor Management
 
+- [x] Create `GET /api/coaches` — list all coaches
+- [x] Create `GET /api/coaches/{id}` — show single coach
+- [x] Create `POST /api/coaches` — create coach (admin)
+- [x] Create `PUT /api/coaches/{id}` — update coach (admin)
+- [x] Create `DELETE /api/coaches/{id}` — delete coach (admin)
+- [x] Create `GET /api/instructor/schedule?coachId=` — instructor's active schedule
+- [x] Create `GET /api/instructor/upcoming?coachId=` — instructor's upcoming bookings
+- [x] Create `GET /api/instructor/stats?coachId=` — instructor stats (upcoming classes, total students, classes this week)
+- [x] Create `GET /api/instructor/attendance?scheduleId=&date=` — attendance for a specific class/date
+
 ### 10.4 Class Type Management
+
+- [x] Create `GET /api/class-types` — list all class types
+- [x] Create `POST /api/class-types` — create class type (admin)
+- [x] Create `PUT /api/class-types/{id}` — update class type (admin)
+- [x] Create `DELETE /api/class-types/{id}` — delete class type (admin)
 
 ### 10.5 Schedule Management
 
+- [x] Create `GET /api/weekly-schedule?day=` — list schedule (optionally filter by day)
+- [x] Create `POST /api/weekly-schedule` — create schedule entry (admin)
+- [x] Create `PUT /api/weekly-schedule/{id}` — update schedule entry (admin)
+- [x] Create `DELETE /api/weekly-schedule/{id}` — delete schedule entry (admin)
+- [x] Create `GET /api/schedule-exceptions?locationId=` — list exceptions
+- [x] Create `POST /api/schedule-exceptions` — create exception (admin)
+- [x] Create `PUT /api/schedule-exceptions/{id}` — update exception (admin)
+- [x] Create `DELETE /api/schedule-exceptions/{id}` — delete exception (admin)
+
 ### 10.6 Subscription Management
+
+- [x] Create `GET /api/subscription-plans` — public list of plans
+- [x] Create `GET /api/subscription-plans/{id}` — public single plan
+- [x] Create `GET /api/customer-subscriptions?userId=` — list customer's subscriptions
+- [x] Create `POST /api/customer-subscriptions` — create subscription for customer
+- [x] Create `PUT /api/customer-subscriptions/{id}/change-plan` — change subscription plan
+- [x] Create `POST /api/customer-subscriptions/{id}/cancel` — cancel subscription
+- [x] Create `POST /api/admin/subscription-plans` — admin create plan
+- [x] Create `PUT /api/admin/subscription-plans/{id}` — admin update plan
+- [x] Create `DELETE /api/admin/subscription-plans/{id}` — admin delete plan
 
 ### 10.7 Point Card Management
 
+- [x] Create `GET /api/point-card-plans` — public list of point card plans
+- [x] Create `GET /api/point-card-plans/{id}` — public single plan
+- [x] Create `GET /api/point-card-purchases?userId=` — list customer's purchases
+- [x] Create `POST /api/point-card-purchases` — purchase a point card
+- [x] Create `POST /api/admin/point-card-plans` — admin create plan
+- [x] Create `PUT /api/admin/point-card-plans/{id}` — admin update plan
+- [x] Create `DELETE /api/admin/point-card-plans/{id}` — admin delete plan
+
 ### 10.8 Class Pricing
+
+- [x] Create `GET /api/single-session-pricing?classTypeId=` — pricing per class type
 
 ### 10.9 Booking Endpoints
 
+- [x] Create `GET /api/bookings?userId=` — list bookings (filterable by user)
+- [x] Create `POST /api/bookings` — create booking (snake_case input)
+- [x] Create `POST /api/bookings/{id}/cancel` — cancel booking
+- [x] Create `POST /api/bookings/{id}/reschedule` — reschedule booking
+
 ### 10.10 Attendance Endpoints
 
+- [x] Create `GET /api/attendance` — list all attendance records
+- [x] Create `POST /api/attendance` — create attendance record (snake_case input)
+- [x] Create `GET /api/admin/attendance/check-in?date=` — bookings for check-in by date
+- [x] Create `POST /api/admin/attendance/check-in` — mark attendance for a booking
+- [x] Create `GET /api/admin/attendance/report?from=&to=` — attendance report with by-class breakdown
+
 ### 10.11 Waitlist Endpoints
+
+- [x] Create `GET /api/waitlist?scheduleId=` — list waitlist entries
+- [x] Create `POST /api/waitlist/join` — join waitlist (auto-calculates position)
+- [x] Create `POST /api/waitlist/{id}/leave` — leave waitlist
+- [x] Create `POST /api/waitlist/{id}/promote` — promote from waitlist
+- [x] Create `GET /api/admin/waitlist?scheduleId=&date=` — admin list (enriched with customer/class names)
+- [x] Create `POST /api/admin/waitlist/{id}/promote` — admin promote
+- [x] Create `POST /api/admin/waitlist/{id}/remove` — admin remove
+- [x] Create `POST /api/admin/waitlist/notify-all` — admin notify all waiting
 
 ### 10.12 Dashboard & Reporting Endpoints
 
