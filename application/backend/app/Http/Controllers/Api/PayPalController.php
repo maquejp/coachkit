@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PaymentReceiptMail;
+use App\Mail\SubscriptionConfirmationMail;
 use App\Models\PaymentTransaction;
 use App\Models\PointCardPlan;
 use App\Models\SubscriptionPlan;
@@ -11,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class PayPalController extends Controller
 {
@@ -146,6 +149,27 @@ class PayPalController extends Controller
 
                 return PaymentTransaction::query()->create($attrs);
             });
+
+            Mail::to($user->email)->queue(new PaymentReceiptMail(
+                userName: $user->first_name,
+                amount: $transaction->amount_cents,
+                currency: $transaction->currency,
+                description: $transaction->description,
+                receiptUrl: '',
+                date: $transaction->created_at->format('Y-m-d'),
+            ));
+
+            if ($planType === 'subscription' && isset($transaction->subscription_id)) {
+                $subscription = $user->subscriptions()->find($transaction->subscription_id);
+                $plan = $subscription?->plan;
+                Mail::to($user->email)->queue(new SubscriptionConfirmationMail(
+                    userName: $user->first_name,
+                    planName: $plan?->name ?? $transaction->description,
+                    startDate: $subscription?->start_date?->format('Y-m-d') ?? now()->format('Y-m-d'),
+                    endDate: $subscription?->end_date?->format('Y-m-d') ?? now()->addMonth()->format('Y-m-d'),
+                    amount: number_format($transaction->amount_cents / 100, 2) . ' ' . $transaction->currency,
+                ));
+            }
 
             return response()->json([
                 'success' => true,

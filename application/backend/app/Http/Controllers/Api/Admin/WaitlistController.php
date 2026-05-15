@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\WaitlistEntry;
-use App\Models\User;
-use App\Models\WeeklySchedule;
+use App\Mail\WaitlistPromotionMail;
 use App\Models\ClassType;
+use App\Models\User;
+use App\Models\WaitlistEntry;
+use App\Models\WeeklySchedule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class WaitlistController extends Controller
 {
@@ -66,6 +68,7 @@ class WaitlistController extends Controller
         $entry->refresh();
 
         $user = User::find($entry->user_id);
+        $this->sendWaitlistPromotion($entry);
 
         return response()->json([
             'success' => true,
@@ -113,6 +116,27 @@ class WaitlistController extends Controller
             ->where('status', 'waiting')
             ->update(['notified_at' => now()]);
 
+        $entries = WaitlistEntry::with('schedule.classType')
+            ->where('schedule_id', $validated['scheduleId'])
+            ->where('date', $validated['date'])
+            ->where('status', 'waiting')
+            ->get();
+
+        $schedule = $entries->first()?->schedule;
+
+        foreach ($entries as $entry) {
+            $user = User::find($entry->user_id);
+            if (!$user) continue;
+
+            Mail::to($user->email)->queue(new WaitlistPromotionMail(
+                userName: $user->first_name,
+                className: $schedule?->classType?->name ?? '',
+                date: $entry->date?->format('Y-m-d') ?? '',
+                time: $schedule?->start_time?->format('H:i') ?? '',
+                claimExpiryHours: 24,
+            ));
+        }
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -120,5 +144,22 @@ class WaitlistController extends Controller
                 'message' => "{$toNotify} customer(s) notified.",
             ],
         ]);
+    }
+
+    private function sendWaitlistPromotion(WaitlistEntry $entry): void
+    {
+        $user = User::find($entry->user_id);
+        if (!$user) return;
+
+        $schedule = WeeklySchedule::with('classType')->find($entry->schedule_id);
+        if (!$schedule) return;
+
+        Mail::to($user->email)->queue(new WaitlistPromotionMail(
+            userName: $user->first_name,
+            className: $schedule->classType?->name ?? '',
+            date: $entry->date?->format('Y-m-d') ?? '',
+            time: $schedule->start_time?->format('H:i') ?? '',
+            claimExpiryHours: 24,
+        ));
     }
 }

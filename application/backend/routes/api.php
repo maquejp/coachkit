@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\ClassTypeController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\CoachController;
 use App\Http\Controllers\Api\CustomerSubscriptionController;
 use App\Http\Controllers\Api\GuestController;
@@ -58,6 +59,8 @@ Route::get('/subscription-plans/{id}', [SubscriptionPlanController::class, 'show
 
 Route::get('/point-card-plans', [PointCardPlanController::class, 'index']);
 Route::get('/point-card-plans/{id}', [PointCardPlanController::class, 'show']);
+
+Route::post('/contact', [ContactController::class, 'submit']);
 
 /*
 |--------------------------------------------------------------------------
