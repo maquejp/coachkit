@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\ScheduleExceptionController;
 use App\Http\Controllers\Api\SingleSessionPricingController;
 use App\Http\Controllers\Api\SubscriptionPlanController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\PayPalController;
 use App\Http\Controllers\Api\StripeWebhookController;
 use App\Http\Controllers\Api\WaitlistController;
 use App\Http\Controllers\Api\WeeklyScheduleController;
@@ -37,6 +38,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
+Route::post('/paypal/webhook', [PayPalController::class, 'webhook']);
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -109,6 +111,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/payments/stripe/create-payment-intent', [PaymentController::class, 'createPaymentIntent']);
     Route::post('/payments/stripe/confirm-payment', [PaymentController::class, 'confirmPayment']);
     Route::get('/payments/history', [PaymentController::class, 'history']);
+
+    // Payments (PayPal)
+    Route::post('/payments/paypal/create-order', [PayPalController::class, 'createOrder']);
+    Route::post('/payments/paypal/capture-order', [PayPalController::class, 'captureOrder']);
 
     // Locations
     Route::get('/locations', [LocationController::class, 'index']);

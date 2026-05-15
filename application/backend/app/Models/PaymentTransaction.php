@@ -13,8 +13,8 @@ class PaymentTransaction extends Model
         'user_id', 'subscription_id', 'point_card_purchase_id',
         'booking_id', 'amount_cents', 'fee_cents', 'net_cents',
         'currency', 'status', 'payment_method',
-        'stripe_payment_intent_id', 'receipt_url',
-        'description', 'metadata',
+        'stripe_payment_intent_id', 'paypal_order_id', 'paypal_capture_id',
+        'receipt_url', 'description', 'metadata',
     ];
 
     public function user(): BelongsTo

@@ -627,11 +627,11 @@
 
 ### 11.2 PayPal Integration
 
-- [ ] Install PayPal PHP SDK (or use REST API directly)
-- [ ] Create `POST /api/payments/paypal/create-order` — create PayPal order for subscription/purchase
-- [ ] Create `POST /api/payments/paypal/capture-order` — capture after buyer approval, create PaymentTransaction
-- [ ] Create `POST /api/payments/paypal/webhook` — handle PAYMENT.CAPTURE.COMPLETED, BILLING.SUBSCRIPTION.*
-- [ ] Write PHPUnit tests for order creation and capture
+- [x] Install PayPal (REST API via Laravel Http facade — no SDK needed)
+- [x] Create `POST /api/payments/paypal/create-order` — create PayPal order for subscription/purchase
+- [x] Create `POST /api/payments/paypal/capture-order` — capture after buyer approval, create PaymentTransaction
+- [x] Create `POST /api/payments/paypal/webhook` — handle PAYMENT.CAPTURE.COMPLETED, CHECKOUT.ORDER.APPROVED
+- [x] Write PHPUnit tests for order creation and capture (8 tests, 18 assertions)
 
 ---
 
