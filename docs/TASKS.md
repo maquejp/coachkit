@@ -424,62 +424,72 @@
 
 ---
 
-## Phase 8: Database
+## Phase 8: Database [x]
 
 ### 8.1 Migration: Core Tables
 
-- [ ] Create `users` table migration (id, email, password_hash, first_name, last_name, phone, role, email_verified_at, last_login_at, timestamps, soft_deletes)
-- [ ] Create `locations` table migration (id, name, slug, address, city, postal_code, phone, email, google_maps_url, notes, is_active, timestamps, soft_deletes)
-- [ ] Create `coaches` table migration (id, first_name, last_name, bio, photo_url, email, phone, is_active, timestamps, soft_deletes)
-- [ ] Create `class_types` table migration (id, name, slug, description, color, intensity_level, image_url, duration_minutes, max_capacity, default_price, sort_order, is_active, timestamps, soft_deletes)
-- [ ] Create `weekly_schedule` table migration (id, class_type_id FK, coach_id FK, location_id FK, day_of_week, start_time, end_time, max_capacity, valid_from, valid_to, is_active, timestamps, soft_deletes)
-- [ ] Create `schedule_exceptions` table migration (id, location_id FK, date, is_closed, open_time, close_time, reason, timestamps)
-- [ ] Create `subscription_plans` table migration (id, name, description, type, sessions_per_week, price_per_month, commitment_months, insurance_fee, trial_days, is_active, stripe_price_id, timestamps, soft_deletes)
-- [ ] Create `point_card_plans` table migration (id, name, description, points, price, validity_months, is_active, stripe_price_id, timestamps, soft_deletes)
-- [ ] Add `default_price` column to `class_types` table migration
-- [ ] Create `customer_subscriptions` table migration (id, user_id FK, subscription_plan_id FK, start_date, end_date, sessions_used, status, stripe_subscription_id, auto_renew, notes, cancelled_at, timestamps)
-- [ ] Create `point_card_purchases` table migration (id, user_id FK, point_card_plan_id FK, points_remaining, purchase_date, expiry_date, timestamps)
-- [ ] Create `bookings` table migration (id, user_id FK nullable, schedule_id FK, booking_date, status, guest_email, source, waitlist_promoted_from_id FK nullable, notes, cancelled_at, timestamps)
-- [ ] Create `attendance` table migration (id, booking_id FK, user_id FK, class_type_id FK, attended_at, marked_by FK, check_in_method, notes, timestamps)
-- [ ] Create `waitlist` table migration (id, user_id FK, schedule_id FK, date, status, expires_at, confirmed_at, notified_at, timestamps)
-- [ ] Create `payment_transactions` table migration (id, user_id FK, subscription_id FK nullable, point_card_purchase_id FK nullable, booking_id FK nullable, amount, fee_amount, net_amount, currency, status, payment_method, stripe_payment_intent_id, receipt_url, description, metadata json, timestamps)
-- [ ] Create `free_session_claims` table migration (id, email, user_id FK nullable, booking_id FK, claimed_at, timestamps)
-- [ ] Add indexes on foreign keys, status columns, and date columns
-- [ ] Add unique constraints where appropriate
+- [x] Create `users` table migration (id, email, password_hash, first_name, last_name, phone, role, email_verified_at, last_login_at, timestamps, soft_deletes)
+- [x] Create `locations` table migration (id, name, slug, address, city, postal_code, phone, email, google_maps_url, notes, is_active, timestamps, soft_deletes)
+- [x] Create `coaches` table migration (id, first_name, last_name, bio, photo_url, email, phone, is_active, timestamps, soft_deletes)
+- [x] Create `class_types` table migration (id, name, slug, description, color, intensity_level, image_url, duration_minutes, max_capacity, default_price_cents, sort_order, is_active, timestamps, soft_deletes)
+- [x] Create `weekly_schedule` table migration (id, class_type_id FK, coach_id FK, location_id FK, day_of_week, start_time, end_time, max_capacity, valid_from, valid_until, is_active, timestamps, soft_deletes)
+- [x] Create `schedule_exceptions` table migration (id, location_id FK, date, is_closed, open_time, close_time, reason, timestamps)
+- [x] Create `subscription_plans` table migration (id, name, description, type, sessions_per_week, price_cents, interval, commitment_months, insurance_fee_cents, trial_days, is_active, stripe_price_id, features json, timestamps, soft_deletes)
+- [x] Create `point_card_plans` table migration (id, name, description, sessions_count, price_cents, validity_days, is_active, stripe_price_id, timestamps, soft_deletes)
+- [x] Add `default_price_cents` column to `class_types` table migration (included directly)
+- [x] Create `customer_subscriptions` table migration (id, user_id FK, subscription_plan_id FK, start_date, end_date, sessions_used, status, stripe_subscription_id, auto_renew, notes, cancelled_at, timestamps)
+- [x] Create `point_card_purchases` table migration (id, user_id FK, point_card_plan_id FK, sessions_remaining, purchase_date, expiry_date, timestamps)
+- [x] Create `bookings` table migration (id, user_id FK nullable, schedule_id FK, booking_date, status, guest_email, source, waitlist_promoted_from_id FK nullable, notes, cancelled_at, timestamps)
+- [x] Create `attendance` table migration (id, booking_id FK, user_id FK, class_type_id FK, attended_at, marked_by FK, check_in_method, notes, timestamps)
+- [x] Create `waitlist` table migration (id, user_id FK, schedule_id FK, date, status, expires_at, confirmed_at, notified_at, timestamps)
+- [x] Create `payment_transactions` table migration (id, user_id FK, subscription_id FK nullable, point_card_purchase_id FK nullable, booking_id FK nullable, amount_cents, fee_cents, net_cents, currency, status, payment_method, stripe_payment_intent_id, receipt_url, description, metadata json, timestamps)
+- [x] Create `free_session_claims` table migration (id, email, user_id FK nullable, booking_id FK, claimed_at, timestamps)
+- [x] Add indexes on foreign keys, status columns, and date columns
+- [x] Add unique constraints where appropriate
 
 ### 8.2 Seed Script
 
-- [ ] Create `DatabaseSeeder` orchestrator
-- [ ] Create `UserSeeder`: fetch `https://jsonplaceholder.typicode.com/users`, map to users table, promote first entry to admin
-- [ ] Create `LocationSeeder`: insert 2-3 hardcoded sites with address, contact info
-- [ ] Create `CoachSeeder`: insert 4 hardcoded instructor profiles
-- [ ] Create `ClassTypeSeeder`: insert 6 hardcoded class types with colors
-- [ ] Create `WeeklyScheduleSeeder`: generate schedule entries across weekdays and locations
-- [ ] Create `ScheduleExceptionSeeder`: insert 2-3 holiday/closure dates per location
-- [ ] Create `SubscriptionPlanSeeder`: insert 4 plans (monthly + annual variants)
-- [ ] Create `PointCardPlanSeeder`: insert 3 point card options
-- [ ] Set `default_price` on each class type in `ClassTypeSeeder`
-- [ ] Create `CustomerSubscriptionSeeder`: assign subscriptions to subset of users (with auto_renew mix)
-- [ ] Create `FreeSessionClaimSeeder`: insert 2-3 claims from guest bookings, 1 linked to activated account
-- [ ] Create `PointCardPurchaseSeeder`: assign point cards to subset of users
-- [ ] Create `BookingSeeder`: generate 10-15 bookings with varied statuses
-- [ ] Create `AttendanceSeeder`: mark attendance for subset of confirmed bookings
-- [ ] Create `WaitlistSeeder`: add 3-5 waitlist entries
-- [ ] Create `PaymentTransactionSeeder`: generate sample payment records
-- [ ] Verify seed is idempotent (skip existing records)
+- [x] Create `DatabaseSeeder` orchestrator
+- [x] Create `UserSeeder`: fetch `https://jsonplaceholder.typicode.com/users`, map to users table, promote first entry to admin
+- [x] Create `LocationSeeder`: insert 2-3 hardcoded sites with address, contact info
+- [x] Create `CoachSeeder`: insert 4 hardcoded instructor profiles
+- [x] Create `ClassTypeSeeder`: insert 6 hardcoded class types with colors
+- [x] Create `WeeklyScheduleSeeder`: generate schedule entries across weekdays and locations
+- [x] Create `ScheduleExceptionSeeder`: insert 2-3 holiday/closure dates per location
+- [x] Create `SubscriptionPlanSeeder`: insert 4 plans (monthly + annual variants)
+- [x] Create `PointCardPlanSeeder`: insert 3 point card options
+- [x] Set `default_price_cents` on each class type in `ClassTypeSeeder`
+- [x] Create `CustomerSubscriptionSeeder`: assign subscriptions to subset of users (with auto_renew mix)
+- [x] Create `FreeSessionClaimSeeder`: insert 2-3 claims from guest bookings, 1 linked to activated account
+- [x] Create `PointCardPurchaseSeeder`: assign point cards to subset of users
+- [x] Create `BookingSeeder`: generate 10-15 bookings with varied statuses
+- [x] Create `AttendanceSeeder`: mark attendance for subset of confirmed bookings
+- [x] Create `WaitlistSeeder`: add 3-5 waitlist entries
+- [x] Create `PaymentTransactionSeeder`: generate sample payment records
+- [x] Verify seed is idempotent (skip existing records)
 
 ---
 
-## Phase 9: API — Authentication
+## Phase 9: API — Authentication [x]
 
 ### 9.1 Auth Endpoints
 
+- [x] Create `POST /api/auth/login` — login with email + password, return Sanctum token + user
+- [x] Create `POST /api/auth/register` — register new customer, return Sanctum token + user
+- [x] Create `GET /api/auth/me` — return authenticated user (camelCase via UserResource)
+- [x] Create `POST /api/auth/logout` — revoke current Sanctum token
+- [x] Create `POST /api/auth/password-reset-request` — placeholder stub
+- [x] Create `POST /api/auth/password-reset` — placeholder stub
+- [x] Configure JSON error rendering for API routes
+- [x] Write PHPUnit tests for all auth endpoints
+
 ### 9.2 Guest Flow
 
-- [ ] Create `POST /api/guest/register` — register after first free session
-- [ ] Create `GET /api/guest/check-email` — check if email already used for free session
-- [ ] Implement one-per-email validation on guest booking
-- [ ] Write tests for guest flow
+- [x] Create `POST /api/guest/register` — register after first free session (validates claim, links user)
+- [x] Create `GET /api/free-session-claims/check?email=` — check if email already used for free session
+- [x] Create `POST /api/free-session-claims` — create new free session claim with one-per-email enforcement
+- [x] Implement one-per-email validation on guest booking (409 on duplicate claim)
+- [x] Write PHPUnit tests for guest flow
 
 ---
 

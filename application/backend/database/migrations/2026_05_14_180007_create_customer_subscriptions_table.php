@@ -1,0 +1,34 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('customer_subscriptions', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('subscription_plan_id')->constrained()->cascadeOnDelete();
+            $table->date('start_date');
+            $table->date('end_date')->nullable();
+            $table->integer('sessions_used')->default(0);
+            $table->string('status', 20)->default('active');
+            $table->string('stripe_subscription_id')->nullable();
+            $table->boolean('auto_renew')->default(true);
+            $table->text('notes')->nullable();
+            $table->timestamp('cancelled_at')->nullable();
+            $table->timestamps();
+
+            $table->index('status');
+            $table->index(['user_id', 'status']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('customer_subscriptions');
+    }
+};
