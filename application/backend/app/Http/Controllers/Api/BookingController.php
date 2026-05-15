@@ -3,9 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\BookingConfirmationMail;
+use App\Mail\CancellationConfirmationMail;
 use App\Models\Booking;
+use App\Models\Coach;
+use App\Models\Location;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class BookingController extends Controller
@@ -26,7 +32,6 @@ class BookingController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'userId' => 'nullable|integer|exists:users,id',
             'scheduleId' => 'required|integer|exists:weekly_schedule,id',
             'bookingDate' => 'required|date',
             'guestEmail' => 'nullable|email',
@@ -34,7 +39,7 @@ class BookingController extends Controller
             'notes' => 'nullable|string',
         ]);
         $booking = Booking::query()->create([
-            'user_id' => $data['userId'] ?? null,
+            'user_id' => $request->user()->id,
             'schedule_id' => $data['scheduleId'],
             'booking_date' => $data['bookingDate'],
             'guest_email' => $data['guestEmail'] ?? null,
@@ -42,6 +47,7 @@ class BookingController extends Controller
             'notes' => $data['notes'] ?? null,
             'status' => 'confirmed',
         ]);
+        $this->sendBookingConfirmation($booking, $request->user());
         return response()->json(['success' => true, 'data' => $this->format($booking)], 201);
     }
 
@@ -51,6 +57,7 @@ class BookingController extends Controller
         if (!$booking) return response()->json(['success' => false, 'error' => 'Not found'], 404);
         $booking->update(['status' => 'cancelled', 'cancelled_at' => now()]);
         $booking->refresh();
+        $this->sendCancellationConfirmation($booking);
         return response()->json(['success' => true, 'data' => $this->format($booking)]);
     }
 
@@ -62,6 +69,39 @@ class BookingController extends Controller
         $booking->update(['booking_date' => $data['date']]);
         $booking->refresh();
         return response()->json(['success' => true, 'data' => $this->format($booking)]);
+    }
+
+    private function sendBookingConfirmation(Booking $booking, User $user): void
+    {
+        $schedule = $booking->schedule;
+        $classType = $schedule?->classType;
+        $coach = $schedule?->coach_id ? Coach::find($schedule->coach_id) : null;
+        $location = $schedule?->location_id ? Location::find($schedule->location_id) : null;
+
+        Mail::to($user->email)->queue(new BookingConfirmationMail(
+            userName: $user->first_name,
+            date: $booking->booking_date?->format('Y-m-d') ?? '',
+            time: $schedule?->start_time?->format('H:i') ?? '',
+            location: $location?->name ?? '',
+            instructor: $coach ? trim($coach->first_name . ' ' . $coach->last_name) : '',
+            className: $classType?->name ?? '',
+        ));
+    }
+
+    private function sendCancellationConfirmation(Booking $booking): void
+    {
+        $user = $booking->user_id ? User::find($booking->user_id) : null;
+        if (!$user) return;
+
+        $schedule = $booking->schedule;
+        $classType = $schedule?->classType;
+
+        Mail::to($user->email)->queue(new CancellationConfirmationMail(
+            userName: $user->first_name,
+            date: $booking->booking_date?->format('Y-m-d') ?? '',
+            time: $schedule?->start_time?->format('H:i') ?? '',
+            className: $classType?->name ?? '',
+        ));
     }
 
     private function format(Booking $b): array

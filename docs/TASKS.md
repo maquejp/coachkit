@@ -639,19 +639,49 @@
 
 ### 12.1 Mail Setup
 
-### 12.2 Notification Templates
+- [x] Verify Mailpit is receiving test emails (already configured in .env, verified in docker-compose)
+- [x] Create base mail layout `resources/views/emails/layout.blade.php` (header, footer, logo, branding colors)
+- [x] Create `config/mail.php` defaults (from_address, from_name already set; added `admin_address`)
+- [x] Set up queue table for email jobs (`0001_01_01_000002_create_jobs_table.php` exists)
 
-- [ ] Create booking confirmation mail (customer + guest)
-- [ ] Create booking reminder mail (24h before)
-- [ ] Create cancellation confirmation mail
-- [ ] Create waitlist promotion mail (claim your spot)
-- [ ] Create subscription confirmation mail
-- [ ] Create payment receipt mail
-- [ ] Create payment failed mail (customer + admin)
-- [ ] Create subscription renewing mail (7 days before)
-- [ ] Create contact form notification mail (admin)
-- [ ] Create account activation mail (guest set password)
-- [ ] Write tests for mailables
+### 12.2 Notification Templates (Mailable classes)
+
+For each mailable:
+
+- Create the Mailable class in `app/Mail/`
+- Create the Blade template in `resources/views/emails/`
+- Register in `config/mail.php` if needed (e.g. email type IDs)
+- Write a PHPUnit test for rendering and content
+
+Mail types to create:
+
+- [x] `BookingConfirmationMail` — sent to customer when booking is created (includes date, time, location, instructor)
+- [x] `BookingReminderMail` — sent 24h before a booking (triggered by scheduled command or queue)
+- [x] `CancellationConfirmationMail` — sent when a booking is cancelled
+- [x] `WaitlistPromotionMail` — sent when a spot opens up (includes claim link with expiry)
+- [x] `SubscriptionConfirmationMail` — sent on successful subscription purchase/activation
+- [x] `PaymentReceiptMail` — sent on successful payment (includes receipt URL)
+- [x] `PaymentFailedMail` — sent to customer when payment fails (cc admin)
+- [x] `SubscriptionRenewingMail` — sent 7 days before auto-renewal
+- [x] `ContactFormNotificationMail` — sent to admin when contact form is submitted
+- [x] `AccountActivationMail` — sent to guest registrants to set password and activate account
+
+### 12.3 Wiring — Sending from Controllers
+
+- [x] Send `BookingConfirmationMail` from `BookingController::store`
+- [x] Send `CancellationConfirmationMail` from `BookingController::cancel`
+- [x] Send `PaymentReceiptMail` from `PaymentController::confirmPayment` and `PayPalController::captureOrder`
+- [x] Send `PaymentFailedMail` from `StripeWebhookController::handlePaymentIntentFailed`
+- [x] Send `SubscriptionConfirmationMail` from `PaymentController::confirmPayment` (subscription flow)
+- [x] Send `WaitlistPromotionMail` from `WaitlistController::promote` and `AdminWaitlistController::promote`
+- [x] Send `ContactFormNotificationMail` from `ContactController::submit` (new public `POST /api/contact`)
+- [x] Send `AccountActivationMail` from `AuthController::register`
+
+### 12.4 Scheduled Commands
+
+- [x] Create `php artisan bookings:send-reminders` artisan command (sends BookingReminderMail for tomorrow's bookings)
+- [x] Create `php artisan subscriptions:renewal-warnings` artisan command (sends SubscriptionRenewingMail for subscriptions expiring in 7 days)
+- [x] Schedule both commands in `routes/console.php`
 
 ---
 

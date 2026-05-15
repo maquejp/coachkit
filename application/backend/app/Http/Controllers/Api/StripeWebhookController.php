@@ -3,15 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PaymentFailedMail;
+use App\Mail\PaymentReceiptMail;
+use App\Mail\SubscriptionConfirmationMail;
 use App\Models\CustomerSubscription;
 use App\Models\PaymentTransaction;
 use App\Models\PointCardPlan;
+use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Services\StripeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class StripeWebhookController extends Controller
 {
@@ -94,7 +99,9 @@ class StripeWebhookController extends Controller
         $planType = $metadata['plan_type'] ?? null;
         $planId = isset($metadata['plan_id']) ? (int) $metadata['plan_id'] : null;
 
-        DB::transaction(function () use ($user, $paymentIntent, $planType, $planId, $metadata) {
+            $transaction = null;
+
+            DB::transaction(function () use ($user, $paymentIntent, $planType, $planId, $metadata, &$transaction) {
             $attrs = [
                 'user_id' => $user->id,
                 'amount_cents' => $paymentIntent->amount,
@@ -132,8 +139,30 @@ class StripeWebhookController extends Controller
                 $attrs['point_card_purchase_id'] = $purchase->id;
             }
 
-            PaymentTransaction::query()->create($attrs);
+            $transaction = PaymentTransaction::query()->create($attrs);
         });
+
+        if (!$transaction) return;
+
+        Mail::to($user->email)->queue(new PaymentReceiptMail(
+            userName: $user->first_name,
+            amount: $transaction->amount_cents,
+            currency: $transaction->currency,
+            description: $transaction->description,
+            receiptUrl: $transaction->receipt_url ?? '',
+            date: $transaction->created_at->format('Y-m-d'),
+        ));
+
+        if ($planType === 'subscription' && $planId) {
+            $plan = SubscriptionPlan::find($planId);
+            Mail::to($user->email)->queue(new SubscriptionConfirmationMail(
+                userName: $user->first_name,
+                planName: $plan?->name ?? $transaction->description,
+                startDate: now()->format('Y-m-d'),
+                endDate: now()->addMonth()->format('Y-m-d'),
+                amount: number_format($transaction->amount_cents / 100, 2) . ' ' . $transaction->currency,
+            ));
+        }
     }
 
     private function handlePaymentIntentFailed(object $paymentIntent): void
@@ -143,6 +172,21 @@ class StripeWebhookController extends Controller
         if ($existing) {
             $existing->update(['status' => 'failed']);
         }
+
+        $userId = $paymentIntent->metadata->user_id ?? null;
+        if (!$userId) return;
+
+        $user = User::find($userId);
+        if (!$user) return;
+
+        $metadata = $paymentIntent->metadata ?? [];
+        Mail::to($user->email)->queue(new PaymentFailedMail(
+            userName: $user->first_name,
+            amount: $paymentIntent->amount,
+            currency: strtoupper($paymentIntent->currency),
+            description: $metadata['plan_name'] ?? 'Payment',
+            errorMessage: $paymentIntent->last_payment_error?->message ?? 'An error occurred',
+        ));
     }
 
     private function handleSubscriptionCreated(object $stripeSubscription): void

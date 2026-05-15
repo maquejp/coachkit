@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\WaitlistPromotionMail;
+use App\Models\User;
 use App\Models\WaitlistEntry;
+use App\Models\WeeklySchedule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class WaitlistController extends Controller
@@ -69,7 +73,26 @@ class WaitlistController extends Controller
         $entry->update(['status' => 'promoted']);
         $entry->refresh();
 
+        $this->sendWaitlistPromotion($entry);
+
         return response()->json(['success' => true, 'data' => $this->formatItem($entry)]);
+    }
+
+    private function sendWaitlistPromotion(WaitlistEntry $entry): void
+    {
+        $user = User::find($entry->user_id);
+        if (!$user) return;
+
+        $schedule = WeeklySchedule::with('classType')->find($entry->schedule_id);
+        if (!$schedule) return;
+
+        Mail::to($user->email)->queue(new WaitlistPromotionMail(
+            userName: $user->first_name,
+            className: $schedule->classType?->name ?? '',
+            date: $entry->date?->format('Y-m-d') ?? '',
+            time: $schedule->start_time?->format('H:i') ?? '',
+            claimExpiryHours: 24,
+        ));
     }
 
     private function formatItem(WaitlistEntry $entry): array

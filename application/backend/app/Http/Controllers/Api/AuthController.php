@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Mail\AccountActivationMail;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -58,6 +60,12 @@ class AuthController extends Controller
         ]);
 
         $token = $user->createToken("api")->plainTextToken;
+
+        Mail::to($user->email)->queue(new AccountActivationMail(
+            userName: $user->first_name,
+            email: $user->email,
+            activationUrl: config('app.frontend_url') . '/auth/activate?token=' . $token,
+        ));
 
         return response()->json([
             "success" => true,
