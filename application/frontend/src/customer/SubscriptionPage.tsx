@@ -1,19 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
-import { Spinner } from '@/components/ui/Spinner';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { useAuthStore } from '@/stores/auth';
-import {
-  fetchMySubscriptionsApi,
-  fetchSubscriptionPlansApi,
-  cancelSubscriptionApi,
-  changeSubscriptionPlanApi,
-} from '@/api/customer';
-import type { CustomerSubscription, SubscriptionPlan } from '@/types';
+import { useCustomerSubscriptions } from '@/hooks/useCustomerSubscriptions';
+import { useSubscriptionPlans } from '@/hooks/useSubscriptionPlans';
+import { formatCurrency } from '@/lib/format';
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('en-US', {
@@ -22,8 +18,6 @@ function formatDate(dateStr: string) {
     year: 'numeric',
   });
 }
-
-import { formatCurrency } from '@/lib/format';
 
 function statusBadgeColor(status: string) {
   switch (status) {
@@ -43,44 +37,26 @@ function statusBadgeColor(status: string) {
 export default function SubscriptionPage() {
   const user = useAuthStore((s) => s.user);
   const { t } = useTranslation();
-  const [subscriptions, setSubscriptions] = useState<CustomerSubscription[]>([]);
-  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: subscriptions, cancel, changePlan } = useCustomerSubscriptions(user?.id);
+  const { data: plans } = useSubscriptionPlans();
 
-  const [cancelTarget, setCancelTarget] = useState<CustomerSubscription | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
-
   const [showChangePlan, setShowChangePlan] = useState(false);
   const [changingPlan, setChangingPlan] = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
-    async function load() {
-      try {
-        const [subs, allPlans] = await Promise.all([
-          fetchMySubscriptionsApi(user.id),
-          fetchSubscriptionPlansApi(),
-        ]);
-        setSubscriptions(subs);
-        setPlans(allPlans);
-      } catch {
-        // API errors are non-fatal; component renders empty state
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, [user]);
+  const loading = !subscriptions || !plans;
+  const subs = subscriptions ?? [];
+  const allPlans = plans ?? [];
 
-  const activeSub = subscriptions.find((s) => s.status === 'active');
-  const activePlan = activeSub ? plans.find((p) => p.id === activeSub.planId) : null;
+  const activeSub = subs.find((s) => s.status === 'active');
+  const activePlan = activeSub ? allPlans.find((p) => p.id === activeSub.planId) : null;
 
   async function handleCancel() {
     if (!cancelTarget) return;
     setCancelling(true);
     try {
-      const updated = await cancelSubscriptionApi(cancelTarget.id);
-      setSubscriptions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+      await cancel(cancelTarget);
       setCancelTarget(null);
     } finally {
       setCancelling(false);
@@ -91,15 +67,14 @@ export default function SubscriptionPage() {
     if (!activeSub) return;
     setChangingPlan(true);
     try {
-      const updated = await changeSubscriptionPlanApi(activeSub.id, newPlanId);
-      setSubscriptions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+      await changePlan(activeSub.id, newPlanId);
       setShowChangePlan(false);
     } finally {
       setChangingPlan(false);
     }
   }
 
-  if (loading) return <Spinner centered size="lg" />;
+  if (loading) return <Skeleton variant="card" />;
 
   return (
     <>
@@ -107,7 +82,6 @@ export default function SubscriptionPage() {
         title={t('seo.customerSubscriptionTitle')}
         description={t('seo.customerSubscriptionDescription')}
       />
-
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{t('customerSubscription.heading')}</h1>
         <p className="mt-1 text-gray-500">{t('customerSubscription.subtitle')}</p>
@@ -130,7 +104,6 @@ export default function SubscriptionPage() {
                 </div>
                 <Badge color={statusBadgeColor(activeSub.status)}>{activeSub.status}</Badge>
               </div>
-
               <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
                 <div>
                   <p className="text-xs text-gray-500">{t('common.price')}</p>
@@ -155,7 +128,6 @@ export default function SubscriptionPage() {
                   </div>
                 )}
               </div>
-
               {activePlan.features.length > 0 && (
                 <div className="border-t border-gray-100 pt-4">
                   <p className="mb-2 text-xs font-medium uppercase text-gray-500">
@@ -170,18 +142,16 @@ export default function SubscriptionPage() {
                   </ul>
                 </div>
               )}
-
               <div className="flex gap-2 border-t border-gray-100 pt-4">
                 <Button variant="outline" onClick={() => setShowChangePlan(true)}>
                   {t('customerSubscription.changePlan')}
                 </Button>
-                <Button variant="ghost" onClick={() => setCancelTarget(activeSub)}>
+                <Button variant="ghost" onClick={() => setCancelTarget(activeSub.id)}>
                   {t('customerSubscription.cancelSubscription')}
                 </Button>
               </div>
             </div>
           </Card>
-
           <Card
             header={
               <span className="font-semibold text-gray-900">
@@ -223,15 +193,13 @@ export default function SubscriptionPage() {
             )}
           </Card>
         </div>
-      ) : subscriptions.length > 0 ? (
+      ) : subs.length > 0 ? (
         <Card>
           <div className="py-12 text-center text-sm text-gray-400">
-            <p>{t('customerSubscription.yourSubscription', { status: subscriptions[0].status })}</p>
+            <p>{t('customerSubscription.yourSubscription', { status: subs[0].status })}</p>
             <p className="mt-1">
-              {t('common.started')} {formatDate(subscriptions[0].startDate)}
-              {subscriptions[0].endDate
-                ? ` · ${t('common.renews')} ${formatDate(subscriptions[0].endDate)}`
-                : ''}
+              {t('common.started')} {formatDate(subs[0].startDate)}
+              {subs[0].endDate ? ` · ${t('common.renews')} ${formatDate(subs[0].endDate)}` : ''}
             </p>
             <Button className="mt-4" onClick={() => (window.location.href = '/pricing')}>
               {t('common.viewPlans')}
@@ -273,7 +241,7 @@ export default function SubscriptionPage() {
         size="md"
       >
         <div className="space-y-3">
-          {plans
+          {allPlans
             .filter((p) => p.isActive && p.id !== activeSub?.planId)
             .map((plan) => (
               <div
@@ -291,7 +259,7 @@ export default function SubscriptionPage() {
                 </Button>
               </div>
             ))}
-          {plans.filter((p) => p.isActive && p.id !== activeSub?.planId).length === 0 && (
+          {allPlans.filter((p) => p.isActive && p.id !== activeSub?.planId).length === 0 && (
             <p className="py-4 text-center text-sm text-gray-400">
               {t('customerSubscription.noOtherPlans')}
             </p>

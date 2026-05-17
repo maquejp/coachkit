@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
@@ -7,19 +7,10 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { FormField } from '@/components/ui/FormField';
-import { Spinner } from '@/components/ui/Spinner';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { Badge } from '@/components/ui/Badge';
-import {
-  fetchSubscriptionPlans,
-  createSubscriptionPlan,
-  updateSubscriptionPlan,
-  deleteSubscriptionPlan,
-  fetchPointCardPlans,
-  createPointCardPlan,
-  updatePointCardPlan,
-  deletePointCardPlan,
-} from '@/api/admin';
-import type { SubscriptionPlan, PointCardPlan } from '@/api/admin';
+import { useSubscriptionPlans } from '@/hooks/useSubscriptionPlans';
+import { usePointCardPlans } from '@/hooks/usePointCardPlans';
 import { formatCurrency } from '@/lib/format';
 
 const emptySubForm = {
@@ -43,40 +34,34 @@ const emptyPcForm = {
 
 export default function PricingPage() {
   const { t } = useTranslation();
-  const [subPlans, setSubPlans] = useState<SubscriptionPlan[]>([]);
-  const [pcPlans, setPcPlans] = useState<PointCardPlan[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: subPlans,
+    loading: subLoading,
+    create,
+    update,
+    remove: deleteSub,
+  } = useSubscriptionPlans();
+  const {
+    data: pcPlans,
+    loading: pcLoading,
+    create: createPc,
+    update: updatePc,
+    remove: deletePc,
+  } = usePointCardPlans();
   const [saving, setSaving] = useState(false);
 
   const [creating, setCreating] = useState<'sub' | 'pc' | null>(null);
-  const [editing, setEditing] = useState<SubscriptionPlan | PointCardPlan | null>(null);
-  const [deleting, setDeleting] = useState<SubscriptionPlan | PointCardPlan | null>(null);
+  const [editing, setEditing] = useState<'sub' | 'pc' | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<{ type: 'sub' | 'pc'; id: string; name: string } | null>(
+    null,
+  );
 
   const [subForm, setSubForm] = useState(emptySubForm);
   const [pcForm, setPcForm] = useState(emptyPcForm);
   const [featuresText, setFeaturesText] = useState('');
 
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      try {
-        const [subs, pcs] = await Promise.all([fetchSubscriptionPlans(), fetchPointCardPlans()]);
-        if (!cancelled) {
-          setSubPlans(subs);
-          setPcPlans(pcs);
-        }
-      } catch {
-        // non-fatal
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const loading = subLoading || pcLoading;
 
   function openCreateSub() {
     setSubForm(emptySubForm);
@@ -89,7 +74,7 @@ export default function PricingPage() {
     setCreating('pc');
   }
 
-  function openEditSub(p: SubscriptionPlan) {
+  function openEditSub(p: NonNullable<typeof subPlans>[number]) {
     setSubForm({
       name: p.name,
       description: p.description,
@@ -100,10 +85,11 @@ export default function PricingPage() {
       isActive: p.isActive,
     });
     setFeaturesText(p.features.join('\n'));
-    setEditing(p);
+    setEditing('sub');
+    setEditingId(p.id);
   }
 
-  function openEditPc(p: PointCardPlan) {
+  function openEditPc(p: NonNullable<typeof pcPlans>[number]) {
     setPcForm({
       name: p.name,
       description: p.description,
@@ -112,7 +98,8 @@ export default function PricingPage() {
       validityDays: p.validityDays,
       isActive: p.isActive,
     });
-    setEditing(p);
+    setEditing('pc');
+    setEditingId(p.id);
   }
 
   async function handleSaveSub(e: React.FormEvent) {
@@ -120,13 +107,12 @@ export default function PricingPage() {
     setSaving(true);
     try {
       const payload = { ...subForm, features: featuresText.split('\n').filter(Boolean) };
-      if (editing && 'interval' in editing) {
-        const updated = await updateSubscriptionPlan(editing.id, payload);
-        setSubPlans((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+      if (editingId) {
+        await update(editingId, payload);
         setEditing(null);
+        setEditingId(null);
       } else {
-        const created = await createSubscriptionPlan(payload);
-        setSubPlans((prev) => [...prev, created]);
+        await create(payload as Parameters<typeof create>[0]);
         setCreating(null);
       }
     } finally {
@@ -138,13 +124,12 @@ export default function PricingPage() {
     e.preventDefault();
     setSaving(true);
     try {
-      if (editing && 'sessionsCount' in editing) {
-        const updated = await updatePointCardPlan(editing.id, pcForm);
-        setPcPlans((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+      if (editingId) {
+        await updatePc(editingId, pcForm);
         setEditing(null);
+        setEditingId(null);
       } else {
-        const created = await createPointCardPlan(pcForm);
-        setPcPlans((prev) => [...prev, created]);
+        await createPc(pcForm);
         setCreating(null);
       }
     } finally {
@@ -156,12 +141,10 @@ export default function PricingPage() {
     if (!deleting) return;
     setSaving(true);
     try {
-      if ('interval' in deleting) {
-        await deleteSubscriptionPlan(deleting.id);
-        setSubPlans((prev) => prev.filter((p) => p.id !== deleting.id));
+      if (deleting.type === 'sub') {
+        await deleteSub(deleting.id);
       } else {
-        await deletePointCardPlan(deleting.id);
-        setPcPlans((prev) => prev.filter((p) => p.id !== deleting.id));
+        await deletePc(deleting.id);
       }
       setDeleting(null);
     } finally {
@@ -169,12 +152,18 @@ export default function PricingPage() {
     }
   }
 
-  if (loading) return <Spinner centered size="lg" />;
+  if (loading)
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+      </div>
+    );
 
   return (
     <>
       <SEO title={t('seo.adminPricingTitle')} description={t('seo.adminPricingDescription')} />
-
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('adminPricing.heading')}</h1>
@@ -189,7 +178,7 @@ export default function PricingPage() {
           </h2>
           <Button onClick={openCreateSub}>{t('adminPricing.addPlan')}</Button>
         </div>
-        {subPlans.length === 0 ? (
+        {!subPlans || subPlans.length === 0 ? (
           <Card>
             <div className="py-8 text-center text-sm text-gray-400">
               {t('adminPricing.noPlans')}
@@ -230,7 +219,11 @@ export default function PricingPage() {
                   <Button size="sm" variant="outline" onClick={() => openEditSub(p)}>
                     {t('common.edit')}
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setDeleting(p)}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setDeleting({ type: 'sub', id: p.id, name: p.name })}
+                  >
                     {t('common.delete')}
                   </Button>
                 </div>
@@ -247,7 +240,7 @@ export default function PricingPage() {
           </h2>
           <Button onClick={openCreatePc}>{t('adminPricing.addPack')}</Button>
         </div>
-        {pcPlans.length === 0 ? (
+        {!pcPlans || pcPlans.length === 0 ? (
           <Card>
             <div className="py-8 text-center text-sm text-gray-400">
               {t('adminPricing.noPacks')}
@@ -276,7 +269,11 @@ export default function PricingPage() {
                   <Button size="sm" variant="outline" onClick={() => openEditPc(p)}>
                     {t('common.edit')}
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setDeleting(p)}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setDeleting({ type: 'pc', id: p.id, name: p.name })}
+                  >
                     {t('common.delete')}
                   </Button>
                 </div>
@@ -287,10 +284,11 @@ export default function PricingPage() {
       </div>
 
       <Modal
-        open={creating === 'sub' || (!!editing && 'interval' in editing)}
+        open={creating === 'sub' || editing === 'sub'}
         onClose={() => {
           setCreating(null);
           setEditing(null);
+          setEditingId(null);
         }}
         title={editing ? t('adminPricing.editPlanTitle') : t('adminPricing.addPlanTitle')}
         size="md"
@@ -372,6 +370,7 @@ export default function PricingPage() {
               onClick={() => {
                 setCreating(null);
                 setEditing(null);
+                setEditingId(null);
               }}
             >
               {t('common.cancel')}
@@ -384,10 +383,11 @@ export default function PricingPage() {
       </Modal>
 
       <Modal
-        open={creating === 'pc' || (!!editing && 'sessionsCount' in editing)}
+        open={creating === 'pc' || editing === 'pc'}
         onClose={() => {
           setCreating(null);
           setEditing(null);
+          setEditingId(null);
         }}
         title={editing ? t('adminPricing.editPackTitle') : t('adminPricing.addPackTitle')}
         size="md"
@@ -458,6 +458,7 @@ export default function PricingPage() {
               onClick={() => {
                 setCreating(null);
                 setEditing(null);
+                setEditingId(null);
               }}
             >
               {t('common.cancel')}

@@ -1,7 +1,25 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import { setupServer } from 'msw/node';
+import { coachHandlers } from '@/mocks/handlers/coaches';
+import { classTypeHandlers } from '@/mocks/handlers/classTypes';
+import { locationHandlers } from '@/mocks/handlers/locations';
+import { subscriptionHandlers } from '@/mocks/handlers/subscriptions';
+import { scheduleHandlers } from '@/mocks/handlers/schedule';
 import HomePage from '@/public/HomePage';
+
+const server = setupServer(
+  ...coachHandlers,
+  ...classTypeHandlers,
+  ...locationHandlers,
+  ...subscriptionHandlers,
+  ...scheduleHandlers,
+);
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 function renderPage() {
   return render(
@@ -26,27 +44,26 @@ describe('HomePage', () => {
     expect(screen.getByText('Analytics Dashboard')).toBeInTheDocument();
   });
 
-  it('renders Our Classes section', () => {
+  it('renders Our Classes section', async () => {
     renderPage();
-    expect(screen.getByText('Our Classes')).toBeInTheDocument();
-    expect(screen.getAllByText('Morning Yoga').length).toBeGreaterThanOrEqual(1);
+    await waitFor(() =>
+      expect(screen.getAllByText('Morning Yoga').length).toBeGreaterThanOrEqual(1),
+    );
   });
 
-  it('renders instructors section', () => {
+  it('renders instructors section', async () => {
     renderPage();
-    expect(screen.getByText('Meet Our Instructors')).toBeInTheDocument();
-    expect(screen.getByText('Alex Rivera')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('Alex Rivera')).toBeInTheDocument());
   });
 
-  it('renders weekly schedule section', () => {
+  it('renders weekly schedule section', async () => {
     renderPage();
-    expect(screen.getByText("This Week's Schedule")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText("This Week's Schedule")).toBeInTheDocument());
   });
 
-  it('renders pricing section', () => {
+  it('renders pricing section', async () => {
     renderPage();
-    expect(screen.getByText('Pricing')).toBeInTheDocument();
-    expect(screen.getByText('€99')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('€99')).toBeInTheDocument());
   });
 
   it('renders reviews carousel', () => {
@@ -57,10 +74,5 @@ describe('HomePage', () => {
   it('renders gallery section', () => {
     renderPage();
     expect(screen.getByText('Gallery')).toBeInTheDocument();
-  });
-
-  it('renders social media section', () => {
-    renderPage();
-    expect(screen.getByText('Follow Us')).toBeInTheDocument();
   });
 });

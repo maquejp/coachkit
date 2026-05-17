@@ -87,7 +87,7 @@ class ReportController extends Controller
             'to' => 'required|date',
         ]);
 
-        $records = Attendance::selectRaw('DATE(attendance.attended_at) as date')
+        $records = Attendance::selectRaw("DATE(attendance.attended_at) as date")
             ->selectRaw('count(distinct attendance.id) as total_check_ins')
             ->selectRaw('count(distinct attendance.user_id) as unique_customers')
             ->whereBetween('attendance.attended_at', [$data['from'], $data['to'] . ' 23:59:59'])
@@ -95,20 +95,22 @@ class ReportController extends Controller
             ->orderBy('date')
             ->get();
 
-        $result = $records->map(function ($record) {
-            $byClass = Attendance::selectRaw('class_types.name as class_name, count(*) as count')
-                ->join('class_types', 'attendance.class_type_id', '=', 'class_types.id')
-                ->whereRaw('DATE(attendance.attended_at) = ?', [$record->date])
-                ->groupBy('class_types.name')
-                ->get()
-                ->map(fn ($c) => ['className' => $c->class_name, 'count' => (int) $c->count])
-                ->toArray();
+        $byClassRaw = Attendance::selectRaw("DATE(attendance.attended_at) as date")
+            ->selectRaw('class_types.name as class_name, count(*) as count')
+            ->join('class_types', 'attendance.class_type_id', '=', 'class_types.id')
+            ->whereBetween('attendance.attended_at', [$data['from'], $data['to'] . ' 23:59:59'])
+            ->groupBy(DB::raw('DATE(attendance.attended_at)'), 'class_types.name')
+            ->orderBy('date')
+            ->get()
+            ->groupBy('date')
+            ->map(fn ($items) => $items->map(fn ($c) => ['className' => $c->class_name, 'count' => (int) $c->count])->toArray());
 
+        $result = $records->map(function ($record) use ($byClassRaw) {
             return [
                 'date' => $record->date,
                 'totalCheckIns' => (int) $record->total_check_ins,
                 'uniqueCustomers' => (int) $record->unique_customers,
-                'byClass' => $byClass,
+                'byClass' => $byClassRaw->get($record->date, []),
             ];
         });
 

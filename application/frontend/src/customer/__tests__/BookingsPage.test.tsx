@@ -24,61 +24,70 @@ const mockUser: CustomerUser = {
 const futureDate = '2026-06-15';
 const pastDate = '2026-05-01';
 
+const mockBookings = [
+  {
+    id: 'bkg-upcoming-1',
+    userId: 'user-002',
+    guestEmail: null,
+    classTypeId: 'ct-001',
+    className: 'Morning Yoga',
+    scheduleId: 'ws-001',
+    date: futureDate,
+    status: 'confirmed',
+    createdAt: '2026-05-10T08:00:00Z',
+    updatedAt: '2026-05-10T08:00:00Z',
+  },
+  {
+    id: 'bkg-upcoming-2',
+    userId: 'user-002',
+    guestEmail: null,
+    classTypeId: 'ct-002',
+    className: 'HIIT Circuit',
+    scheduleId: 'ws-002',
+    date: futureDate,
+    status: 'confirmed',
+    createdAt: '2026-05-10T08:05:00Z',
+    updatedAt: '2026-05-10T08:05:00Z',
+  },
+  {
+    id: 'bkg-history-1',
+    userId: 'user-002',
+    guestEmail: null,
+    classTypeId: 'ct-003',
+    className: 'Pilates Flow',
+    scheduleId: 'ws-003',
+    date: pastDate,
+    status: 'attended',
+    createdAt: '2026-04-28T09:00:00Z',
+    updatedAt: '2026-05-01T08:00:00Z',
+  },
+  {
+    id: 'bkg-history-2',
+    userId: 'user-002',
+    guestEmail: null,
+    classTypeId: 'ct-004',
+    className: 'Strength & Tone',
+    scheduleId: 'ws-004',
+    date: pastDate,
+    status: 'cancelled',
+    createdAt: '2026-04-28T10:00:00Z',
+    updatedAt: '2026-04-30T10:00:00Z',
+  },
+];
+
 const server = setupServer(
   http.get('/api/bookings', ({ request }) => {
     const url = new URL(request.url);
     const userId = url.searchParams.get('userId');
+    const page = Number(url.searchParams.get('page')) || 1;
+    const pageSize = Number(url.searchParams.get('pageSize')) || 20;
+    const userBookings = userId === 'user-002' ? mockBookings : [];
+    const total = userBookings.length;
+    const totalPages = Math.ceil(total / pageSize);
+    const items = userBookings.slice((page - 1) * pageSize, page * pageSize);
     return HttpResponse.json({
       success: true,
-      data:
-        userId === 'user-002'
-          ? [
-              {
-                id: 'bkg-upcoming-1',
-                userId: 'user-002',
-                guestEmail: null,
-                classTypeId: 'ct-001',
-                scheduleId: 'ws-001',
-                date: futureDate,
-                status: 'confirmed',
-                createdAt: '2026-05-10T08:00:00Z',
-                updatedAt: '2026-05-10T08:00:00Z',
-              },
-              {
-                id: 'bkg-upcoming-2',
-                userId: 'user-002',
-                guestEmail: null,
-                classTypeId: 'ct-002',
-                scheduleId: 'ws-002',
-                date: futureDate,
-                status: 'confirmed',
-                createdAt: '2026-05-10T08:05:00Z',
-                updatedAt: '2026-05-10T08:05:00Z',
-              },
-              {
-                id: 'bkg-history-1',
-                userId: 'user-002',
-                guestEmail: null,
-                classTypeId: 'ct-003',
-                scheduleId: 'ws-003',
-                date: pastDate,
-                status: 'attended',
-                createdAt: '2026-04-28T09:00:00Z',
-                updatedAt: '2026-05-01T08:00:00Z',
-              },
-              {
-                id: 'bkg-history-2',
-                userId: 'user-002',
-                guestEmail: null,
-                classTypeId: 'ct-004',
-                scheduleId: 'ws-004',
-                date: pastDate,
-                status: 'cancelled',
-                createdAt: '2026-04-28T10:00:00Z',
-                updatedAt: '2026-04-30T10:00:00Z',
-              },
-            ]
-          : [],
+      data: { items, total, totalPages, page, pageSize },
     });
   }),
 

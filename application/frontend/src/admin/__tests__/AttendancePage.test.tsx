@@ -61,8 +61,7 @@ const server = setupServer(
     return HttpResponse.json({
       success: true,
       data: {
-        total: 1,
-        records: [
+        items: [
           {
             id: 'att-001',
             bookingId: 'bkg-003',
@@ -74,6 +73,10 @@ const server = setupServer(
             classColor: '#14b8a6',
           },
         ],
+        total: 1,
+        totalPages: 1,
+        page: 1,
+        pageSize: 20,
       },
     });
   }),
@@ -155,7 +158,7 @@ describe('AttendancePage', () => {
     await userEvent.click(screen.getByText('Usage Report'));
     await waitFor(() => {
       expect(screen.getByText('Alice Johnson')).toBeInTheDocument();
-      expect(screen.getByText('Monthly Unlimited')).toBeInTheDocument();
+      expect(screen.getByText((c) => c.includes('Monthly Unlimited'))).toBeInTheDocument();
     });
   });
 });

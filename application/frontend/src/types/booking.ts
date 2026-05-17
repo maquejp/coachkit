@@ -10,6 +10,8 @@ export interface Booking {
   status: BookingStatus;
   createdAt: string;
   updatedAt: string;
+  className?: string;
+  classColor?: string;
 }
 
 export interface FreeSessionClaim {

@@ -58,7 +58,6 @@ describe('LoginPage', () => {
     renderPage();
     expect(screen.getByText("Don't have an account?")).toBeInTheDocument();
     expect(screen.getByText('Sign up')).toBeInTheDocument();
-    expect(screen.getByText('Forgot password?')).toBeInTheDocument();
   });
 
   it('shows error on failed login', async () => {

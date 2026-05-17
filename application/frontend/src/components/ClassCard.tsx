@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -26,11 +27,18 @@ export default function ClassCard({
   onBook,
 }: ClassCardProps) {
   const { t } = useTranslation();
+  const [imgError, setImgError] = useState(false);
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white transition-shadow hover:shadow-card-hover">
-      {imageSrc ? (
-        <img src={imageSrc} alt={name} className="h-40 w-full object-cover" />
+      {imageSrc && !imgError ? (
+        <img
+          src={imageSrc}
+          alt={name}
+          loading="lazy"
+          onError={() => setImgError(true)}
+          className="h-40 w-full object-cover"
+        />
       ) : (
         <div className="flex h-40 items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200">
           <span className="text-3xl font-bold text-primary-400">{name.charAt(0)}</span>

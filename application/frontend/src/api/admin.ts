@@ -22,18 +22,20 @@ export interface OccupancyData {
 }
 
 export async function fetchDashboardKpis() {
-  const { data } = await apiClient.get<{ success: boolean; data: Kpis }>('/dashboard/kpis');
+  const { data } = await apiClient.get<{ success: boolean; data: Kpis }>('/admin/dashboard/kpis');
   return data.data;
 }
 
 export async function fetchDashboardCharts() {
-  const { data } = await apiClient.get<{ success: boolean; data: ChartsData }>('/dashboard/charts');
+  const { data } = await apiClient.get<{ success: boolean; data: ChartsData }>(
+    '/admin/dashboard/charts',
+  );
   return data.data;
 }
 
 export async function fetchDashboardOccupancy() {
   const { data } = await apiClient.get<{ success: boolean; data: OccupancyData }>(
-    '/dashboard/occupancy',
+    '/admin/dashboard/occupancy',
   );
   return data.data;
 }
@@ -76,7 +78,7 @@ export async function createWeeklySchedule(
   item: Omit<WeeklyScheduleItem, 'id' | 'createdAt' | 'updatedAt'>,
 ) {
   const { data } = await apiClient.post<{ success: boolean; data: WeeklyScheduleItem }>(
-    '/weekly-schedule',
+    '/admin/weekly-schedule',
     item,
   );
   return data.data;
@@ -87,7 +89,7 @@ export async function updateWeeklySchedule(
   item: Partial<Omit<WeeklyScheduleItem, 'id' | 'createdAt' | 'updatedAt'>>,
 ) {
   const { data } = await apiClient.put<{ success: boolean; data: WeeklyScheduleItem }>(
-    `/weekly-schedule/${id}`,
+    `/admin/weekly-schedule/${id}`,
     item,
   );
   return data.data;
@@ -95,7 +97,7 @@ export async function updateWeeklySchedule(
 
 export async function deleteWeeklySchedule(id: string) {
   const { data } = await apiClient.delete<{ success: boolean; data: null }>(
-    `/weekly-schedule/${id}`,
+    `/admin/weekly-schedule/${id}`,
   );
   return data.data;
 }
@@ -112,7 +114,7 @@ export async function createScheduleException(
   item: Omit<ScheduleExceptionItem, 'id' | 'createdAt' | 'updatedAt'>,
 ) {
   const { data } = await apiClient.post<{ success: boolean; data: ScheduleExceptionItem }>(
-    '/schedule-exceptions',
+    '/admin/schedule-exceptions',
     item,
   );
   return data.data;
@@ -123,7 +125,7 @@ export async function updateScheduleException(
   item: Partial<Omit<ScheduleExceptionItem, 'id' | 'createdAt' | 'updatedAt'>>,
 ) {
   const { data } = await apiClient.put<{ success: boolean; data: ScheduleExceptionItem }>(
-    `/schedule-exceptions/${id}`,
+    `/admin/schedule-exceptions/${id}`,
     item,
   );
   return data.data;
@@ -131,22 +133,24 @@ export async function updateScheduleException(
 
 export async function deleteScheduleException(id: string) {
   const { data } = await apiClient.delete<{ success: boolean; data: null }>(
-    `/schedule-exceptions/${id}`,
+    `/admin/schedule-exceptions/${id}`,
   );
   return data.data;
 }
 
-export async function fetchAllClassTypes() {
-  const { data } = await apiClient.get<{ success: boolean; data: import('@/types').ClassType[] }>(
-    '/class-types',
-  );
+export async function fetchAllClassTypes(page = 1, pageSize = 50) {
+  const { data } = await apiClient.get<{
+    success: boolean;
+    data: PaginatedResult<import('@/types').ClassType>;
+  }>(`/class-types?page=${page}&pageSize=${pageSize}`);
   return data.data;
 }
 
-export async function fetchAllCoaches() {
-  const { data } = await apiClient.get<{ success: boolean; data: import('@/types').Coach[] }>(
-    '/coaches',
-  );
+export async function fetchAllCoaches(page = 1, pageSize = 50) {
+  const { data } = await apiClient.get<{
+    success: boolean;
+    data: PaginatedResult<import('@/types').Coach>;
+  }>(`/coaches?page=${page}&pageSize=${pageSize}`);
   return data.data;
 }
 
@@ -158,7 +162,10 @@ export async function fetchAllLocations() {
 }
 
 export async function createLocation(item: Omit<Location, 'id' | 'createdAt' | 'updatedAt'>) {
-  const { data } = await apiClient.post<{ success: boolean; data: Location }>('/locations', item);
+  const { data } = await apiClient.post<{ success: boolean; data: Location }>(
+    '/admin/locations',
+    item,
+  );
   return data.data;
 }
 
@@ -167,14 +174,16 @@ export async function updateLocation(
   item: Partial<Omit<Location, 'id' | 'createdAt' | 'updatedAt'>>,
 ) {
   const { data } = await apiClient.put<{ success: boolean; data: Location }>(
-    `/locations/${id}`,
+    `/admin/locations/${id}`,
     item,
   );
   return data.data;
 }
 
 export async function deleteLocation(id: string) {
-  const { data } = await apiClient.delete<{ success: boolean; data: null }>(`/locations/${id}`);
+  const { data } = await apiClient.delete<{ success: boolean; data: null }>(
+    `/admin/locations/${id}`,
+  );
   return data.data;
 }
 
@@ -182,7 +191,7 @@ export type ClassType = import('@/types').ClassType;
 
 export async function createClassType(item: Omit<ClassType, 'id' | 'createdAt' | 'updatedAt'>) {
   const { data } = await apiClient.post<{ success: boolean; data: ClassType }>(
-    '/class-types',
+    '/admin/class-types',
     item,
   );
   return data.data;
@@ -193,14 +202,16 @@ export async function updateClassType(
   item: Partial<Omit<ClassType, 'id' | 'createdAt' | 'updatedAt'>>,
 ) {
   const { data } = await apiClient.put<{ success: boolean; data: ClassType }>(
-    `/class-types/${id}`,
+    `/admin/class-types/${id}`,
     item,
   );
   return data.data;
 }
 
 export async function deleteClassType(id: string) {
-  const { data } = await apiClient.delete<{ success: boolean; data: null }>(`/class-types/${id}`);
+  const { data } = await apiClient.delete<{ success: boolean; data: null }>(
+    `/admin/class-types/${id}`,
+  );
   return data.data;
 }
 
@@ -357,11 +368,17 @@ export interface CustomerBookingDetail {
   classColor: string;
 }
 
-export async function fetchCustomerBookings(id: string) {
+export async function fetchCustomerBookings(id: string, page = 1, pageSize = 20) {
   const { data } = await apiClient.get<{
     success: boolean;
-    data: CustomerBookingDetail[];
-  }>(`/admin/customers/${id}/bookings`);
+    data: {
+      items: CustomerBookingDetail[];
+      total: number;
+      totalPages: number;
+      page: number;
+      pageSize: number;
+    };
+  }>(`/admin/customers/${id}/bookings`, { params: { page, pageSize } });
   return data.data;
 }
 
@@ -373,11 +390,17 @@ export interface CustomerAttendanceDetail {
   checkInTime: string;
 }
 
-export async function fetchCustomerAttendance(id: string) {
+export async function fetchCustomerAttendance(id: string, page = 1, pageSize = 20) {
   const { data } = await apiClient.get<{
     success: boolean;
-    data: CustomerAttendanceDetail[];
-  }>(`/admin/customers/${id}/attendance`);
+    data: {
+      items: CustomerAttendanceDetail[];
+      total: number;
+      totalPages: number;
+      page: number;
+      pageSize: number;
+    };
+  }>(`/admin/customers/${id}/attendance`, { params: { page, pageSize } });
   return data.data;
 }
 
@@ -392,11 +415,17 @@ export interface CustomerPaymentDetail {
   createdAt: string;
 }
 
-export async function fetchCustomerPayments(id: string) {
+export async function fetchCustomerPayments(id: string, page = 1, pageSize = 20) {
   const { data } = await apiClient.get<{
     success: boolean;
-    data: CustomerPaymentDetail[];
-  }>(`/admin/customers/${id}/payments`);
+    data: {
+      items: CustomerPaymentDetail[];
+      total: number;
+      totalPages: number;
+      page: number;
+      pageSize: number;
+    };
+  }>(`/admin/customers/${id}/payments`, { params: { page, pageSize } });
   return data.data;
 }
 
@@ -450,11 +479,17 @@ export interface AttendanceReportRecord {
   classColor: string;
 }
 
-export async function fetchAttendanceReport(from: string, to: string) {
+export async function fetchAttendanceReport(from: string, to: string, page = 1, pageSize = 20) {
   const { data } = await apiClient.get<{
     success: boolean;
-    data: { total: number; records: AttendanceReportRecord[] };
-  }>('/admin/attendance/report', { params: { from, to } });
+    data: {
+      items: AttendanceReportRecord[];
+      total: number;
+      totalPages: number;
+      page: number;
+      pageSize: number;
+    };
+  }>('/admin/attendance/report', { params: { from, to, page, pageSize } });
   return data.data;
 }
 
@@ -487,7 +522,7 @@ export async function fetchSessionUsage() {
 export type Coach = import('@/types').Coach;
 
 export async function createCoach(item: Omit<Coach, 'id' | 'createdAt' | 'updatedAt'>) {
-  const { data } = await apiClient.post<{ success: boolean; data: Coach }>('/coaches', item);
+  const { data } = await apiClient.post<{ success: boolean; data: Coach }>('/admin/coaches', item);
   return data.data;
 }
 
@@ -495,12 +530,15 @@ export async function updateCoach(
   id: string,
   item: Partial<Omit<Coach, 'id' | 'createdAt' | 'updatedAt'>>,
 ) {
-  const { data } = await apiClient.put<{ success: boolean; data: Coach }>(`/coaches/${id}`, item);
+  const { data } = await apiClient.put<{ success: boolean; data: Coach }>(
+    `/admin/coaches/${id}`,
+    item,
+  );
   return data.data;
 }
 
 export async function deleteCoach(id: string) {
-  const { data } = await apiClient.delete<{ success: boolean; data: null }>(`/coaches/${id}`);
+  const { data } = await apiClient.delete<{ success: boolean; data: null }>(`/admin/coaches/${id}`);
   return data.data;
 }
 

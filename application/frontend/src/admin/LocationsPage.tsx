@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
@@ -7,10 +7,11 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { FormField } from '@/components/ui/FormField';
-import { Spinner } from '@/components/ui/Spinner';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/EmptyState';
 import { Badge } from '@/components/ui/Badge';
-import { fetchAllLocations, createLocation, updateLocation, deleteLocation } from '@/api/admin';
-import type { Location } from '@/api/admin';
+import { useLocations } from '@/hooks/useLocations';
+import type { Location } from '@/types';
 
 const emptyForm = {
   name: '',
@@ -25,34 +26,13 @@ const emptyForm = {
 
 export default function LocationsPage() {
   const { t } = useTranslation();
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: locations, loading, create, update, remove } = useLocations();
 
   const [editing, setEditing] = useState<Location | null>(null);
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState<Location | null>(null);
   const [saving, setSaving] = useState(false);
-
   const [form, setForm] = useState(emptyForm);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      try {
-        const locs = await fetchAllLocations();
-        if (!cancelled) setLocations(locs);
-      } catch {
-        // non-fatal
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   function openCreate() {
     setForm(emptyForm);
@@ -77,19 +57,22 @@ export default function LocationsPage() {
     e.preventDefault();
     setSaving(true);
     try {
+      const slug = form.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+      const payload = {
+        ...form,
+        slug,
+        googleMapsUrl: form.mapLink || null,
+        postalCode: '',
+        notes: null,
+      };
       if (editing) {
-        const updated = await updateLocation(editing.id, {
-          ...form,
-          mapLink: form.mapLink || null,
-        });
-        setLocations((prev) => prev.map((l) => (l.id === updated.id ? updated : l)));
+        await update(editing.id, payload as Parameters<typeof update>[1]);
         setEditing(null);
       } else {
-        const created = await createLocation({
-          ...form,
-          mapLink: form.mapLink || null,
-        });
-        setLocations((prev) => [...prev, created]);
+        await create(payload as Parameters<typeof create>[0]);
         setCreating(false);
       }
     } finally {
@@ -101,20 +84,25 @@ export default function LocationsPage() {
     if (!deleting) return;
     setSaving(true);
     try {
-      await deleteLocation(deleting.id);
-      setLocations((prev) => prev.filter((l) => l.id !== deleting.id));
+      await remove(deleting.id);
       setDeleting(null);
     } finally {
       setSaving(false);
     }
   }
 
-  if (loading) return <Spinner centered size="lg" />;
+  if (loading)
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+      </div>
+    );
 
   return (
     <>
       <SEO title={t('seo.adminLocationsTitle')} description={t('seo.adminLocationsDescription')} />
-
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('adminLocations.heading')}</h1>
@@ -122,13 +110,8 @@ export default function LocationsPage() {
         </div>
         <Button onClick={openCreate}>{t('adminLocations.addLocation')}</Button>
       </div>
-
-      {locations.length === 0 ? (
-        <Card>
-          <div className="py-12 text-center text-sm text-gray-400">
-            {t('adminLocations.noLocations')}
-          </div>
-        </Card>
+      {!locations || locations.length === 0 ? (
+        <EmptyState message={t('adminLocations.noLocations')} />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {locations.map((loc) => (
@@ -284,7 +267,7 @@ export default function LocationsPage() {
             {t('common.keep')}
           </Button>
           <Button variant="accent" loading={saving} onClick={handleDelete}>
-            {t('common.yesDelete')}
+            {t('adminClasses.yesDelete')}
           </Button>
         </div>
       </Modal>

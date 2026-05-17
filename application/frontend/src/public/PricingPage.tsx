@@ -2,15 +2,19 @@ import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import PricingCard from '@/components/PricingCard';
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { subscriptionPlans, pointCardPlans, classTypes } from '@/mocks/fixtures';
+import { useSubscriptionPlans } from '@/hooks/useSubscriptionPlans';
+import { usePointCardPlans } from '@/hooks/usePointCardPlans';
+import { useClassTypes } from '@/hooks/useClassTypes';
 import { formatCurrency } from '@/lib/format';
 
 export default function PricingPage() {
   const { t } = useTranslation();
+  const { data: subPlans } = useSubscriptionPlans();
+  const { data: pcPlans } = usePointCardPlans();
+  const { data: classTypes } = useClassTypes();
 
-  const activePlans = subscriptionPlans
-    .filter((sp) => sp.isActive)
+  const activePlans = (subPlans ?? [])
+    .filter((p) => p.isActive)
     .map((p) => ({
       planName: p.name,
       price: formatCurrency(p.priceCents, 'EUR', false),
@@ -20,8 +24,8 @@ export default function PricingPage() {
       ctaLabel: p.trialDays > 0 ? t('pricingPage.startFreeTrial') : t('common.getStarted'),
     }));
 
-  const activePointCards = pointCardPlans.filter((pcp) => pcp.isActive);
-  const singlePrice = classTypes
+  const activePointCards = (pcPlans ?? []).filter((pcp) => pcp.isActive);
+  const singlePrice = (classTypes ?? [])
     .filter((ct) => ct.isActive)
     .reduce((min, ct) => Math.min(min, ct.defaultPriceCents), Infinity);
 
@@ -37,79 +41,56 @@ export default function PricingPage() {
           {t('pricingPage.heading')}
         </h1>
         <p className="mb-10 text-center text-gray-600">{t('pricingPage.subtitle')}</p>
-
-        <h2 className="mb-6 text-2xl font-bold text-gray-900">
-          {t('pricingPage.membershipPlans')}
-        </h2>
         <div className="mb-16 grid gap-6 md:grid-cols-3">
-          {activePlans.map((p) => (
-            <PricingCard key={p.planName} {...p} />
+          {activePlans.map((plan, i) => (
+            <PricingCard key={i} {...plan} />
           ))}
-        </div>
-
-        <h2 className="mb-6 text-2xl font-bold text-gray-900">{t('pricingPage.classPacks')}</h2>
-        <div className="mb-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {activePointCards.map((pcp) => (
-            <Card key={pcp.id} className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900">{pcp.name}</h3>
-              <p className="mt-1 text-sm text-gray-500">{pcp.description}</p>
-              <div className="mt-4">
-                <span className="text-3xl font-bold text-gray-900">
-                  {formatCurrency(pcp.priceCents, 'EUR', false)}
-                </span>
-              </div>
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <svg
-                    className="h-4 w-4 text-primary-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  {t('pricingPage.sessionsCount', { count: pcp.sessionsCount })}
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <svg
-                    className="h-4 w-4 text-primary-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  {t('pricingPage.validDays', { days: pcp.validityDays })}
-                </div>
+          {activePlans.length === 0 && (
+            <Card>
+              <div className="py-12 text-center text-sm text-gray-400">
+                {t('pricingPage.noPlans')}
               </div>
             </Card>
-          ))}
+          )}
         </div>
-
-        <h2 className="mb-6 text-2xl font-bold text-gray-900">{t('pricingPage.singleSession')}</h2>
-        <Card className="max-w-sm p-6">
-          <p className="text-sm text-gray-500">{t('pricingPage.dropIn')}</p>
-          <div className="mt-2">
-            <span className="text-3xl font-bold text-gray-900">
-              {formatCurrency(singlePrice, 'EUR', false)}
-            </span>
-            <span className="ml-1 text-sm text-gray-500">{t('pricingPage.perSession')}</span>
-          </div>
-          <p className="mt-2 text-sm text-gray-500">{t('pricingPage.disclaimer')}</p>
-          <Badge color="green" className="mt-3">
-            {t('pricingPage.noCommitment')}
-          </Badge>
-        </Card>
+        <div className="mb-16">
+          <h2 className="mb-6 text-center text-2xl font-bold text-gray-900">
+            {t('pricingPage.pointCards')}
+          </h2>
+          {activePointCards.length === 0 ? (
+            <Card>
+              <div className="py-12 text-center text-sm text-gray-400">
+                {t('pricingPage.noPointCards')}
+              </div>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-3">
+              {activePointCards.map((pc) => (
+                <Card key={pc.id} hover>
+                  <div className="p-6 text-center">
+                    <h3 className="text-lg font-semibold text-gray-900">{pc.name}</h3>
+                    <p className="mt-1 text-sm text-gray-500">{pc.description}</p>
+                    <p className="mt-4 text-3xl font-bold text-gray-900">
+                      {formatCurrency(pc.priceCents)}
+                    </p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      {t('pricingPage.packInfo', {
+                        sessions: pc.sessionsCount,
+                        days: pc.validityDays,
+                      })}
+                    </p>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="text-center">
+          <h2 className="mb-4 text-2xl font-bold text-gray-900">{t('pricingPage.dropIn')}</h2>
+          <p className="text-gray-600">
+            {t('pricingPage.dropInPrice', { price: formatCurrency(singlePrice) })}
+          </p>
+        </div>
       </div>
     </>
   );

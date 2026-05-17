@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
-import { Spinner } from '@/components/ui/Spinner';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/EmptyState';
 import { Badge } from '@/components/ui/Badge';
-import { fetchAdminCustomers } from '@/api/admin';
-import type { CustomerUser, PaginatedResult } from '@/api/admin';
+import { Pagination } from '@/components/ui/Pagination';
+import { useCustomers } from '@/hooks/useCustomers';
 
 const PAGE_SIZES = [5, 10, 20, 50];
 
@@ -19,35 +19,24 @@ function SortIcon({ sortBy, sortDir, field }: { sortBy: string; sortDir: string;
 
 export default function CustomersPage() {
   const { t } = useTranslation();
-  const [result, setResult] = useState<PaginatedResult<CustomerUser> | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [sortBy, setSortBy] = useState('createdAt');
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      try {
-        const res = await fetchAdminCustomers({ search, page, pageSize, sortBy, sortDir });
-        if (!cancelled) setResult(res);
-      } catch {
-        // non-fatal
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [search, page, pageSize, sortBy, sortDir]);
+  const {
+    data: result,
+    loading,
+    search,
+    setSearch,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    sortBy,
+    setSortBy,
+    sortDir,
+    setSortDir,
+  } = useCustomers();
 
   function handleSort(field: string) {
     if (sortBy === field) {
-      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
     } else {
       setSortBy(field);
       setSortDir('asc');
@@ -57,7 +46,6 @@ export default function CustomersPage() {
   return (
     <>
       <SEO title={t('seo.adminCustomersTitle')} description={t('seo.adminCustomersDescription')} />
-
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('adminCustomers.heading')}</h1>
@@ -68,7 +56,6 @@ export default function CustomersPage() {
           </p>
         </div>
       </div>
-
       <Card className="mb-4">
         <div className="flex flex-wrap items-center gap-3">
           <Input
@@ -96,15 +83,15 @@ export default function CustomersPage() {
           </Select>
         </div>
       </Card>
-
       {loading ? (
-        <Spinner centered size="lg" />
+        <div className="space-y-3">
+          <Skeleton variant="text" lines={1} />
+          <Skeleton variant="text" lines={1} />
+          <Skeleton variant="text" lines={1} />
+          <Skeleton variant="text" lines={1} />
+        </div>
       ) : !result || result.items.length === 0 ? (
-        <Card>
-          <div className="py-12 text-center text-sm text-gray-400">
-            {t('adminCustomers.noCustomers')}
-          </div>
-        </Card>
+        <EmptyState message={t('adminCustomers.noCustomers')} />
       ) : (
         <>
           <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
@@ -178,7 +165,6 @@ export default function CustomersPage() {
               </tbody>
             </table>
           </div>
-
           {result.totalPages > 1 && (
             <div className="mt-4 flex items-center justify-between">
               <p className="text-sm text-gray-500">
@@ -187,22 +173,7 @@ export default function CustomersPage() {
                   totalPages: result.totalPages,
                 })}
               </p>
-              <div className="flex gap-2">
-                <button
-                  disabled={page <= 1}
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  {t('common.previous')}
-                </button>
-                <button
-                  disabled={page >= result.totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  {t('common.next')}
-                </button>
-              </div>
+              <Pagination current={page} total={result.totalPages} onChange={setPage} />
             </div>
           )}
         </>

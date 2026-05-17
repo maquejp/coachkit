@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
-import { Spinner } from '@/components/ui/Spinner';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { useAuthStore } from '@/stores/auth';
-import { fetchInstructorUpcoming, fetchInstructorStats } from '@/api/instructor';
-import type { InstructorBooking, InstructorStats as Stats } from '@/api/instructor';
+import { useInstructorDashboard } from '@/hooks/useInstructorDashboard';
 import type { InstructorUser } from '@/types';
 
 export default function InstructorDashboardPage() {
@@ -14,37 +12,15 @@ export default function InstructorDashboardPage() {
   const user = useAuthStore((s) => s.user) as InstructorUser | null;
   const coachId = user?.coachId ?? null;
 
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [upcoming, setUpcoming] = useState<InstructorBooking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { stats, upcoming, loading } = useInstructorDashboard(coachId);
 
-  useEffect(() => {
-    if (!coachId) return;
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      try {
-        const [s, u] = await Promise.all([
-          fetchInstructorStats(coachId),
-          fetchInstructorUpcoming(coachId),
-        ]);
-        if (!cancelled) {
-          setStats(s);
-          setUpcoming(u);
-        }
-      } catch {
-        // non-fatal
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [coachId]);
-
-  if (loading) return <Spinner centered size="lg" />;
+  if (loading)
+    return (
+      <div className="space-y-4">
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+      </div>
+    );
 
   return (
     <>

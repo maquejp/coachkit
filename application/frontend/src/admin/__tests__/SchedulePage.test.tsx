@@ -6,182 +6,179 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import SchedulePage from '@/admin/SchedulePage';
 
+const exceptionStore = [
+  {
+    id: 'se-001',
+    date: '2025-12-25',
+    locationId: 'loc-001',
+    openTime: null,
+    closeTime: null,
+    isClosed: true,
+    reason: 'Christmas Day',
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+];
+
+const mockSchedules: Array<Record<string, unknown>> = [
+  {
+    id: 'ws-001',
+    dayOfWeek: 1,
+    classTypeId: 'ct-001',
+    coachId: 'coach-001',
+    locationId: 'loc-001',
+    startTime: '07:00',
+    endTime: '08:00',
+    maxCapacity: 25,
+    isActive: true,
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+  {
+    id: 'ws-002',
+    dayOfWeek: 3,
+    classTypeId: 'ct-002',
+    coachId: 'coach-002',
+    locationId: 'loc-002',
+    startTime: '09:00',
+    endTime: '09:45',
+    maxCapacity: 20,
+    isActive: true,
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+  {
+    id: 'ws-003',
+    dayOfWeek: 1,
+    classTypeId: 'ct-002',
+    coachId: 'coach-002',
+    locationId: 'loc-002',
+    startTime: '07:00',
+    endTime: '08:00',
+    maxCapacity: 20,
+    isActive: true,
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+];
+const mockClassTypes = [
+  {
+    id: 'ct-001',
+    name: 'Morning Yoga',
+    color: '#0ea5e9',
+    durationMinutes: 60,
+    capacity: 25,
+    defaultPriceCents: 2000,
+    isActive: true,
+  },
+  {
+    id: 'ct-002',
+    name: 'HIIT Circuit',
+    color: '#f43f5e',
+    durationMinutes: 45,
+    capacity: 20,
+    defaultPriceCents: 2500,
+    isActive: true,
+  },
+];
+const mockCoaches = [
+  { id: 'coach-001', name: 'Alex Rivera', isActive: true },
+  { id: 'coach-002', name: 'Jordan Chen', isActive: true },
+];
+const mockLocations = [
+  { id: 'loc-001', name: 'CoachKit Downtown', isActive: true },
+  { id: 'loc-002', name: 'CoachKit Eastside', isActive: true },
+];
+
 const server = setupServer(
   http.get('/api/weekly-schedule', () => {
+    return HttpResponse.json({ success: true, data: mockSchedules });
+  }),
+
+  http.post('/api/admin/weekly-schedule', async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    const item = {
+      id: 'ws-new-001',
+      ...body,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    mockSchedules.push(item);
+    return HttpResponse.json({ success: true, data: item }, { status: 201 });
+  }),
+
+  http.put('/api/admin/weekly-schedule/:id', async ({ params, request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    const idx = mockSchedules.findIndex((s) => s.id === params.id);
+    if (idx !== -1)
+      mockSchedules[idx] = { ...mockSchedules[idx], ...body, updatedAt: new Date().toISOString() };
     return HttpResponse.json({
       success: true,
-      data: [
-        {
-          id: 'ws-001',
-          dayOfWeek: 1,
-          classTypeId: 'ct-001',
-          coachId: 'coach-001',
-          locationId: 'loc-001',
-          startTime: '07:00',
-          endTime: '08:00',
-          maxCapacity: 25,
-          isActive: true,
-          createdAt: '2025-01-01T00:00:00Z',
-          updatedAt: '2025-01-01T00:00:00Z',
-        },
-        {
-          id: 'ws-002',
-          dayOfWeek: 3,
-          classTypeId: 'ct-002',
-          coachId: 'coach-002',
-          locationId: 'loc-002',
-          startTime: '09:00',
-          endTime: '09:45',
-          maxCapacity: 20,
-          isActive: true,
-          createdAt: '2025-01-01T00:00:00Z',
-          updatedAt: '2025-01-01T00:00:00Z',
-        },
-        {
-          id: 'ws-003',
-          dayOfWeek: 1,
-          classTypeId: 'ct-002',
-          coachId: 'coach-002',
-          locationId: 'loc-002',
-          startTime: '07:00',
-          endTime: '08:00',
-          maxCapacity: 20,
-          isActive: true,
-          createdAt: '2025-01-01T00:00:00Z',
-          updatedAt: '2025-01-01T00:00:00Z',
-        },
-      ],
+      data: mockSchedules[idx] ?? { id: params.id, ...body, updatedAt: new Date().toISOString() },
     });
   }),
 
-  http.post('/api/weekly-schedule', async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json(
-      {
-        success: true,
-        data: {
-          id: 'ws-new-001',
-          ...body,
-          isActive: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      },
-      { status: 201 },
-    );
-  }),
-
-  http.put('/api/weekly-schedule/:id', async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json({
-      success: true,
-      data: {
-        id: params.id,
-        ...body,
-        updatedAt: new Date().toISOString(),
-      },
-    });
-  }),
-
-  http.delete('/api/weekly-schedule/:id', () => {
+  http.delete('/api/admin/weekly-schedule/:id', ({ params }) => {
+    const idx = mockSchedules.findIndex((s) => s.id === params.id);
+    if (idx !== -1) mockSchedules.splice(idx, 1);
     return HttpResponse.json({ success: true, data: null });
   }),
 
   http.get('/api/schedule-exceptions', () => {
-    return HttpResponse.json({
-      success: true,
-      data: [
-        {
-          id: 'se-001',
-          date: '2025-12-25',
-          locationId: 'loc-001',
-          openTime: null,
-          closeTime: null,
-          isClosed: true,
-          reason: 'Christmas Day',
-          createdAt: '2025-01-01T00:00:00Z',
-          updatedAt: '2025-01-01T00:00:00Z',
-        },
-      ],
-    });
+    return HttpResponse.json({ success: true, data: exceptionStore });
   }),
 
-  http.post('/api/schedule-exceptions', async ({ request }) => {
+  http.post('/api/admin/schedule-exceptions', async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json(
-      {
-        success: true,
-        data: {
-          id: 'se-new-001',
-          ...body,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      },
-      { status: 201 },
-    );
+    const newEntry = {
+      id: 'se-new-001',
+      ...body,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    exceptionStore.push(newEntry);
+    return HttpResponse.json({ success: true, data: newEntry }, { status: 201 });
   }),
 
-  http.delete('/api/schedule-exceptions/:id', () => {
+  http.delete('/api/admin/schedule-exceptions/:id', ({ params }) => {
+    const idx = exceptionStore.findIndex((e) => e.id === params.id);
+    if (idx !== -1) exceptionStore.splice(idx, 1);
     return HttpResponse.json({ success: true, data: null });
   }),
 
-  http.get('/api/class-types', () => {
-    return HttpResponse.json({
-      success: true,
-      data: [
-        {
-          id: 'ct-001',
-          name: 'Morning Yoga',
-          color: '#0ea5e9',
-          durationMinutes: 60,
-          capacity: 25,
-          defaultPriceCents: 2000,
-          isActive: true,
-        },
-        {
-          id: 'ct-002',
-          name: 'HIIT Circuit',
-          color: '#f43f5e',
-          durationMinutes: 45,
-          capacity: 20,
-          defaultPriceCents: 2500,
-          isActive: true,
-        },
-      ],
-    });
+  http.get('/api/class-types', ({ request }) => {
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page')) || 1;
+    const pageSize = Number(url.searchParams.get('pageSize')) || 50;
+    const total = mockClassTypes.length;
+    const totalPages = Math.ceil(total / pageSize);
+    const items = mockClassTypes.slice((page - 1) * pageSize, page * pageSize);
+    return HttpResponse.json({ success: true, data: { items, total, totalPages, page, pageSize } });
   }),
 
-  http.get('/api/coaches', () => {
-    return HttpResponse.json({
-      success: true,
-      data: [
-        { id: 'coach-001', name: 'Alex Rivera', isActive: true },
-        { id: 'coach-002', name: 'Jordan Chen', isActive: true },
-      ],
-    });
+  http.get('/api/coaches', ({ request }) => {
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page')) || 1;
+    const pageSize = Number(url.searchParams.get('pageSize')) || 50;
+    const total = mockCoaches.length;
+    const totalPages = Math.ceil(total / pageSize);
+    const items = mockCoaches.slice((page - 1) * pageSize, page * pageSize);
+    return HttpResponse.json({ success: true, data: { items, total, totalPages, page, pageSize } });
   }),
 
   http.get('/api/locations', () => {
-    return HttpResponse.json({
-      success: true,
-      data: [
-        {
-          id: 'loc-001',
-          name: 'CoachKit Downtown',
-          isActive: true,
-        },
-        {
-          id: 'loc-002',
-          name: 'CoachKit Eastside',
-          isActive: true,
-        },
-      ],
-    });
+    return HttpResponse.json({ success: true, data: mockLocations });
   }),
 );
 
+const initialMockSchedules = JSON.parse(JSON.stringify(mockSchedules));
+
 beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
+beforeEach(() => {
+  mockSchedules.length = 0;
+  mockSchedules.push(...initialMockSchedules);
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 

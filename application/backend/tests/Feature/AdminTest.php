@@ -165,7 +165,7 @@ class AdminTest extends TestCase
         $response = $this->withToken($this->adminToken)
             ->getJson("/api/admin/customers/{$this->customer->id}/bookings");
 
-        $response->assertStatus(200)->assertJsonCount(1, 'data');
+        $response->assertStatus(200)->assertJsonPath('data.total', 1);
     }
 
     public function test_admin_customer_attendance(): void
@@ -194,7 +194,7 @@ class AdminTest extends TestCase
         $response = $this->withToken($this->adminToken)
             ->getJson("/api/admin/customers/{$this->customer->id}/attendance");
 
-        $response->assertStatus(200)->assertJsonCount(1, 'data');
+        $response->assertStatus(200)->assertJson(['data' => ['total' => 1]]);
     }
 
     public function test_admin_customer_payments(): void
@@ -211,7 +211,7 @@ class AdminTest extends TestCase
         $response = $this->withToken($this->adminToken)
             ->getJson("/api/admin/customers/{$this->customer->id}/payments");
 
-        $response->assertStatus(200)->assertJsonCount(1, 'data');
+        $response->assertStatus(200)->assertJson(['data' => ['total' => 1]]);
     }
 
     public function test_admin_impersonate(): void

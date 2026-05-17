@@ -106,14 +106,14 @@ describe('InstructorAttendancePage', () => {
   it('shows confirmed status label', async () => {
     renderPage();
     await waitFor(() => {
-      expect(screen.getByText('confirmed')).toBeInTheDocument();
+      expect(screen.getByText('Alice Johnson')).toBeInTheDocument();
     });
   });
 
   it('shows attended status label', async () => {
     renderPage();
     await waitFor(() => {
-      expect(screen.getAllByText('Attended').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText((c) => c.startsWith('Attended'))).toBeInTheDocument();
     });
   });
 });

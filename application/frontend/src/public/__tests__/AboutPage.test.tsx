@@ -1,7 +1,16 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import { setupServer } from 'msw/node';
+import { coachHandlers } from '@/mocks/handlers/coaches';
+import { locationHandlers } from '@/mocks/handlers/locations';
 import AboutPage from '@/public/AboutPage';
+
+const server = setupServer(...coachHandlers, ...locationHandlers);
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 function renderPage() {
   return render(
@@ -32,9 +41,9 @@ describe('AboutPage', () => {
     expect(screen.getByText('Meet Our Instructors')).toBeInTheDocument();
   });
 
-  it('renders all active coaches from fixtures', () => {
+  it('renders all active coaches from fixtures', async () => {
     renderPage();
-    expect(screen.getByText('Alex Rivera')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('Alex Rivera')).toBeInTheDocument());
     expect(screen.getByText('Jordan Chen')).toBeInTheDocument();
     expect(screen.getByText('Priya Sharma')).toBeInTheDocument();
     expect(screen.getByText('Marcus Webb')).toBeInTheDocument();
@@ -45,9 +54,9 @@ describe('AboutPage', () => {
     expect(screen.getByText('Our Locations')).toBeInTheDocument();
   });
 
-  it('renders active location names from fixtures', () => {
+  it('renders active location names from fixtures', async () => {
     renderPage();
-    expect(screen.getByText('CoachKit Downtown')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('CoachKit Downtown')).toBeInTheDocument());
     expect(screen.getByText('CoachKit Eastside')).toBeInTheDocument();
   });
 });

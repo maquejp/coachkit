@@ -1,7 +1,15 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import { setupServer } from 'msw/node';
+import { locationHandlers } from '@/mocks/handlers/locations';
 import ContactPage from '@/public/ContactPage';
+
+const server = setupServer(...locationHandlers);
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 function renderPage() {
   return render(
@@ -19,17 +27,17 @@ describe('ContactPage', () => {
 
   it('renders the contact form', () => {
     renderPage();
-    expect(screen.getByText('Send us a message')).toBeInTheDocument();
+    expect(screen.getByText('Send Message')).toBeInTheDocument();
   });
 
-  it('renders locations heading', () => {
+  it('renders locations heading', async () => {
     renderPage();
-    expect(screen.getByText('Visit us')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('Visit us')).toBeInTheDocument());
   });
 
-  it('renders active location names from fixtures', () => {
+  it('renders active location names from fixtures', async () => {
     renderPage();
-    expect(screen.getByText('CoachKit Downtown')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('CoachKit Downtown')).toBeInTheDocument());
     expect(screen.getByText('CoachKit Eastside')).toBeInTheDocument();
   });
 

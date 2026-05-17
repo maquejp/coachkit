@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 type AvatarSize = 'sm' | 'md' | 'lg' | 'xl';
 
 interface AvatarProps {
@@ -16,11 +18,15 @@ const sizeMap: Record<AvatarSize, string> = {
 };
 
 export function Avatar({ src, alt = '', initials, size = 'md', className = '' }: AvatarProps) {
-  if (src) {
+  const [imgError, setImgError] = useState(false);
+
+  if (src && !imgError) {
     return (
       <img
         src={src}
         alt={alt}
+        loading="lazy"
+        onError={() => setImgError(true)}
         className={`rounded-full object-cover ${sizeMap[size]} ${className}`}
       />
     );

@@ -59,17 +59,17 @@ export default function CustomerDetailPage() {
         const [cust, subs, bks, att, pmts, cards] = await Promise.all([
           fetchAdminCustomer(id),
           fetchCustomerSubscriptions(id),
-          fetchCustomerBookings(id),
-          fetchCustomerAttendance(id),
-          fetchCustomerPayments(id),
+          fetchCustomerBookings(id, 1, 200),
+          fetchCustomerAttendance(id, 1, 200),
+          fetchCustomerPayments(id, 1, 200),
           fetchCustomerPointCards(id),
         ]);
         if (cancelled) return;
         setCustomer(cust);
         setSubscriptions(subs);
-        setBookings(bks);
-        setAttendance(att);
-        setPayments(pmts);
+        setBookings(bks.items ?? bks);
+        setAttendance(att.items ?? att);
+        setPayments(pmts.items ?? pmts);
         setPointCards(cards);
       } catch {
         // non-fatal

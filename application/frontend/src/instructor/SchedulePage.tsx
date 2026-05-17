@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import SEO from '@/components/SEO';
@@ -6,10 +5,8 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Spinner } from '@/components/ui/Spinner';
 import { useAuthStore } from '@/stores/auth';
-import { fetchInstructorSchedule } from '@/api/instructor';
-import { fetchAllClassTypes, fetchAllLocations } from '@/api/admin';
-import type { InstructorScheduleItem } from '@/api/instructor';
-import type { ClassType, InstructorUser, Location } from '@/types';
+import { useInstructorSchedule } from '@/hooks/useInstructorSchedule';
+import type { InstructorUser } from '@/types';
 
 const DAYS = [
   { num: 1, name: 'Monday' },
@@ -34,38 +31,7 @@ export default function InstructorSchedulePage() {
   const user = useAuthStore((s) => s.user) as InstructorUser | null;
   const coachId = user?.coachId ?? null;
 
-  const [schedules, setSchedules] = useState<InstructorScheduleItem[]>([]);
-  const [classTypes, setClassTypes] = useState<ClassType[]>([]);
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!coachId) return;
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      try {
-        const [sched, cts, locs] = await Promise.all([
-          fetchInstructorSchedule(coachId),
-          fetchAllClassTypes(),
-          fetchAllLocations(),
-        ]);
-        if (!cancelled) {
-          setSchedules(sched);
-          setClassTypes(cts);
-          setLocations(locs);
-        }
-      } catch {
-        // non-fatal
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [coachId]);
+  const { schedules, classTypes, locations, loading } = useInstructorSchedule(coachId);
 
   if (loading) return <Spinner centered size="lg" />;
 

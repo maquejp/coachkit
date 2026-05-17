@@ -14,7 +14,7 @@ export const locationHandlers = [
     return HttpResponse.json({ success: true, data: loc });
   }),
 
-  http.post('/api/locations', async ({ request }) => {
+  http.post('/api/admin/locations', async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
     const loc = {
       id: `loc-${String(store.length + 1).padStart(3, '0')}`,
@@ -26,7 +26,7 @@ export const locationHandlers = [
     return HttpResponse.json({ success: true, data: loc }, { status: 201 });
   }),
 
-  http.put('/api/locations/:id', async ({ params, request }) => {
+  http.put('/api/admin/locations/:id', async ({ params, request }) => {
     const idx = store.findIndex((l) => l.id === params.id);
     if (idx === -1)
       return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });
@@ -35,7 +35,7 @@ export const locationHandlers = [
     return HttpResponse.json({ success: true, data: store[idx] });
   }),
 
-  http.delete('/api/locations/:id', ({ params }) => {
+  http.delete('/api/admin/locations/:id', ({ params }) => {
     const idx = store.findIndex((l) => l.id === params.id);
     if (idx === -1)
       return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });

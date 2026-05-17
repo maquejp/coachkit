@@ -381,7 +381,7 @@ class PaymentTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson(['success' => true])
-            ->assertJsonCount(2, 'data');
+            ->assertJson(['data' => ['total' => 2]]);
     }
 
     public function test_payment_history_returns_only_own_transactions(): void
@@ -412,7 +412,7 @@ class PaymentTest extends TestCase
             ->getJson('/api/payments/history');
 
         $response->assertStatus(200)
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.description', 'Mine');
+            ->assertJson(['data' => ['total' => 1]])
+            ->assertJsonPath('data.items.0.description', 'Mine');
     }
 }

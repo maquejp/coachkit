@@ -210,24 +210,32 @@ class PaymentController extends Controller
 
     public function history(Request $request): JsonResponse
     {
-        $transactions = $request->user()
+        $page = (int) $request->query('page', 1);
+        $pageSize = (int) $request->query('pageSize', 20);
+
+        $paginator = $request->user()
             ->paymentTransactions()
             ->latest()
-            ->get()
-            ->map(fn (PaymentTransaction $t) => [
-                'id' => $t->id,
-                'amountCents' => $t->amount_cents,
-                'currency' => $t->currency,
-                'status' => $t->status,
-                'paymentMethod' => $t->payment_method,
-                'description' => $t->description,
-                'receiptUrl' => $t->receipt_url,
-                'createdAt' => $t->created_at,
-            ]);
+            ->paginate($pageSize, ['*'], 'page', $page);
 
         return response()->json([
             'success' => true,
-            'data' => $transactions,
+            'data' => [
+                'items' => collect($paginator->items())->map(fn (PaymentTransaction $t) => [
+                    'id' => $t->id,
+                    'amountCents' => $t->amount_cents,
+                    'currency' => $t->currency,
+                    'status' => $t->status,
+                    'paymentMethod' => $t->payment_method,
+                    'description' => $t->description,
+                    'receiptUrl' => $t->receipt_url,
+                    'createdAt' => $t->created_at,
+                ])->toArray(),
+                'total' => $paginator->total(),
+                'totalPages' => $paginator->lastPage(),
+                'page' => $paginator->currentPage(),
+                'pageSize' => $paginator->perPage(),
+            ],
         ]);
     }
 }

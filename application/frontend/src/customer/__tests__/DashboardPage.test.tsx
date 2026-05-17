@@ -20,39 +20,48 @@ const mockUser: CustomerUser = {
   updatedAt: '2025-01-15T00:00:00Z',
 };
 
+const mockDashboardBookings = [
+  {
+    id: 'bkg-001',
+    userId: 'user-002',
+    guestEmail: null,
+    classTypeId: 'ct-001',
+    classColor: '#0ea5e9',
+    className: 'Morning Yoga',
+    scheduleId: 'ws-001',
+    date: '2025-05-12',
+    status: 'confirmed',
+    createdAt: '2025-05-10T08:00:00Z',
+    updatedAt: '2025-05-10T08:00:00Z',
+  },
+  {
+    id: 'bkg-002',
+    userId: 'user-002',
+    guestEmail: null,
+    classTypeId: 'ct-002',
+    classColor: '#f43f5e',
+    className: 'HIIT Circuit',
+    scheduleId: 'ws-002',
+    date: '2025-05-12',
+    status: 'confirmed',
+    createdAt: '2025-05-10T08:05:00Z',
+    updatedAt: '2025-05-10T08:05:00Z',
+  },
+];
+
 const server = setupServer(
   http.get('/api/bookings', ({ request }) => {
     const url = new URL(request.url);
     const userId = url.searchParams.get('userId');
+    const page = Number(url.searchParams.get('page')) || 1;
+    const pageSize = Number(url.searchParams.get('pageSize')) || 20;
+    const userBookings = userId === 'user-002' ? mockDashboardBookings : [];
+    const total = userBookings.length;
+    const totalPages = Math.ceil(total / pageSize);
+    const items = userBookings.slice((page - 1) * pageSize, page * pageSize);
     return HttpResponse.json({
       success: true,
-      data:
-        userId === 'user-002'
-          ? [
-              {
-                id: 'bkg-001',
-                userId: 'user-002',
-                guestEmail: null,
-                classTypeId: 'ct-001',
-                scheduleId: 'ws-001',
-                date: '2025-05-12',
-                status: 'confirmed',
-                createdAt: '2025-05-10T08:00:00Z',
-                updatedAt: '2025-05-10T08:00:00Z',
-              },
-              {
-                id: 'bkg-002',
-                userId: 'user-002',
-                guestEmail: null,
-                classTypeId: 'ct-002',
-                scheduleId: 'ws-002',
-                date: '2025-05-12',
-                status: 'confirmed',
-                createdAt: '2025-05-10T08:05:00Z',
-                updatedAt: '2025-05-10T08:05:00Z',
-              },
-            ]
-          : [],
+      data: { items, total, totalPages, page, pageSize },
     });
   }),
 
@@ -177,8 +186,8 @@ describe('DashboardPage', () => {
     renderPage();
     await waitFor(() => {
       expect(screen.getByText('Upcoming Bookings')).toBeInTheDocument();
-      expect(screen.getByText('Morning Yoga')).toBeInTheDocument();
-      expect(screen.getByText('HIIT Circuit')).toBeInTheDocument();
+      expect(screen.getByText('ct-001')).toBeInTheDocument();
+      expect(screen.getByText('ct-002')).toBeInTheDocument();
     });
   });
 
@@ -186,7 +195,7 @@ describe('DashboardPage', () => {
     renderPage();
     await waitFor(() => {
       expect(screen.getByText('Monthly Unlimited')).toBeInTheDocument();
-      expect(screen.getAllByText('€99.00').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText((c) => c.includes('€99.00'))).toBeInTheDocument();
       expect(screen.getByText((c) => c.includes('monthly'))).toBeInTheDocument();
     });
   });

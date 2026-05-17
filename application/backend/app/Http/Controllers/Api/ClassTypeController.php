@@ -10,13 +10,22 @@ use Illuminate\Support\Str;
 
 class ClassTypeController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $classTypes = ClassType::all();
+        $page = (int) $request->query('page', 1);
+        $pageSize = (int) $request->query('pageSize', 20);
+
+        $paginator = ClassType::query()->paginate($pageSize, ['*'], 'page', $page);
 
         return response()->json([
             "success" => true,
-            "data" => $classTypes->map(fn (ClassType $classType) => $this->formatItem($classType)),
+            "data" => [
+                'items' => collect($paginator->items())->map(fn (ClassType $classType) => $this->formatItem($classType))->toArray(),
+                'total' => $paginator->total(),
+                'totalPages' => $paginator->lastPage(),
+                'page' => $paginator->currentPage(),
+                'pageSize' => $paginator->perPage(),
+            ],
         ]);
     }
 

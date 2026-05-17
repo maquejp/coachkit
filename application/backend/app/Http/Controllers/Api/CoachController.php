@@ -10,13 +10,22 @@ use Illuminate\Support\Str;
 
 class CoachController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $coaches = Coach::all();
+        $page = (int) $request->query('page', 1);
+        $pageSize = (int) $request->query('pageSize', 20);
+
+        $paginator = Coach::query()->paginate($pageSize, ['*'], 'page', $page);
 
         return response()->json([
             "success" => true,
-            "data" => $coaches->map(fn (Coach $coach) => $this->formatItem($coach)),
+            "data" => [
+                'items' => collect($paginator->items())->map(fn (Coach $coach) => $this->formatItem($coach))->toArray(),
+                'total' => $paginator->total(),
+                'totalPages' => $paginator->lastPage(),
+                'page' => $paginator->currentPage(),
+                'pageSize' => $paginator->perPage(),
+            ],
         ]);
     }
 

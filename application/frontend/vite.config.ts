@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -8,6 +9,27 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+    },
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8001',
+        changeOrigin: true,
+      },
+      '/sanctum': {
+        target: 'http://localhost:8001',
+        changeOrigin: true,
+      },
+      '/storage': {
+        target: 'http://localhost:8001',
+        changeOrigin: true,
+      },
+    },
+  },
+  test: {
+    env: {
+      VITE_API_URL: '/api',
     },
   },
 });

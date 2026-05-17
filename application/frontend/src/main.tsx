@@ -8,10 +8,18 @@ import { initAnalytics } from './lib/analytics';
 import './lib/i18n';
 import './index.css';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 2,
+      gcTime: 1000 * 60 * 10,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 async function main() {
-  if (import.meta.env.DEV) {
+  if (import.meta.env.VITE_USE_MSW === 'true' || import.meta.env.MODE === 'test') {
     const { worker } = await import('./mocks/browser');
     await worker.start({ onUnhandledRequest: 'bypass' });
   }

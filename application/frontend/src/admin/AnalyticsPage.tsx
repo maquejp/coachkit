@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
-import { Spinner } from '@/components/ui/Spinner';
-import { fetchAnalytics } from '@/api/admin';
-import type { AnalyticsData } from '@/api/admin';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 function formatPct(n: number) {
   return (n * 100).toFixed(1) + '%';
@@ -17,47 +15,22 @@ function formatDuration(seconds: number) {
 }
 
 function formatCurrency(cents: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(cents / 100);
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
 }
 
 export default function AnalyticsPage() {
   const { t } = useTranslation();
-  const [data, setData] = useState<AnalyticsData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      try {
-        const result = await fetchAnalytics();
-        if (!cancelled) setData(result);
-      } catch {
-        // non-fatal
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { data, loading } = useAnalytics();
 
   return (
     <>
       <SEO title={t('seo.adminAnalyticsTitle')} description={t('seo.adminAnalyticsDescription')} />
-
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{t('adminAnalytics.heading')}</h1>
         <p className="mt-1 text-gray-500">{t('adminAnalytics.subtitle')}</p>
       </div>
-
       {loading ? (
-        <Spinner centered size="lg" />
+        <Skeleton variant="card" />
       ) : !data ? (
         <Card>
           <div className="py-12 text-center text-sm text-gray-400">
@@ -104,7 +77,6 @@ export default function AnalyticsPage() {
               </div>
             </Card>
           </div>
-
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <Card>
               <h3 className="mb-4 text-sm font-semibold text-gray-900">
@@ -124,7 +96,6 @@ export default function AnalyticsPage() {
                 ))}
               </div>
             </Card>
-
             <Card>
               <h3 className="mb-4 text-sm font-semibold text-gray-900">
                 {t('adminAnalytics.peakTimes')}
@@ -147,7 +118,6 @@ export default function AnalyticsPage() {
               </div>
             </Card>
           </div>
-
           <Card>
             <h3 className="mb-4 text-sm font-semibold text-gray-900">
               {t('adminAnalytics.referralSources')}

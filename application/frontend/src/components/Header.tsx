@@ -37,7 +37,7 @@ export default function Header() {
     try {
       await logoutApi();
     } catch {
-      // non-fatal
+      /* ignore — clear auth regardless */
     }
     useAuthStore.getState().clearAuth();
     navigate('/');

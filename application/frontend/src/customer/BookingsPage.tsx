@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
@@ -6,10 +6,11 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Tabs } from '@/components/ui/Tabs';
-import { Spinner } from '@/components/ui/Spinner';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { Pagination } from '@/components/ui/Pagination';
+import { EmptyState } from '@/components/EmptyState';
 import { useAuthStore } from '@/stores/auth';
-import { fetchMyBookingsApi, cancelBookingApi, rescheduleBookingApi } from '@/api/customer';
-import { classTypes, weeklySchedule, locations } from '@/mocks/fixtures';
+import { useBookings } from '@/hooks/useBookings';
 import type { Booking } from '@/types';
 
 function formatDate(dateStr: string) {
@@ -38,7 +39,6 @@ function statusBadgeColor(status: string) {
 function todayStr() {
   return new Date().toISOString().slice(0, 10);
 }
-
 function isUpcoming(b: Booking) {
   return b.status === 'confirmed' && b.date >= todayStr();
 }
@@ -46,8 +46,14 @@ function isUpcoming(b: Booking) {
 export default function BookingsPage() {
   const user = useAuthStore((s) => s.user);
   const { t } = useTranslation();
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: bookings,
+    totalPages,
+    page,
+    setPage,
+    cancelBooking: cancel,
+    rescheduleBooking: reschedule,
+  } = useBookings(user?.id);
   const [tab, setTab] = useState('upcoming');
   const [cancelTarget, setCancelTarget] = useState<Booking | null>(null);
   const [cancelling, setCancelling] = useState(false);
@@ -55,30 +61,16 @@ export default function BookingsPage() {
   const [newDate, setNewDate] = useState('');
   const [rescheduling, setRescheduling] = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
-    async function load() {
-      try {
-        const bks = await fetchMyBookingsApi(user.id);
-        setBookings(bks);
-      } catch {
-        // API errors are non-fatal; component renders empty state
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, [user]);
-
-  const upcoming = bookings.filter(isUpcoming);
-  const history = bookings.filter((b) => !isUpcoming(b));
+  const loading = !bookings;
+  const bks = bookings ?? [];
+  const upcoming = bks.filter(isUpcoming);
+  const history = bks.filter((b) => !isUpcoming(b));
 
   async function handleCancel() {
     if (!cancelTarget) return;
     setCancelling(true);
     try {
-      const updated = await cancelBookingApi(cancelTarget.id);
-      setBookings((prev) => prev.map((b) => (b.id === updated.id ? updated : b)));
+      await cancel(cancelTarget.id);
       setCancelTarget(null);
     } finally {
       setCancelling(false);
@@ -89,8 +81,7 @@ export default function BookingsPage() {
     if (!rescheduleTarget || !newDate) return;
     setRescheduling(true);
     try {
-      const updated = await rescheduleBookingApi(rescheduleTarget.id, newDate);
-      setBookings((prev) => prev.map((b) => (b.id === updated.id ? updated : b)));
+      await reschedule(rescheduleTarget.id, newDate);
       setRescheduleTarget(null);
       setNewDate('');
     } finally {
@@ -103,15 +94,7 @@ export default function BookingsPage() {
     setRescheduleTarget(b);
   }
 
-  function resolveBookingInfo(b: Booking) {
-    const ct = classTypes.find((c) => c.id === b.classTypeId);
-    const slot = weeklySchedule.find((s) => s.id === b.scheduleId);
-    const loc = slot ? locations.find((l) => l.id === slot.locationId) : null;
-    return { ct, slot, loc };
-  }
-
   function renderBookingRow(b: Booking) {
-    const { ct, slot, loc } = resolveBookingInfo(b);
     const past = b.date < todayStr();
     return (
       <div
@@ -119,18 +102,8 @@ export default function BookingsPage() {
         className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-50 pb-3 last:border-0 last:pb-0"
       >
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-gray-900">{ct?.name ?? t('common.classes')}</p>
-          <p className="text-xs text-gray-500">
-            {formatDate(b.date)}
-            {slot ? ` · ${slot.startTime}—${slot.endTime}` : ''}
-            {loc ? (
-              <span className="inline-flex items-center gap-1">
-                <span> · </span>
-                <div className="h-2 w-2 rounded-full" style={{ backgroundColor: loc.color }} />
-                {loc.name}
-              </span>
-            ) : null}
-          </p>
+          <p className="text-sm font-medium text-gray-900">{b.className ?? b.classTypeId}</p>
+          <p className="text-xs text-gray-500">{formatDate(b.date)}</p>
         </div>
         <div className="flex items-center gap-2">
           <Badge color={statusBadgeColor(b.status)}>{b.status}</Badge>
@@ -149,7 +122,7 @@ export default function BookingsPage() {
     );
   }
 
-  if (loading) return <Spinner centered size="lg" />;
+  if (loading) return <Skeleton variant="card" />;
 
   const tabs = [
     {
@@ -157,9 +130,7 @@ export default function BookingsPage() {
       label: t('customerBookings.upcoming', { count: upcoming.length }),
       content:
         upcoming.length === 0 ? (
-          <div className="py-12 text-center text-sm text-gray-400">
-            <p>{t('customerBookings.noUpcoming')}</p>
-          </div>
+          <EmptyState message={t('customerBookings.noUpcoming')} />
         ) : (
           <div className="space-y-3">{upcoming.map(renderBookingRow)}</div>
         ),
@@ -169,9 +140,7 @@ export default function BookingsPage() {
       label: t('customerBookings.history', { count: history.length }),
       content:
         history.length === 0 ? (
-          <div className="py-12 text-center text-sm text-gray-400">
-            <p>{t('customerBookings.noHistory')}</p>
-          </div>
+          <EmptyState message={t('customerBookings.noHistory')} />
         ) : (
           <div className="space-y-3">{history.map(renderBookingRow)}</div>
         ),
@@ -184,15 +153,18 @@ export default function BookingsPage() {
         title={t('seo.customerBookingsTitle')}
         description={t('seo.customerBookingsDescription')}
       />
-
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{t('customerBookings.heading')}</h1>
         <p className="mt-1 text-gray-500">{t('customerBookings.subtitle')}</p>
       </div>
-
       <Card>
         <Tabs tabs={tabs} activeId={tab} onChange={setTab} />
       </Card>
+      {totalPages > 1 && (
+        <div className="mt-4 flex justify-center">
+          <Pagination current={page} total={totalPages} onChange={setPage} />
+        </div>
+      )}
 
       <Modal
         open={!!cancelTarget}

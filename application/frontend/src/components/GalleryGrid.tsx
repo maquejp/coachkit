@@ -9,6 +9,31 @@ interface GalleryGridProps {
   images: GalleryImage[];
 }
 
+function GalleryImage({ img, onClick }: { img: GalleryImage; onClick: () => void }) {
+  const [error, setError] = useState(false);
+  if (error) {
+    return (
+      <div className="flex h-48 items-center justify-center rounded-xl bg-gray-100 text-sm text-gray-400">
+        Image not available
+      </div>
+    );
+  }
+  return (
+    <button
+      onClick={onClick}
+      className="overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+    >
+      <img
+        src={img.src}
+        alt={img.alt}
+        loading="lazy"
+        onError={() => setError(true)}
+        className="h-48 w-full object-cover transition-transform hover:scale-105"
+      />
+    </button>
+  );
+}
+
 export default function GalleryGrid({ images }: GalleryGridProps) {
   const [lightbox, setLightbox] = useState<number | null>(null);
 
@@ -16,17 +41,7 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
     <>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {images.map((img, i) => (
-          <button
-            key={i}
-            onClick={() => setLightbox(i)}
-            className="overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <img
-              src={img.src}
-              alt={img.alt}
-              className="h-48 w-full object-cover transition-transform hover:scale-105"
-            />
-          </button>
+          <GalleryImage key={i} img={img} onClick={() => setLightbox(i)} />
         ))}
       </div>
 

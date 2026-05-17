@@ -10,13 +10,22 @@ use Illuminate\Support\Str;
 
 class AttendanceController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $attendances = Attendance::all();
+        $page = (int) $request->query('page', 1);
+        $pageSize = (int) $request->query('pageSize', 20);
+
+        $paginator = Attendance::query()->paginate($pageSize, ['*'], 'page', $page);
 
         return response()->json([
-            "success" => true,
-            "data" => $attendances->map(fn (Attendance $attendance) => $this->formatItem($attendance)),
+            'success' => true,
+            'data' => [
+                'items' => collect($paginator->items())->map(fn (Attendance $attendance) => $this->formatItem($attendance))->toArray(),
+                'total' => $paginator->total(),
+                'totalPages' => $paginator->lastPage(),
+                'page' => $paginator->currentPage(),
+                'pageSize' => $paginator->perPage(),
+            ],
         ]);
     }
 
