@@ -4,8 +4,14 @@ import { coaches } from '@/mocks/fixtures';
 const coachStore = [...coaches];
 
 export const coachHandlers = [
-  http.get('/api/coaches', () => {
-    return HttpResponse.json({ success: true, data: coachStore });
+  http.get('/api/coaches', ({ request }) => {
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page')) || 1;
+    const pageSize = Number(url.searchParams.get('pageSize')) || 50;
+    const total = coachStore.length;
+    const totalPages = Math.ceil(total / pageSize);
+    const items = coachStore.slice((page - 1) * pageSize, page * pageSize);
+    return HttpResponse.json({ success: true, data: { items, total, totalPages, page, pageSize } });
   }),
 
   http.get('/api/coaches/:id', ({ params }) => {
@@ -14,7 +20,7 @@ export const coachHandlers = [
     return HttpResponse.json({ success: true, data: coach });
   }),
 
-  http.post('/api/coaches', async ({ request }) => {
+  http.post('/api/admin/coaches', async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
     const coach = {
       id: `coach-${String(coachStore.length + 1).padStart(3, '0')}`,
@@ -26,7 +32,7 @@ export const coachHandlers = [
     return HttpResponse.json({ success: true, data: coach }, { status: 201 });
   }),
 
-  http.put('/api/coaches/:id', async ({ params, request }) => {
+  http.put('/api/admin/coaches/:id', async ({ params, request }) => {
     const idx = coachStore.findIndex((c) => c.id === params.id);
     if (idx === -1)
       return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });
@@ -40,7 +46,7 @@ export const coachHandlers = [
     return HttpResponse.json({ success: true, data: coachStore[idx] });
   }),
 
-  http.delete('/api/coaches/:id', ({ params }) => {
+  http.delete('/api/admin/coaches/:id', ({ params }) => {
     const idx = coachStore.findIndex((c) => c.id === params.id);
     if (idx === -1)
       return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });

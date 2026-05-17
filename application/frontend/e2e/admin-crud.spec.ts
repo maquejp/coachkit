@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const ADMIN_EMAIL = 'Sincere@april.biz';
-const ADMIN_PASSWORD = 'testpassword123';
+const ADMIN_PASSWORD = 'password';
 
 async function loginAsAdmin(page: import('@playwright/test').Page) {
   await page.goto('/login');

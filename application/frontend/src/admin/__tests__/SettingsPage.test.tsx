@@ -41,7 +41,38 @@ const server = setupServer(
   }),
   http.put('/api/admin/settings', async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json({ success: true, data: body });
+    return HttpResponse.json({
+      success: true,
+      data: {
+        studioName: body.studio_name ?? body.studioName ?? '',
+        studioEmail: body.studio_email ?? body.studioEmail ?? '',
+        studioPhone: body.studio_phone ?? body.studioPhone ?? '',
+        studioAddress: body.studio_address ?? body.studioAddress ?? '',
+        studioCity: body.studio_city ?? body.studioCity ?? '',
+        timezone: body.timezone ?? 'America/New_York',
+        defaultCurrency: body.default_currency ?? body.defaultCurrency ?? 'EUR',
+        businessHours: body.business_hours ??
+          body.businessHours ?? {
+            1: { open: '06:00', close: '21:00', isClosed: false },
+            2: { open: '06:00', close: '21:00', isClosed: false },
+            3: { open: '06:00', close: '21:00', isClosed: false },
+            4: { open: '06:00', close: '21:00', isClosed: false },
+            5: { open: '06:00', close: '20:00', isClosed: false },
+            6: { open: '08:00', close: '18:00', isClosed: false },
+            7: { open: '08:00', close: '14:00', isClosed: true },
+          },
+        bookingLeadTimeMinutes: body.booking_lead_time_minutes ?? body.bookingLeadTimeMinutes ?? 60,
+        cancellationWindowMinutes:
+          body.cancellation_window_minutes ?? body.cancellationWindowMinutes ?? 120,
+        maxBookingsPerCustomer: body.max_bookings_per_customer ?? body.maxBookingsPerCustomer ?? 5,
+        defaultEmailSender: body.default_email_sender ?? body.defaultEmailSender ?? '',
+        notifyOnBooking: body.notify_on_booking ?? body.notifyOnBooking ?? true,
+        notifyOnCancellation: body.notify_on_cancellation ?? body.notifyOnCancellation ?? true,
+        notifyOnWaitlist: body.notify_on_waitlist ?? body.notifyOnWaitlist ?? true,
+        notifyOnReminder: body.notify_on_reminder ?? body.notifyOnReminder ?? true,
+        taxRate: body.tax_rate ?? body.taxRate ?? 0,
+      },
+    });
   }),
 );
 

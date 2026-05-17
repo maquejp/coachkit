@@ -62,6 +62,14 @@ Route::get('/point-card-plans/{id}', [PointCardPlanController::class, 'show']);
 
 Route::post('/contact', [ContactController::class, 'submit']);
 
+// Public read-only resources (no auth required)
+Route::get('/locations', [LocationController::class, 'index']);
+Route::get('/class-types', [ClassTypeController::class, 'index']);
+Route::get('/coaches', [CoachController::class, 'index']);
+Route::get('/coaches/{id}', [CoachController::class, 'show']);
+Route::get('/weekly-schedule', [WeeklyScheduleController::class, 'index']);
+Route::get('/schedule-exceptions', [ScheduleExceptionController::class, 'index']);
+
 /*
 |--------------------------------------------------------------------------
 | Authenticated Routes (auth:sanctum required)
@@ -118,20 +126,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Payments (PayPal)
     Route::post('/payments/paypal/create-order', [PayPalController::class, 'createOrder']);
     Route::post('/payments/paypal/capture-order', [PayPalController::class, 'captureOrder']);
-
-    // Locations (read)
-    Route::get('/locations', [LocationController::class, 'index']);
-    // Class Types (read)
-    Route::get('/class-types', [ClassTypeController::class, 'index']);
-    // Coaches (read)
-    Route::get('/coaches', [CoachController::class, 'index']);
-    Route::get('/coaches/{id}', [CoachController::class, 'show']);
-
-    // Weekly Schedule (read)
-    Route::get('/weekly-schedule', [WeeklyScheduleController::class, 'index']);
-
-    // Schedule Exceptions (read)
-    Route::get('/schedule-exceptions', [ScheduleExceptionController::class, 'index']);
 
     // Attendance
     Route::get('/attendance', [AttendanceController::class, 'index']);

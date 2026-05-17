@@ -6,40 +6,48 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import ClassesPage from '@/admin/ClassesPage';
 
+const mockClassTypes: Array<Record<string, unknown>> = [
+  {
+    id: 'ct-001',
+    name: 'Morning Yoga',
+    description: 'Gentle stretches.',
+    color: '#0ea5e9',
+    durationMinutes: 60,
+    capacity: 25,
+    defaultPriceCents: 2000,
+    isActive: true,
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+  {
+    id: 'ct-002',
+    name: 'HIIT Circuit',
+    description: 'High intensity.',
+    color: '#f43f5e',
+    durationMinutes: 45,
+    capacity: 20,
+    defaultPriceCents: 2500,
+    isActive: true,
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+];
+
 const server = setupServer(
-  http.get('/api/class-types', () => {
+  http.get('/api/class-types', ({ request }) => {
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page')) || 1;
+    const pageSize = Number(url.searchParams.get('pageSize')) || 50;
+    const total = mockClassTypes.length;
+    const totalPages = Math.ceil(total / pageSize);
+    const items = mockClassTypes.slice((page - 1) * pageSize, page * pageSize);
     return HttpResponse.json({
       success: true,
-      data: [
-        {
-          id: 'ct-001',
-          name: 'Morning Yoga',
-          description: 'Gentle stretches.',
-          color: '#0ea5e9',
-          durationMinutes: 60,
-          capacity: 25,
-          defaultPriceCents: 2000,
-          isActive: true,
-          createdAt: '2025-01-01T00:00:00Z',
-          updatedAt: '2025-01-01T00:00:00Z',
-        },
-        {
-          id: 'ct-002',
-          name: 'HIIT Circuit',
-          description: 'High intensity.',
-          color: '#f43f5e',
-          durationMinutes: 45,
-          capacity: 20,
-          defaultPriceCents: 2500,
-          isActive: true,
-          createdAt: '2025-01-01T00:00:00Z',
-          updatedAt: '2025-01-01T00:00:00Z',
-        },
-      ],
+      data: { items, total, totalPages, page, pageSize },
     });
   }),
 
-  http.post('/api/class-types', async ({ request }) => {
+  http.post('/api/admin/class-types', async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
     return HttpResponse.json(
       {
@@ -55,24 +63,35 @@ const server = setupServer(
     );
   }),
 
-  http.put('/api/class-types/:id', async ({ params, request }) => {
+  http.put('/api/admin/class-types/:id', async ({ params, request }) => {
     const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json({
-      success: true,
-      data: {
-        id: params.id,
+    const idx = mockClassTypes.findIndex((c) => c.id === params.id);
+    if (idx !== -1)
+      mockClassTypes[idx] = {
+        ...mockClassTypes[idx],
         ...body,
         updatedAt: new Date().toISOString(),
-      },
+      };
+    return HttpResponse.json({
+      success: true,
+      data: mockClassTypes[idx] ?? { id: params.id, ...body, updatedAt: new Date().toISOString() },
     });
   }),
 
-  http.delete('/api/class-types/:id', () => {
+  http.delete('/api/admin/class-types/:id', ({ params }) => {
+    const idx = mockClassTypes.findIndex((c) => c.id === params.id);
+    if (idx !== -1) mockClassTypes.splice(idx, 1);
     return HttpResponse.json({ success: true, data: null });
   }),
 );
 
+const initialClassTypes = JSON.parse(JSON.stringify(mockClassTypes));
+
 beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
+beforeEach(() => {
+  mockClassTypes.length = 0;
+  mockClassTypes.push(...initialClassTypes);
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 

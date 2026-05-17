@@ -6,50 +6,61 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import LocationsPage from '@/admin/LocationsPage';
 
+const mockLocations: Array<Record<string, unknown>> = [
+  {
+    id: 'loc-001',
+    name: 'CoachKit Downtown',
+    address: '123 Main Street',
+    city: 'Portland',
+    phone: '+1-555-1001',
+    email: 'downtown@coachkit.test',
+    mapLink: 'https://maps.example.com/downtown',
+    color: '#0ea5e9',
+    isActive: true,
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+];
+
 const server = setupServer(
   http.get('/api/locations', () => {
     return HttpResponse.json({
       success: true,
-      data: [
-        {
-          id: 'loc-001',
-          name: 'CoachKit Downtown',
-          address: '123 Main Street',
-          city: 'Portland',
-          phone: '+1-555-1001',
-          email: 'downtown@coachkit.test',
-          mapLink: 'https://maps.example.com/downtown',
-          color: '#0ea5e9',
-          isActive: true,
-          createdAt: '2025-01-01T00:00:00Z',
-          updatedAt: '2025-01-01T00:00:00Z',
-        },
-      ],
+      data: mockLocations,
     });
   }),
 
-  http.post('/api/locations', async ({ request }) => {
+  http.post('/api/admin/locations', async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json(
-      {
-        success: true,
-        data: { id: 'loc-new', ...body, createdAt: '', updatedAt: '' },
-      },
-      { status: 201 },
-    );
+    const newLoc = { id: 'loc-new', ...body, createdAt: '', updatedAt: '' };
+    mockLocations.push(newLoc);
+    return HttpResponse.json({ success: true, data: newLoc }, { status: 201 });
   }),
 
-  http.put('/api/locations/:id', async ({ request }) => {
+  http.put('/api/admin/locations/:id', async ({ params, request }) => {
     const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json({ success: true, data: { id: 'loc-001', ...body, updatedAt: '' } });
+    const idx = mockLocations.findIndex((l) => l.id === params.id);
+    if (idx !== -1) mockLocations[idx] = { ...mockLocations[idx], ...body, updatedAt: '' };
+    return HttpResponse.json({
+      success: true,
+      data: mockLocations[idx] ?? { id: params.id, ...body, updatedAt: '' },
+    });
   }),
 
-  http.delete('/api/locations/:id', () => {
+  http.delete('/api/admin/locations/:id', ({ params }) => {
+    const idx = mockLocations.findIndex((l) => l.id === params.id);
+    if (idx !== -1) mockLocations.splice(idx, 1);
     return HttpResponse.json({ success: true, data: null });
   }),
 );
 
+const initialMockLocations = JSON.parse(JSON.stringify(mockLocations));
+
 beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
+beforeEach(() => {
+  mockLocations.length = 0;
+  mockLocations.push(...initialMockLocations);
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 

@@ -4,8 +4,14 @@ import { classTypes } from '@/mocks/fixtures';
 const store = [...classTypes];
 
 export const classTypeHandlers = [
-  http.get('/api/class-types', () => {
-    return HttpResponse.json({ success: true, data: store });
+  http.get('/api/class-types', ({ request }) => {
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page')) || 1;
+    const pageSize = Number(url.searchParams.get('pageSize')) || 50;
+    const total = store.length;
+    const totalPages = Math.ceil(total / pageSize);
+    const items = store.slice((page - 1) * pageSize, page * pageSize);
+    return HttpResponse.json({ success: true, data: { items, total, totalPages, page, pageSize } });
   }),
 
   http.get('/api/class-types/:id', ({ params }) => {
@@ -14,7 +20,7 @@ export const classTypeHandlers = [
     return HttpResponse.json({ success: true, data: ct });
   }),
 
-  http.post('/api/class-types', async ({ request }) => {
+  http.post('/api/admin/class-types', async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
     const ct = {
       id: `ct-${String(store.length + 1).padStart(3, '0')}`,
@@ -26,7 +32,7 @@ export const classTypeHandlers = [
     return HttpResponse.json({ success: true, data: ct }, { status: 201 });
   }),
 
-  http.put('/api/class-types/:id', async ({ params, request }) => {
+  http.put('/api/admin/class-types/:id', async ({ params, request }) => {
     const idx = store.findIndex((c) => c.id === params.id);
     if (idx === -1)
       return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });
@@ -35,7 +41,7 @@ export const classTypeHandlers = [
     return HttpResponse.json({ success: true, data: store[idx] });
   }),
 
-  http.delete('/api/class-types/:id', ({ params }) => {
+  http.delete('/api/admin/class-types/:id', ({ params }) => {
     const idx = store.findIndex((c) => c.id === params.id);
     if (idx === -1)
       return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });

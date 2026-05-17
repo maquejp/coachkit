@@ -22,7 +22,7 @@ export const scheduleHandlers = [
     return HttpResponse.json({ success: true, data: item });
   }),
 
-  http.post('/api/weekly-schedule', async ({ request }) => {
+  http.post('/api/admin/weekly-schedule', async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
     const item = {
       id: `ws-${String(wsStore.length + 1).padStart(3, '0')}`,
@@ -34,7 +34,7 @@ export const scheduleHandlers = [
     return HttpResponse.json({ success: true, data: item }, { status: 201 });
   }),
 
-  http.put('/api/weekly-schedule/:id', async ({ params, request }) => {
+  http.put('/api/admin/weekly-schedule/:id', async ({ params, request }) => {
     const idx = wsStore.findIndex((s) => s.id === params.id);
     if (idx === -1)
       return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });
@@ -48,7 +48,7 @@ export const scheduleHandlers = [
     return HttpResponse.json({ success: true, data: wsStore[idx] });
   }),
 
-  http.delete('/api/weekly-schedule/:id', ({ params }) => {
+  http.delete('/api/admin/weekly-schedule/:id', ({ params }) => {
     const idx = wsStore.findIndex((s) => s.id === params.id);
     if (idx === -1)
       return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });
@@ -64,7 +64,7 @@ export const scheduleHandlers = [
     return HttpResponse.json({ success: true, data: result });
   }),
 
-  http.post('/api/schedule-exceptions', async ({ request }) => {
+  http.post('/api/admin/schedule-exceptions', async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
     const item = {
       id: `se-${String(exStore.length + 1).padStart(3, '0')}`,
@@ -76,7 +76,7 @@ export const scheduleHandlers = [
     return HttpResponse.json({ success: true, data: item }, { status: 201 });
   }),
 
-  http.put('/api/schedule-exceptions/:id', async ({ params, request }) => {
+  http.put('/api/admin/schedule-exceptions/:id', async ({ params, request }) => {
     const idx = exStore.findIndex((e) => e.id === params.id);
     if (idx === -1)
       return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });
@@ -90,7 +90,7 @@ export const scheduleHandlers = [
     return HttpResponse.json({ success: true, data: exStore[idx] });
   }),
 
-  http.delete('/api/schedule-exceptions/:id', ({ params }) => {
+  http.delete('/api/admin/schedule-exceptions/:id', ({ params }) => {
     const idx = exStore.findIndex((e) => e.id === params.id);
     if (idx === -1)
       return HttpResponse.json({ success: false, error: 'Not found' }, { status: 404 });
