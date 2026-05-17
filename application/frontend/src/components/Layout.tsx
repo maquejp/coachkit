@@ -5,6 +5,7 @@ import Footer from './Footer';
 import JSONLD from './JSONLD';
 import { ToastContainer } from '@/components/ui/Toast';
 import { OfflineBanner } from '@/components/OfflineBanner';
+import { CookieConsent } from '@/components/CookieConsent';
 import { trackPageView } from '@/lib/analytics';
 
 export default function Layout() {
@@ -23,6 +24,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <Footer />
+      <CookieConsent />
       <ToastContainer />
     </div>
   );
