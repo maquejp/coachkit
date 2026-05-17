@@ -1,26 +1,17 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { Spinner } from '@/components/ui/Spinner';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/EmptyState';
 import { useAuthStore } from '@/stores/auth';
-import {
-  fetchMyBookingsApi,
-  fetchMySubscriptionsApi,
-  fetchMyPointCardsApi,
-  fetchSubscriptionPlansApi,
-  fetchPointCardPlansApi,
-} from '@/api/customer';
-import { classTypes, weeklySchedule, locations, paymentTransactions } from '@/mocks/fixtures';
-import type {
-  Booking,
-  CustomerSubscription,
-  PointCardPurchase,
-  SubscriptionPlan,
-  PointCardPlan,
-} from '@/types';
+import { useBookings } from '@/hooks/useBookings';
+import { useCustomerSubscriptions } from '@/hooks/useCustomerSubscriptions';
+import { usePointCardPurchases } from '@/hooks/usePointCardPurchases';
+import { useSubscriptionPlans } from '@/hooks/useSubscriptionPlans';
+import { usePointCardPlans } from '@/hooks/usePointCardPlans';
+import type { PaymentTransaction } from '@/types';
 import { formatCurrency } from '@/lib/format';
 
 function formatDate(dateStr: string) {
@@ -63,62 +54,31 @@ function statusBadgeColor(status: string) {
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user);
   const { t } = useTranslation();
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [subscriptions, setSubscriptions] = useState<CustomerSubscription[]>([]);
-  const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>([]);
-  const [pointCards, setPointCards] = useState<PointCardPurchase[]>([]);
-  const [pointCardPlans, setPointCardPlans] = useState<PointCardPlan[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: bookings } = useBookings(user?.id);
+  const { data: subscriptions } = useCustomerSubscriptions(user?.id);
+  const { data: pointCards } = usePointCardPurchases(user?.id);
+  const { data: subscriptionPlans } = useSubscriptionPlans();
+  const { data: pointCardPlans } = usePointCardPlans();
 
-  function dayLabel(dayOfWeek: number): string {
-    const map: Record<number, string> = {
-      1: 'monday',
-      2: 'tuesday',
-      3: 'wednesday',
-      4: 'thursday',
-      5: 'friday',
-      6: 'saturday',
-      7: 'sunday',
-    };
-    return t(`bookingPage.days.${map[dayOfWeek]}`);
-  }
+  const loading = !user;
+  const bks = bookings ?? [];
+  const subs = subscriptions ?? [];
+  const pcs = pointCards ?? [];
+  const splans = subscriptionPlans ?? [];
+  const pcplans = pointCardPlans ?? [];
 
-  useEffect(() => {
-    if (!user) return;
-    async function load() {
-      try {
-        const [bks, subs, pcs, splans, pcplans] = await Promise.all([
-          fetchMyBookingsApi(user.id),
-          fetchMySubscriptionsApi(user.id),
-          fetchMyPointCardsApi(user.id),
-          fetchSubscriptionPlansApi(),
-          fetchPointCardPlansApi(),
-        ]);
-        setBookings(bks);
-        setSubscriptions(subs);
-        setPointCards(pcs);
-        setSubscriptionPlans(splans);
-        setPointCardPlans(pcplans);
-      } catch {
-        // API errors are non-fatal; component renders with null/empty state
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, [user]);
+  const activeSub = subs.find((s) => s.status === 'active');
+  const activeSubPlan = activeSub ? splans.find((p) => p.id === activeSub.planId) : null;
+  const upcomingBookings = bks.filter((b) => b.status === 'confirmed').slice(0, 5);
+  const myPayments: PaymentTransaction[] = [];
 
-  if (loading) return <Spinner centered size="lg" />;
-
-  const activeSub = subscriptions.find((s) => s.status === 'active');
-  const activeSubPlan = activeSub ? subscriptionPlans.find((p) => p.id === activeSub.planId) : null;
-
-  const myPayments = paymentTransactions
-    .filter((p) => p.userId === user?.id)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 5);
-
-  const upcomingBookings = bookings.filter((b) => b.status === 'confirmed').slice(0, 5);
+  if (loading)
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+      </div>
+    );
 
   return (
     <>
@@ -126,17 +86,13 @@ export default function DashboardPage() {
         title={t('seo.customerDashboardTitle')}
         description={t('seo.customerDashboardDescription')}
       />
-
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
           {t('customerDashboard.welcomeBack')}
-          {user && 'role' in user && (user as { firstName?: string }).firstName
-            ? `, ${(user as { firstName: string }).firstName}`
-            : ''}
+          {user && 'firstName' in user ? `, ${(user as { firstName: string }).firstName}` : ''}
         </h1>
         <p className="mt-1 text-gray-500">{t('customerDashboard.overview')}</p>
       </div>
-
       <div className="grid gap-6 lg:grid-cols-2">
         <Card
           header={
@@ -154,50 +110,31 @@ export default function DashboardPage() {
           }
         >
           {upcomingBookings.length === 0 ? (
-            <div className="py-8 text-center text-sm text-gray-400">
-              <p>{t('customerDashboard.noUpcomingBookings')}</p>
-              <Link
-                to="/book"
-                className="mt-1 inline-block text-primary-600 hover:text-primary-700"
-              >
-                {t('customerDashboard.bookAClass')}
-              </Link>
-            </div>
+            <EmptyState
+              message={t('customerDashboard.noUpcomingBookings')}
+              action={
+                <Link
+                  to="/book"
+                  className="mt-1 inline-block text-primary-600 hover:text-primary-700"
+                >
+                  {t('customerDashboard.bookAClass')}
+                </Link>
+              }
+            />
           ) : (
             <div className="space-y-3">
-              {upcomingBookings.map((b) => {
-                const ct = classTypes.find((c) => c.id === b.classTypeId);
-                const slot = weeklySchedule.find((s) => s.id === b.scheduleId);
-                const loc = slot ? locations.find((l) => l.id === slot.locationId) : null;
-                return (
-                  <div
-                    key={b.id}
-                    className="flex items-center justify-between border-b border-gray-50 pb-2 last:border-0 last:pb-0"
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {ct?.name ?? t('common.classes')}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {slot
-                          ? `${dayLabel(slot.dayOfWeek)}, ${slot.startTime} — ${slot.endTime}`
-                          : b.date}
-                        {loc ? (
-                          <span className="inline-flex items-center gap-1">
-                            <span> · </span>
-                            <div
-                              className="h-2 w-2 rounded-full"
-                              style={{ backgroundColor: loc.color }}
-                            />
-                            {loc.name}
-                          </span>
-                        ) : null}
-                      </p>
-                    </div>
-                    <Badge color={statusBadgeColor(b.status)}>{b.status}</Badge>
+              {upcomingBookings.map((b) => (
+                <div
+                  key={b.id}
+                  className="flex items-center justify-between border-b border-gray-50 pb-2 last:border-0 last:pb-0"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{b.classTypeId}</p>
+                    <p className="text-xs text-gray-500">{b.date}</p>
                   </div>
-                );
-              })}
+                  <Badge color={statusBadgeColor(b.status)}>{b.status}</Badge>
+                </div>
+              ))}
             </div>
           )}
         </Card>
@@ -244,26 +181,30 @@ export default function DashboardPage() {
                 </span>
               </div>
             </div>
-          ) : subscriptions.length > 0 ? (
-            <div className="py-8 text-center text-sm text-gray-400">
-              <p>{t('customerDashboard.yourSubscription', { status: subscriptions[0].status })}</p>
-              <Link
-                to="/pricing"
-                className="mt-1 inline-block text-primary-600 hover:text-primary-700"
-              >
-                {t('common.viewPlans')}
-              </Link>
-            </div>
+          ) : subs.length > 0 ? (
+            <EmptyState
+              message={t('customerDashboard.yourSubscription', { status: subs[0].status })}
+              action={
+                <Link
+                  to="/pricing"
+                  className="mt-1 inline-block text-primary-600 hover:text-primary-700"
+                >
+                  {t('common.viewPlans')}
+                </Link>
+              }
+            />
           ) : (
-            <div className="py-8 text-center text-sm text-gray-400">
-              <p>{t('common.noSubscription')}</p>
-              <Link
-                to="/pricing"
-                className="mt-1 inline-block text-primary-600 hover:text-primary-700"
-              >
-                {t('common.viewPlans')}
-              </Link>
-            </div>
+            <EmptyState
+              message={t('common.noSubscription')}
+              action={
+                <Link
+                  to="/pricing"
+                  className="mt-1 inline-block text-primary-600 hover:text-primary-700"
+                >
+                  {t('common.viewPlans')}
+                </Link>
+              }
+            />
           )}
         </Card>
 
@@ -279,20 +220,22 @@ export default function DashboardPage() {
             </div>
           }
         >
-          {pointCards.length === 0 ? (
-            <div className="py-8 text-center text-sm text-gray-400">
-              <p>{t('customerDashboard.noPointCards')}</p>
-              <Link
-                to="/pricing"
-                className="mt-1 inline-block text-primary-600 hover:text-primary-700"
-              >
-                {t('customerDashboard.viewPacks')}
-              </Link>
-            </div>
+          {pcs.length === 0 ? (
+            <EmptyState
+              message={t('customerDashboard.noPointCards')}
+              action={
+                <Link
+                  to="/pricing"
+                  className="mt-1 inline-block text-primary-600 hover:text-primary-700"
+                >
+                  {t('customerDashboard.viewPacks')}
+                </Link>
+              }
+            />
           ) : (
             <div className="space-y-3">
-              {pointCards.map((pc) => {
-                const plan = pointCardPlans.find((p) => p.id === pc.planId);
+              {pcs.map((pc) => {
+                const plan = pcplans.find((p) => p.id === pc.planId);
                 return (
                   <div
                     key={pc.id}
@@ -329,9 +272,7 @@ export default function DashboardPage() {
           }
         >
           {myPayments.length === 0 ? (
-            <div className="py-8 text-center text-sm text-gray-400">
-              <p>{t('customerDashboard.noPayments')}</p>
-            </div>
+            <EmptyState message={t('customerDashboard.noPayments')} />
           ) : (
             <div className="space-y-3">
               {myPayments.map((p) => (

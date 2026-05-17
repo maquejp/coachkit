@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { FormField } from '@/components/ui/FormField';
-import { Spinner } from '@/components/ui/Spinner';
-import { fetchSettings, updateSettings } from '@/api/admin';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { useSettings } from '@/hooks/useSettings';
 import type { AdminSettings } from '@/api/admin';
 
 const DAY_KEYS = [1, 2, 3, 4, 5, 6, 7] as const;
@@ -43,34 +43,18 @@ const CURRENCY_OPTIONS = [
 
 export default function AdminSettingsPage() {
   const { t } = useTranslation();
-  const [settings, setSettings] = useState<AdminSettings | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const { data: settings, loading, update, saving, error } = useSettings();
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
+  const [draft, setDraft] = useState<AdminSettings | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      try {
-        const data = await fetchSettings();
-        if (!cancelled) setSettings(data);
-      } catch {
-        // non-fatal
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (settings) setDraft(settings);
+  }, [settings]);
 
-  function update<K extends keyof AdminSettings>(key: K, value: AdminSettings[K]) {
-    if (!settings) return;
-    setSettings((prev) => (prev ? { ...prev, [key]: value } : prev));
+  function updateDraft<K extends keyof AdminSettings>(key: K, value: AdminSettings[K]) {
+    if (!draft) return;
+    setDraft((prev) => (prev ? { ...prev, [key]: value } : prev));
   }
 
   function updateBusinessHours(
@@ -78,8 +62,8 @@ export default function AdminSettingsPage() {
     field: 'open' | 'close' | 'isClosed',
     value: string | boolean,
   ) {
-    if (!settings) return;
-    setSettings((prev) => {
+    if (!draft) return;
+    setDraft((prev) => {
       if (!prev) return prev;
       return {
         ...prev,
@@ -93,32 +77,33 @@ export default function AdminSettingsPage() {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    if (!settings) return;
-    setSaving(true);
+    if (!draft) return;
     setSuccess(false);
-    setError('');
     try {
-      await updateSettings(settings);
+      await update(draft);
       setSuccess(true);
     } catch {
-      setError(t('adminSettings.saveFailed'));
-    } finally {
-      setSaving(false);
+      /* error is set by hook */
     }
   }
 
-  if (loading) return <Spinner centered size="lg" />;
-  if (!settings) return null;
+  if (loading || !draft)
+    return (
+      <div className="space-y-6">
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+      </div>
+    );
 
   return (
     <>
       <SEO title={t('seo.adminSettingsTitle')} description={t('seo.adminSettingsDescription')} />
-
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{t('adminSettings.heading')}</h1>
         <p className="mt-1 text-gray-500">{t('adminSettings.subtitle')}</p>
       </div>
-
       {success && (
         <div className="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
           {t('adminSettings.saved')}
@@ -139,42 +124,42 @@ export default function AdminSettingsPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField label={t('adminSettings.studioName')} required>
               <Input
-                value={settings.studioName}
-                onChange={(e) => update('studioName', e.target.value)}
+                value={draft.studioName}
+                onChange={(e) => updateDraft('studioName', e.target.value)}
                 required
               />
             </FormField>
             <FormField label={t('adminSettings.studioEmail')} required>
               <Input
                 type="email"
-                value={settings.studioEmail}
-                onChange={(e) => update('studioEmail', e.target.value)}
+                value={draft.studioEmail}
+                onChange={(e) => updateDraft('studioEmail', e.target.value)}
                 required
               />
             </FormField>
             <FormField label={t('adminSettings.studioPhone')} required>
               <Input
-                value={settings.studioPhone}
-                onChange={(e) => update('studioPhone', e.target.value)}
+                value={draft.studioPhone}
+                onChange={(e) => updateDraft('studioPhone', e.target.value)}
                 required
               />
             </FormField>
             <FormField label={t('adminSettings.studioAddress')}>
               <Input
-                value={settings.studioAddress}
-                onChange={(e) => update('studioAddress', e.target.value)}
+                value={draft.studioAddress}
+                onChange={(e) => updateDraft('studioAddress', e.target.value)}
               />
             </FormField>
             <FormField label={t('adminSettings.studioCity')}>
               <Input
-                value={settings.studioCity}
-                onChange={(e) => update('studioCity', e.target.value)}
+                value={draft.studioCity}
+                onChange={(e) => updateDraft('studioCity', e.target.value)}
               />
             </FormField>
             <FormField label={t('adminSettings.timezone')} required>
               <Select
-                value={settings.timezone}
-                onChange={(e) => update('timezone', e.target.value)}
+                value={draft.timezone}
+                onChange={(e) => updateDraft('timezone', e.target.value)}
               >
                 {TZ_OPTIONS.map((tz) => (
                   <option key={tz} value={tz}>
@@ -185,8 +170,8 @@ export default function AdminSettingsPage() {
             </FormField>
             <FormField label={t('adminSettings.defaultCurrency')} required>
               <Select
-                value={settings.defaultCurrency}
-                onChange={(e) => update('defaultCurrency', e.target.value)}
+                value={draft.defaultCurrency}
+                onChange={(e) => updateDraft('defaultCurrency', e.target.value)}
               >
                 {CURRENCY_OPTIONS.map((c) => (
                   <option key={c.value} value={c.value}>
@@ -207,7 +192,7 @@ export default function AdminSettingsPage() {
           </div>
           <div className="space-y-2">
             {DAY_KEYS.map((day) => {
-              const entry = settings.businessHours[day] ?? {
+              const entry = draft.businessHours[day] ?? {
                 open: '09:00',
                 close: '17:00',
                 isClosed: false,
@@ -265,7 +250,7 @@ export default function AdminSettingsPage() {
               <Input
                 type="number"
                 min={0}
-                value={settings.bookingLeadTimeMinutes}
+                value={draft.bookingLeadTimeMinutes}
                 onChange={(e) => update('bookingLeadTimeMinutes', Number(e.target.value))}
               />
             </FormField>
@@ -276,7 +261,7 @@ export default function AdminSettingsPage() {
               <Input
                 type="number"
                 min={0}
-                value={settings.cancellationWindowMinutes}
+                value={draft.cancellationWindowMinutes}
                 onChange={(e) => update('cancellationWindowMinutes', Number(e.target.value))}
               />
             </FormField>
@@ -287,7 +272,7 @@ export default function AdminSettingsPage() {
               <Input
                 type="number"
                 min={0}
-                value={settings.maxBookingsPerCustomer}
+                value={draft.maxBookingsPerCustomer}
                 onChange={(e) => update('maxBookingsPerCustomer', Number(e.target.value))}
               />
             </FormField>
@@ -305,7 +290,7 @@ export default function AdminSettingsPage() {
             <FormField label={t('adminSettings.defaultSender')} required>
               <Input
                 type="email"
-                value={settings.defaultEmailSender}
+                value={draft.defaultEmailSender}
                 onChange={(e) => update('defaultEmailSender', e.target.value)}
                 required
               />
@@ -323,8 +308,8 @@ export default function AdminSettingsPage() {
               <label key={key} className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
-                  checked={settings[key]}
-                  onChange={(e) => update(key, e.target.checked)}
+                  checked={draft[key]}
+                  onChange={(e) => updateDraft(key, e.target.checked)}
                   className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
                 {t(`adminSettings.${key}`)}
@@ -344,7 +329,7 @@ export default function AdminSettingsPage() {
                 type="number"
                 min={0}
                 step={0.1}
-                value={settings.taxRate}
+                value={draft.taxRate}
                 onChange={(e) => update('taxRate', Number(e.target.value))}
               />
             </FormField>

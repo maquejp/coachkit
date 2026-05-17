@@ -1,19 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
 import { Spinner } from '@/components/ui/Spinner';
 import { Badge } from '@/components/ui/Badge';
-import {
-  fetchAllCoaches,
-  fetchWeeklySchedule,
-  fetchAllClassTypes,
-  fetchAllLocations,
-} from '@/api/admin';
-import type { Coach } from '@/api/admin';
-import type { WeeklyScheduleItem } from '@/api/admin';
-import type { ClassType, Location } from '@/types';
+import { useCoaches } from '@/hooks/useCoaches';
+import { useWeeklySchedule } from '@/hooks/useWeeklySchedule';
+import { useClassTypes } from '@/hooks/useClassTypes';
+import { useLocations } from '@/hooks/useLocations';
 
 function formatTime(time: string) {
   const [h, m] = time.split(':');
@@ -28,43 +23,20 @@ const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satu
 export default function InstructorDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
-  const [coach, setCoach] = useState<Coach | null>(null);
-  const [schedules, setSchedules] = useState<WeeklyScheduleItem[]>([]);
-  const [classTypes, setClassTypes] = useState<ClassType[]>([]);
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: coaches, loading: coachesLoading } = useCoaches();
+  const { data: schedules, loading: schedLoading } = useWeeklySchedule();
+  const { data: classTypes, loading: ctLoading } = useClassTypes();
+  const { data: locations, loading: locLoading } = useLocations();
 
-  useEffect(() => {
-    if (!id) return;
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      try {
-        const [cos, sched, cts, locs] = await Promise.all([
-          fetchAllCoaches(),
-          fetchWeeklySchedule(),
-          fetchAllClassTypes(),
-          fetchAllLocations(),
-        ]);
-        if (cancelled) return;
-        setCoach(cos.find((c) => c.id === id) ?? null);
-        setSchedules(sched.filter((s) => s.coachId === id));
-        setClassTypes(cts);
-        setLocations(locs);
-      } catch {
-        // non-fatal
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [id]);
+  const coach = useMemo(() => (coaches ?? []).find((c) => c.id === id) ?? null, [coaches, id]);
+  const coachSchedules = useMemo(
+    () => (schedules ?? []).filter((s) => s.coachId === id),
+    [schedules, id],
+  );
+
+  const loading = coachesLoading || schedLoading || ctLoading || locLoading;
 
   if (loading) return <Spinner centered size="lg" />;
-
   if (!coach) {
     return (
       <div className="py-12 text-center">
@@ -82,21 +54,18 @@ export default function InstructorDetailPage() {
   const groupedSchedules = DAY_NAMES.map((name, idx) => ({
     day: name,
     dayNum: idx + 1,
-    slots: schedules.filter((s) => s.dayOfWeek === idx + 1),
+    slots: coachSchedules.filter((s) => s.dayOfWeek === idx + 1),
   }));
-
-  const hasSchedule = schedules.length > 0;
+  const hasSchedule = coachSchedules.length > 0;
 
   return (
     <>
       <SEO title={coach.name} description={t('seo.adminInstructorsDescription')} />
-
       <div className="mb-6">
         <Link to="/admin/instructors" className="text-sm text-primary-600 hover:underline">
           {t('adminInstructorDetail.backToInstructors')}
         </Link>
       </div>
-
       <div className="mb-6 flex items-start justify-between">
         <div className="flex items-center gap-4">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-100 text-lg font-bold text-primary-700">
@@ -114,7 +83,6 @@ export default function InstructorDetailPage() {
           {coach.isActive ? t('common.active') : t('common.inactive')}
         </Badge>
       </div>
-
       <div className="mb-8 grid gap-6 md:grid-cols-2">
         <Card>
           <h2 className="mb-3 text-sm font-semibold text-gray-900">
@@ -139,12 +107,11 @@ export default function InstructorDetailPage() {
               <span className="font-medium text-gray-700">
                 {t('adminInstructorDetail.weeklySlots')}
               </span>{' '}
-              {schedules.length}
+              {coachSchedules.length}
             </p>
           </div>
         </Card>
       </div>
-
       <Card>
         <h2 className="mb-4 text-lg font-semibold text-gray-900">
           {t('adminInstructorDetail.schedule')}
@@ -162,8 +129,8 @@ export default function InstructorDetailPage() {
                     <h3 className="mb-1 text-sm font-medium text-gray-700">{g.day}</h3>
                     <div className="space-y-1">
                       {g.slots.map((slot) => {
-                        const ct = classTypes.find((c) => c.id === slot.classTypeId);
-                        const loc = locations.find((l) => l.id === slot.locationId);
+                        const ct = (classTypes ?? []).find((c) => c.id === slot.classTypeId);
+                        const loc = (locations ?? []).find((l) => l.id === slot.locationId);
                         return (
                           <div
                             key={slot.id}

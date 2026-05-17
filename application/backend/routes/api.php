@@ -119,36 +119,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/payments/paypal/create-order', [PayPalController::class, 'createOrder']);
     Route::post('/payments/paypal/capture-order', [PayPalController::class, 'captureOrder']);
 
-    // Locations
+    // Locations (read)
     Route::get('/locations', [LocationController::class, 'index']);
-    Route::post('/locations', [LocationController::class, 'store']);
-    Route::put('/locations/{id}', [LocationController::class, 'update']);
-    Route::delete('/locations/{id}', [LocationController::class, 'destroy']);
-
-    // Class Types
+    // Class Types (read)
     Route::get('/class-types', [ClassTypeController::class, 'index']);
-    Route::post('/class-types', [ClassTypeController::class, 'store']);
-    Route::put('/class-types/{id}', [ClassTypeController::class, 'update']);
-    Route::delete('/class-types/{id}', [ClassTypeController::class, 'destroy']);
-
-    // Coaches
+    // Coaches (read)
     Route::get('/coaches', [CoachController::class, 'index']);
     Route::get('/coaches/{id}', [CoachController::class, 'show']);
-    Route::post('/coaches', [CoachController::class, 'store']);
-    Route::put('/coaches/{id}', [CoachController::class, 'update']);
-    Route::delete('/coaches/{id}', [CoachController::class, 'destroy']);
 
-    // Weekly Schedule
+    // Weekly Schedule (read)
     Route::get('/weekly-schedule', [WeeklyScheduleController::class, 'index']);
-    Route::post('/weekly-schedule', [WeeklyScheduleController::class, 'store']);
-    Route::put('/weekly-schedule/{id}', [WeeklyScheduleController::class, 'update']);
-    Route::delete('/weekly-schedule/{id}', [WeeklyScheduleController::class, 'destroy']);
 
-    // Schedule Exceptions
+    // Schedule Exceptions (read)
     Route::get('/schedule-exceptions', [ScheduleExceptionController::class, 'index']);
-    Route::post('/schedule-exceptions', [ScheduleExceptionController::class, 'store']);
-    Route::put('/schedule-exceptions/{id}', [ScheduleExceptionController::class, 'update']);
-    Route::delete('/schedule-exceptions/{id}', [ScheduleExceptionController::class, 'destroy']);
 
     // Attendance
     Route::get('/attendance', [AttendanceController::class, 'index']);
@@ -215,5 +198,30 @@ Route::middleware('auth:sanctum')->group(function () {
         // Settings
         Route::get('/settings', [SettingsController::class, 'show']);
         Route::put('/settings', [SettingsController::class, 'update']);
+
+        // Locations (write)
+        Route::post('/locations', [LocationController::class, 'store']);
+        Route::put('/locations/{id}', [LocationController::class, 'update']);
+        Route::delete('/locations/{id}', [LocationController::class, 'destroy']);
+
+        // Class Types (write)
+        Route::post('/class-types', [ClassTypeController::class, 'store']);
+        Route::put('/class-types/{id}', [ClassTypeController::class, 'update']);
+        Route::delete('/class-types/{id}', [ClassTypeController::class, 'destroy']);
+
+        // Coaches (write)
+        Route::post('/coaches', [CoachController::class, 'store']);
+        Route::put('/coaches/{id}', [CoachController::class, 'update']);
+        Route::delete('/coaches/{id}', [CoachController::class, 'destroy']);
+
+        // Weekly Schedule (write)
+        Route::post('/weekly-schedule', [WeeklyScheduleController::class, 'store']);
+        Route::put('/weekly-schedule/{id}', [WeeklyScheduleController::class, 'update']);
+        Route::delete('/weekly-schedule/{id}', [WeeklyScheduleController::class, 'destroy']);
+
+        // Schedule Exceptions (write)
+        Route::post('/schedule-exceptions', [ScheduleExceptionController::class, 'store']);
+        Route::put('/schedule-exceptions/{id}', [ScheduleExceptionController::class, 'update']);
+        Route::delete('/schedule-exceptions/{id}', [ScheduleExceptionController::class, 'destroy']);
     });
 });

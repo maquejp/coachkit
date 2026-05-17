@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import ClassCard from '@/components/ClassCard';
+import { useClassTypes } from '@/hooks/useClassTypes';
 import type { Intensity } from '@/types';
-import { classTypes } from '@/mocks/fixtures';
 
 function getIntensity(durationMinutes: number): Intensity {
   if (durationMinutes <= 35) return 'beginner';
@@ -12,7 +12,8 @@ function getIntensity(durationMinutes: number): Intensity {
 
 export default function ClassesPage() {
   const { t } = useTranslation();
-  const activeTypes = classTypes.filter((ct) => ct.isActive);
+  const { data: classTypes } = useClassTypes();
+  const activeTypes = (classTypes ?? []).filter((ct) => ct.isActive);
 
   return (
     <>

@@ -3,11 +3,20 @@ import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { classTypeHandlers } from '@/mocks/handlers/classTypes';
+import { coachHandlers } from '@/mocks/handlers/coaches';
+import { locationHandlers } from '@/mocks/handlers/locations';
+import { scheduleHandlers } from '@/mocks/handlers/schedule';
 import BookingPage from '@/public/BookingPage';
 
 let claimStore: Array<{ email: string; bookingId: string }> = [];
 
 const server = setupServer(
+  ...classTypeHandlers,
+  ...coachHandlers,
+  ...locationHandlers,
+  ...scheduleHandlers,
+
   http.get('/api/free-session-claims/check', ({ request }) => {
     const url = new URL(request.url);
     const email = url.searchParams.get('email');
@@ -95,6 +104,7 @@ function renderPage() {
 }
 
 async function navigateToInfo() {
+  await waitFor(() => expect(screen.getByText('Morning Yoga')).toBeInTheDocument());
   fireEvent.click(screen.getByText('Morning Yoga'));
   const monday = screen.getByText('Monday').closest('button');
   if (monday) fireEvent.click(monday);
@@ -119,9 +129,9 @@ describe('BookingPage', () => {
     expect(screen.getByText('Reserve your spot in just a few steps.')).toBeInTheDocument();
   });
 
-  it('renders class type selection grid with all active class types', () => {
+  it('renders class type selection grid with all active class types', async () => {
     renderPage();
-    expect(screen.getByText('Morning Yoga')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('Morning Yoga')).toBeInTheDocument());
     expect(screen.getByText('HIIT Circuit')).toBeInTheDocument();
     expect(screen.getByText('Pilates Flow')).toBeInTheDocument();
     expect(screen.getByText('Strength & Tone')).toBeInTheDocument();
@@ -142,29 +152,33 @@ describe('BookingPage', () => {
     expect(link.closest('a')).toHaveAttribute('href', '/classes');
   });
 
-  it('advances to day selection when a class type is clicked', () => {
+  it('advances to day selection when a class type is clicked', async () => {
     renderPage();
+    await waitFor(() => expect(screen.getByText('Morning Yoga')).toBeInTheDocument());
     fireEvent.click(screen.getByText('Morning Yoga'));
     expect(screen.getByText(/Select a Day/)).toBeInTheDocument();
     expect(screen.getByText(/Monday/)).toBeInTheDocument();
   });
 
-  it('shows back link to change class type on day step', () => {
+  it('shows back link to change class type on day step', async () => {
     renderPage();
+    await waitFor(() => expect(screen.getByText('Morning Yoga')).toBeInTheDocument());
     fireEvent.click(screen.getByText('Morning Yoga'));
     expect(screen.getByText(/Change class type/)).toBeInTheDocument();
   });
 
-  it('advances to time slot selection when a day is clicked', () => {
+  it('advances to time slot selection when a day is clicked', async () => {
     renderPage();
+    await waitFor(() => expect(screen.getByText('Morning Yoga')).toBeInTheDocument());
     fireEvent.click(screen.getByText('Morning Yoga'));
     const monday = screen.getByText('Monday').closest('button');
     if (monday) fireEvent.click(monday);
     expect(screen.getByText(/Choose a Time/)).toBeInTheDocument();
   });
 
-  it('advances to info form when a time slot is clicked', () => {
+  it('advances to info form when a time slot is clicked', async () => {
     renderPage();
+    await waitFor(() => expect(screen.getByText('Morning Yoga')).toBeInTheDocument());
     fireEvent.click(screen.getByText('Morning Yoga'));
     const monday = screen.getByText('Monday').closest('button');
     if (monday) fireEvent.click(monday);

@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { useAuthStore } from '@/stores/auth';
-import { updateProfileApi, changePasswordApi, deleteAccountApi } from '@/api/customer';
+import { useProfile } from '@/hooks/useProfile';
 import type { CustomerUser } from '@/types';
 
 export default function ProfilePage() {
@@ -13,13 +13,13 @@ export default function ProfilePage() {
   const { t, i18n } = useTranslation();
   const setAuth = useAuthStore((s) => s.setAuth);
   const clearAuth = useAuthStore((s) => s.clearAuth);
+  const { updateProfile, changePassword, deleteAccount, saving } = useProfile();
 
   const [firstName, setFirstName] = useState((user as CustomerUser)?.firstName ?? '');
   const [lastName, setLastName] = useState((user as CustomerUser)?.lastName ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
   const [phone, setPhone] = useState((user as CustomerUser)?.phone ?? '');
   const [language, setLanguage] = useState(user?.language ?? 'en');
-  const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   const [currentPassword, setCurrentPassword] = useState('');
@@ -32,17 +32,19 @@ export default function ProfilePage() {
   const [deleting, setDeleting] = useState(false);
 
   async function handleSaveProfile() {
-    setSaving(true);
     setSaveSuccess(false);
     try {
-      const updated = await updateProfileApi({ firstName, lastName, email, phone, language });
-      if (updated && user) {
-        setAuth({ ...user, ...updated }, localStorage.getItem('auth_token') ?? '');
+      await updateProfile({ firstName, lastName, email, phone, language });
+      if (user) {
+        setAuth(
+          { ...user, firstName, lastName, email, phone, language } as typeof user,
+          localStorage.getItem('auth_token') ?? '',
+        );
         void i18n.changeLanguage(language);
       }
       setSaveSuccess(true);
-    } finally {
-      setSaving(false);
+    } catch {
+      /* error is set by hook */
     }
   }
 
@@ -58,7 +60,7 @@ export default function ProfilePage() {
     }
     setChangingPassword(true);
     try {
-      await changePasswordApi(currentPassword, newPassword);
+      await changePassword(currentPassword, newPassword);
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -72,7 +74,7 @@ export default function ProfilePage() {
   async function handleDeleteAccount() {
     setDeleting(true);
     try {
-      await deleteAccountApi();
+      await deleteAccount();
       clearAuth();
       window.location.href = '/';
     } finally {
@@ -86,12 +88,10 @@ export default function ProfilePage() {
         title={t('seo.customerProfileTitle')}
         description={t('seo.customerProfileDescription')}
       />
-
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{t('customerProfile.heading')}</h1>
         <p className="mt-1 text-gray-500">{t('customerProfile.subtitle')}</p>
       </div>
-
       <div className="space-y-6 max-w-2xl">
         <Card
           header={
@@ -101,75 +101,70 @@ export default function ProfilePage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="firstName" className="mb-1 block text-xs font-medium text-gray-600">
                   {t('customerProfile.firstName')}
                 </label>
                 <input
-                  id="first-name"
-                  type="text"
+                  id="firstName"
+                  className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
                 />
               </div>
               <div>
-                <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="lastName" className="mb-1 block text-xs font-medium text-gray-600">
                   {t('customerProfile.lastName')}
                 </label>
                 <input
-                  id="last-name"
-                  type="text"
+                  id="lastName"
+                  className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
                 />
               </div>
             </div>
             <div>
-              <label htmlFor="profile-email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="mb-1 block text-xs font-medium text-gray-600">
                 {t('customerProfile.email')}
               </label>
               <input
-                id="profile-email"
+                id="email"
                 type="email"
+                className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
               />
             </div>
             <div>
-              <label htmlFor="profile-phone" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="phone" className="mb-1 block text-xs font-medium text-gray-600">
                 {t('customerProfile.phone')}
               </label>
               <input
-                id="profile-phone"
-                type="tel"
+                id="phone"
+                className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
               />
             </div>
             <div>
-              <label htmlFor="profile-language" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="language" className="mb-1 block text-xs font-medium text-gray-600">
                 {t('customerProfile.language')}
               </label>
               <select
-                id="profile-language"
+                className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
               >
                 <option value="en">English</option>
+                <option value="es">Español</option>
                 <option value="fr">Français</option>
               </select>
             </div>
-            <div className="flex items-center gap-3">
-              <Button loading={saving} onClick={handleSaveProfile}>
+            {saveSuccess && <p className="text-sm text-green-600">{t('common.profileUpdated')}</p>}
+            <div className="flex justify-end">
+              <Button onClick={handleSaveProfile} loading={saving}>
                 {t('common.saveChanges')}
               </Button>
-              {saveSuccess && (
-                <span className="text-sm text-green-600">{t('common.profileUpdated')}</span>
-              )}
             </div>
           </div>
         </Card>
@@ -183,56 +178,67 @@ export default function ProfilePage() {
         >
           <div className="space-y-4">
             <div>
-              <label htmlFor="current-password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="currentPassword"
+                className="mb-1 block text-xs font-medium text-gray-600"
+              >
                 {t('common.currentPassword')}
               </label>
               <input
-                id="current-password"
+                id="currentPassword"
                 type="password"
+                className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
               />
             </div>
-            <div>
-              <label htmlFor="new-password" className="block text-sm font-medium text-gray-700">
-                {t('common.newPassword')}
-              </label>
-              <input
-                id="new-password"
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-              />
-            </div>
-            <div>
-              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
-                {t('common.confirmNewPassword')}
-              </label>
-              <input
-                id="confirm-password"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="newPassword"
+                  className="mb-1 block text-xs font-medium text-gray-600"
+                >
+                  {t('common.newPassword')}
+                </label>
+                <input
+                  id="newPassword"
+                  type="password"
+                  className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="mb-1 block text-xs font-medium text-gray-600"
+                >
+                  {t('common.confirmNewPassword')}
+                </label>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
             </div>
             {passwordError && <p className="text-sm text-red-600">{passwordError}</p>}
-            <Button loading={changingPassword} onClick={handleChangePassword}>
-              {t('common.updatePassword')}
-            </Button>
+            <div className="flex justify-end">
+              <Button onClick={handleChangePassword} loading={changingPassword}>
+                {t('common.updatePassword')}
+              </Button>
+            </div>
           </div>
         </Card>
 
         <Card
-          variant="bordered"
-          className="border-red-200"
           header={
-            <span className="font-semibold text-red-700">{t('customerProfile.dangerZone')}</span>
+            <span className="font-semibold text-red-600">{t('customerProfile.dangerZone')}</span>
           }
         >
-          <p className="mb-4 text-sm text-gray-600">{t('customerProfile.dangerWarning')}</p>
+          <p className="mb-4 text-sm text-gray-500">{t('customerProfile.dangerDesc')}</p>
           <Button variant="accent" onClick={() => setShowDelete(true)}>
             {t('customerProfile.deleteAccount')}
           </Button>
@@ -248,7 +254,7 @@ export default function ProfilePage() {
         <p className="text-sm text-gray-600">{t('customerProfile.deleteBody')}</p>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setShowDelete(false)}>
-            {t('customerProfile.keepAccount')}
+            {t('common.keep')}
           </Button>
           <Button variant="accent" loading={deleting} onClick={handleDeleteAccount}>
             {t('common.yesDelete')}

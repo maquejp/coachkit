@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
-import { Spinner } from '@/components/ui/Spinner';
-import { fetchDashboardKpis, fetchDashboardCharts, fetchDashboardOccupancy } from '@/api/admin';
-import type { Kpis, ChartsData, OccupancyData } from '@/api/admin';
-import { bookings, classTypes, weeklySchedule, locations } from '@/mocks/fixtures';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { useDashboard } from '@/hooks/useDashboard';
+import { useBookings } from '@/hooks/useBookings';
+import { useLocations } from '@/hooks/useLocations';
+import { useClassTypes } from '@/hooks/useClassTypes';
+import { useWeeklySchedule } from '@/hooks/useWeeklySchedule';
 import { formatCurrency } from '@/lib/format';
 
 function pct(v: number) {
@@ -14,34 +15,21 @@ function pct(v: number) {
 
 export default function AdminDashboardPage() {
   const { t } = useTranslation();
-  const [kpis, setKpis] = useState<Kpis | null>(null);
-  const [charts, setCharts] = useState<ChartsData | null>(null);
-  const [occupancy, setOccupancy] = useState<OccupancyData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { kpis, charts, occupancy, loading } = useDashboard();
+  const { data: bookings } = useBookings();
+  const { data: locations } = useLocations();
+  const { data: classTypes } = useClassTypes();
+  const { data: schedules } = useWeeklySchedule();
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const [k, c, o] = await Promise.all([
-          fetchDashboardKpis(),
-          fetchDashboardCharts(),
-          fetchDashboardOccupancy(),
-        ]);
-        setKpis(k);
-        setCharts(c);
-        setOccupancy(o);
-      } catch {
-        // API errors are non-fatal; component renders with null data
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
+  if (loading)
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+      </div>
+    );
 
-  if (loading) return <Spinner centered size="lg" />;
-
-  const upcomingClasses = bookings.filter((b) => b.status === 'confirmed').slice(0, 5);
+  const upcomingClasses = (bookings ?? []).filter((b) => b.status === 'confirmed').slice(0, 5);
 
   const maxRevenue = charts ? Math.max(...charts.revenueByMonth.map((r) => r.amountCents), 1) : 1;
   const maxPopularity = charts ? Math.max(...charts.classPopularity.map((c) => c.bookings), 1) : 1;
@@ -174,9 +162,9 @@ export default function AdminDashboardPage() {
           ) : (
             <div className="space-y-3">
               {upcomingClasses.map((b) => {
-                const ct = classTypes.find((c) => c.id === b.classTypeId);
-                const slot = weeklySchedule.find((s) => s.id === b.scheduleId);
-                const loc = slot ? locations.find((l) => l.id === slot.locationId) : null;
+                const ct = (classTypes ?? []).find((c) => c.id === b.classTypeId);
+                const slot = (schedules ?? []).find((s) => s.id === b.scheduleId);
+                const loc = slot ? (locations ?? []).find((l) => l.id === slot.locationId) : null;
                 return (
                   <div
                     key={b.id}

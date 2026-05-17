@@ -106,58 +106,85 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function bookings($id): JsonResponse
+    public function bookings(Request $request, $id): JsonResponse
     {
-        $bookings = Booking::where('user_id', $id)
+        $page = (int) $request->query('page', 1);
+        $pageSize = (int) $request->query('pageSize', 20);
+
+        $paginator = Booking::where('user_id', $id)
             ->with('schedule.classType')
-            ->get();
+            ->paginate($pageSize, ['*'], 'page', $page);
 
         return response()->json([
             'success' => true,
-            'data' => $bookings->map(fn ($b) => [
-                'id' => $b->id,
-                'userId' => $b->user_id,
-                'classTypeId' => $b->relationLoaded('schedule') && $b->schedule ? $b->schedule->class_type_id : null,
-                'date' => $b->booking_date,
-                'status' => $b->status,
-                'className' => $b->relationLoaded('schedule.classType') && $b->schedule && $b->schedule->classType ? $b->schedule->classType->name : null,
-                'classColor' => $b->relationLoaded('schedule.classType') && $b->schedule && $b->schedule->classType ? $b->schedule->classType->color : null,
-            ]),
+            'data' => [
+                'items' => collect($paginator->items())->map(fn ($b) => [
+                    'id' => $b->id,
+                    'userId' => $b->user_id,
+                    'classTypeId' => $b->relationLoaded('schedule') && $b->schedule ? $b->schedule->class_type_id : null,
+                    'date' => $b->booking_date,
+                    'status' => $b->status,
+                    'className' => $b->relationLoaded('schedule.classType') && $b->schedule && $b->schedule->classType ? $b->schedule->classType->name : null,
+                    'classColor' => $b->relationLoaded('schedule.classType') && $b->schedule && $b->schedule->classType ? $b->schedule->classType->color : null,
+                ])->toArray(),
+                'total' => $paginator->total(),
+                'totalPages' => $paginator->lastPage(),
+                'page' => $paginator->currentPage(),
+                'pageSize' => $paginator->perPage(),
+            ],
         ]);
     }
 
-    public function attendance($id): JsonResponse
+    public function attendance(Request $request, $id): JsonResponse
     {
-        $records = Attendance::where('user_id', $id)->get();
+        $page = (int) $request->query('page', 1);
+        $pageSize = (int) $request->query('pageSize', 20);
+
+        $paginator = Attendance::where('user_id', $id)->paginate($pageSize, ['*'], 'page', $page);
 
         return response()->json([
             'success' => true,
-            'data' => $records->map(fn ($a) => [
-                'id' => $a->id,
-                'bookingId' => $a->booking_id,
-                'userId' => $a->user_id,
-                'date' => $a->attended_at ? $a->attended_at->format('Y-m-d') : null,
-                'checkInTime' => $a->attended_at ? $a->attended_at->format('H:i:s') : null,
-            ]),
+            'data' => [
+                'items' => collect($paginator->items())->map(fn ($a) => [
+                    'id' => $a->id,
+                    'bookingId' => $a->booking_id,
+                    'userId' => $a->user_id,
+                    'date' => $a->attended_at ? $a->attended_at->format('Y-m-d') : null,
+                    'checkInTime' => $a->attended_at ? $a->attended_at->format('H:i:s') : null,
+                ])->toArray(),
+                'total' => $paginator->total(),
+                'totalPages' => $paginator->lastPage(),
+                'page' => $paginator->currentPage(),
+                'pageSize' => $paginator->perPage(),
+            ],
         ]);
     }
 
-    public function payments($id): JsonResponse
+    public function payments(Request $request, $id): JsonResponse
     {
-        $transactions = PaymentTransaction::where('user_id', $id)->get();
+        $page = (int) $request->query('page', 1);
+        $pageSize = (int) $request->query('pageSize', 20);
+
+        $paginator = PaymentTransaction::where('user_id', $id)->latest()->paginate($pageSize, ['*'], 'page', $page);
 
         return response()->json([
             'success' => true,
-            'data' => $transactions->map(fn ($t) => [
-                'id' => $t->id,
-                'userId' => $t->user_id,
-                'amountCents' => (int) $t->amount_cents,
-                'currency' => $t->currency,
-                'status' => $t->status,
-                'provider' => $t->payment_method,
-                'description' => $t->description,
-                'createdAt' => $t->created_at,
-            ]),
+            'data' => [
+                'items' => collect($paginator->items())->map(fn ($t) => [
+                    'id' => $t->id,
+                    'userId' => $t->user_id,
+                    'amountCents' => (int) $t->amount_cents,
+                    'currency' => $t->currency,
+                    'status' => $t->status,
+                    'provider' => $t->payment_method,
+                    'description' => $t->description,
+                    'createdAt' => $t->created_at,
+                ])->toArray(),
+                'total' => $paginator->total(),
+                'totalPages' => $paginator->lastPage(),
+                'page' => $paginator->currentPage(),
+                'pageSize' => $paginator->perPage(),
+            ],
         ]);
     }
 

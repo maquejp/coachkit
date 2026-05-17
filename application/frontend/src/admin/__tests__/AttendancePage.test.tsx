@@ -155,7 +155,7 @@ describe('AttendancePage', () => {
     await userEvent.click(screen.getByText('Usage Report'));
     await waitFor(() => {
       expect(screen.getByText('Alice Johnson')).toBeInTheDocument();
-      expect(screen.getByText('Monthly Unlimited')).toBeInTheDocument();
+      expect(screen.getByText((c) => c.includes('Monthly Unlimited'))).toBeInTheDocument();
     });
   });
 });

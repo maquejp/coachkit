@@ -22,10 +22,21 @@ class BookingController extends Controller
         if ($userId = $request->query('userId')) {
             $query->where('user_id', $userId);
         }
-        $bookings = $query->with('schedule.classType')->get();
+
+        $page = (int) $request->query('page', 1);
+        $pageSize = (int) $request->query('pageSize', 20);
+
+        $paginator = $query->with('schedule.classType')->paginate($pageSize, ['*'], 'page', $page);
+
         return response()->json([
             'success' => true,
-            'data' => $bookings->map(fn ($b) => $this->format($b)),
+            'data' => [
+                'items' => collect($paginator->items())->map(fn ($b) => $this->format($b))->toArray(),
+                'total' => $paginator->total(),
+                'totalPages' => $paginator->lastPage(),
+                'page' => $paginator->currentPage(),
+                'pageSize' => $paginator->perPage(),
+            ],
         ]);
     }
 

@@ -83,12 +83,15 @@ class AttendanceController extends Controller
         $from = $request->query('from', now()->subMonth()->format('Y-m-d'));
         $to = $request->query('to', now()->format('Y-m-d'));
 
-        $records = Attendance::whereDate('attended_at', '>=', $from)
+        $page = (int) $request->query('page', 1);
+        $pageSize = (int) $request->query('pageSize', 20);
+
+        $paginator = Attendance::whereDate('attended_at', '>=', $from)
             ->whereDate('attended_at', '<=', $to)
             ->with('booking.schedule.classType')
-            ->get();
+            ->paginate($pageSize, ['*'], 'page', $page);
 
-        $mapped = $records->map(function ($a) {
+        $mapped = collect($paginator->items())->map(function ($a) {
             $user = $a->user_id ? User::find($a->user_id) : null;
             return [
                 'id' => $a->id,
@@ -105,8 +108,11 @@ class AttendanceController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'total' => $mapped->count(),
-                'records' => $mapped,
+                'items' => $mapped->toArray(),
+                'total' => $paginator->total(),
+                'totalPages' => $paginator->lastPage(),
+                'page' => $paginator->currentPage(),
+                'pageSize' => $paginator->perPage(),
             ],
         ]);
     }

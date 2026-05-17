@@ -6,6 +6,20 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import SchedulePage from '@/admin/SchedulePage';
 
+const exceptionStore = [
+  {
+    id: 'se-001',
+    date: '2025-12-25',
+    locationId: 'loc-001',
+    openTime: null,
+    closeTime: null,
+    isClosed: true,
+    reason: 'Christmas Day',
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+];
+
 const server = setupServer(
   http.get('/api/weekly-schedule', () => {
     return HttpResponse.json({
@@ -88,41 +102,24 @@ const server = setupServer(
   }),
 
   http.get('/api/schedule-exceptions', () => {
-    return HttpResponse.json({
-      success: true,
-      data: [
-        {
-          id: 'se-001',
-          date: '2025-12-25',
-          locationId: 'loc-001',
-          openTime: null,
-          closeTime: null,
-          isClosed: true,
-          reason: 'Christmas Day',
-          createdAt: '2025-01-01T00:00:00Z',
-          updatedAt: '2025-01-01T00:00:00Z',
-        },
-      ],
-    });
+    return HttpResponse.json({ success: true, data: exceptionStore });
   }),
 
-  http.post('/api/schedule-exceptions', async ({ request }) => {
+  http.post('/api/admin/schedule-exceptions', async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json(
-      {
-        success: true,
-        data: {
-          id: 'se-new-001',
-          ...body,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      },
-      { status: 201 },
-    );
+    const newEntry = {
+      id: 'se-new-001',
+      ...body,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    } as (typeof exceptionStore)[0];
+    exceptionStore.push(newEntry);
+    return HttpResponse.json({ success: true, data: newEntry }, { status: 201 });
   }),
 
-  http.delete('/api/schedule-exceptions/:id', () => {
+  http.delete('/api/admin/schedule-exceptions/:id', ({ params }) => {
+    const idx = exceptionStore.findIndex((e) => e.id === params.id);
+    if (idx !== -1) exceptionStore.splice(idx, 1);
     return HttpResponse.json({ success: true, data: null });
   }),
 

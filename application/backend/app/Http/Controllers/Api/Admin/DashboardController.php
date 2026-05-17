@@ -53,11 +53,10 @@ class DashboardController extends Controller
             ->get()
             ->toArray();
 
-        $classPopularity = Booking::selectRaw('class_type_id, count(*) as bookings')
-            ->join('weekly_schedule', 'bookings.schedule_id', '=', 'weekly_schedule.id')
+        $classPopularity = Booking::join('weekly_schedule', 'bookings.schedule_id', '=', 'weekly_schedule.id')
             ->join('class_types', 'weekly_schedule.class_type_id', '=', 'class_types.id')
             ->selectRaw('class_types.name as class_name, count(*) as bookings')
-            ->groupBy('class_types.name', 'class_types.id')
+            ->groupBy('class_types.id', 'class_types.name')
             ->orderByDesc('bookings')
             ->get()
             ->map(fn ($row) => [

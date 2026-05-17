@@ -18,9 +18,12 @@ export interface CustomerDashboardData {
   payments: PaymentTransaction[];
 }
 
-export async function fetchMyBookingsApi(userId: string) {
-  const { data } = await apiClient.get<{ success: boolean; data: Booking[] }>('/bookings', {
-    params: { userId },
+export async function fetchMyBookingsApi(userId: string, page = 1, pageSize = 20) {
+  const { data } = await apiClient.get<{
+    success: boolean;
+    data: { items: Booking[]; total: number; totalPages: number; page: number; pageSize: number };
+  }>('/bookings', {
+    params: { userId, page, pageSize },
   });
   return data.data;
 }

@@ -7,15 +7,22 @@ import { Input } from '@/components/ui/Input';
 import { FormField } from '@/components/ui/FormField';
 import { Card } from '@/components/ui/Card';
 import { useAuthStore } from '@/stores/auth';
-import { registerApi } from '@/api/auth';
+import { useAuth } from '@/hooks/useAuth';
+import { useFieldErrors } from '@/lib/errors';
 
 export default function RegisterPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const token = useAuthStore((s) => s.token);
   const user = useAuthStore((s) => s.user);
-  const setAuth = useAuthStore((s) => s.setAuth);
+  const { register, isLoading } = useAuth();
   const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const { fieldErrors, setFromApi, clearFieldError, clearAll } = useFieldErrors();
 
   useEffect(() => {
     if (token && user) {
@@ -29,110 +36,109 @@ export default function RegisterPage() {
       );
     }
   }, [token, user, navigate]);
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    clearAll();
     try {
-      const res = await registerApi({
+      await register({
         firstName,
         lastName,
         email,
+        phone,
         password,
-        phone: phone || undefined,
+        passwordConfirmation: password,
       });
-      if (res.success) {
-        setAuth(res.data.user, res.data.token);
-        navigate('/dashboard');
-      } else {
-        setError(res.error ?? t('registerPage.errors.generic'));
-      }
-    } catch {
+      navigate('/dashboard');
+    } catch (err) {
+      setFromApi(err);
       setError(t('registerPage.errors.generic'));
-    } finally {
-      setLoading(false);
     }
   }
 
   return (
     <>
-      <SEO title={t('seo.registerTitle')} description={t('seo.registerTitle')} />
+      <SEO title={t('seo.registerTitle')} description={t('seo.registerDescription')} />
       <div className="mx-auto max-w-md px-4 py-20">
         <Card className="p-8">
           <h1 className="mb-2 text-2xl font-bold text-gray-900">{t('registerPage.heading')}</h1>
           <p className="mb-6 text-sm text-gray-500">{t('registerPage.subtitle')}</p>
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <FormField label={t('registerPage.firstName')} required>
+              <FormField label={t('registerPage.firstName')} required error={fieldErrors.firstName}>
                 <Input
                   value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  onChange={(e) => {
+                    setFirstName(e.target.value);
+                    clearFieldError('firstName');
+                  }}
                   placeholder={t('registerPage.firstNamePlaceholder')}
+                  error={!!fieldErrors.firstName}
                   required
                 />
               </FormField>
-              <FormField label={t('registerPage.lastName')} required>
+              <FormField label={t('registerPage.lastName')} required error={fieldErrors.lastName}>
                 <Input
                   value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
+                  onChange={(e) => {
+                    setLastName(e.target.value);
+                    clearFieldError('lastName');
+                  }}
                   placeholder={t('registerPage.lastNamePlaceholder')}
+                  error={!!fieldErrors.lastName}
                   required
                 />
               </FormField>
             </div>
-            <FormField label={t('registerPage.emailLabel')} required>
+            <FormField label={t('registerPage.email')} required error={fieldErrors.email}>
               <Input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  clearFieldError('email');
+                }}
                 placeholder={t('registerPage.emailPlaceholder')}
+                error={!!fieldErrors.email}
                 required
               />
             </FormField>
-            <FormField label={t('registerPage.phoneLabel')}>
+            <FormField label={t('registerPage.phone')} error={fieldErrors.phone}>
               <Input
-                type="tel"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  clearFieldError('phone');
+                }}
                 placeholder={t('registerPage.phonePlaceholder')}
+                error={!!fieldErrors.phone}
               />
             </FormField>
-            <FormField label={t('registerPage.passwordLabel')} required>
+            <FormField label={t('registerPage.password')} required error={fieldErrors.password}>
               <Input
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  clearFieldError('password');
+                }}
                 placeholder={t('registerPage.passwordPlaceholder')}
+                error={!!fieldErrors.password}
                 required
-                minLength={8}
               />
             </FormField>
-
-            {error && (
-              <p className="text-sm text-red-600" role="alert">
-                {error}
-              </p>
-            )}
-
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? t('registerPage.creatingAccount') : t('registerPage.signUpBtn')}
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            <Button type="submit" className="w-full" loading={isLoading}>
+              {t('registerPage.registerBtn')}
             </Button>
+            <p className="text-center text-sm text-gray-500">
+              {t('registerPage.hasAccount')}{' '}
+              <Link to="/login" className="text-primary-600 hover:underline">
+                {t('registerPage.login')}
+              </Link>
+            </p>
           </form>
-
-          <div className="mt-6 border-t border-gray-100 pt-4 text-center text-sm text-gray-500">
-            {t('registerPage.hasAccount')}{' '}
-            <Link to="/login" className="font-medium text-primary-600 hover:text-primary-700">
-              {t('registerPage.logInLink')}
-            </Link>
-          </div>
         </Card>
       </div>
     </>

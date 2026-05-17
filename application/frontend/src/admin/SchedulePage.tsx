@@ -7,22 +7,14 @@ import { Modal } from '@/components/ui/Modal';
 import { Select } from '@/components/ui/Select';
 import { Input } from '@/components/ui/Input';
 import { FormField } from '@/components/ui/FormField';
-import { Spinner } from '@/components/ui/Spinner';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { Badge } from '@/components/ui/Badge';
-import {
-  fetchWeeklySchedule,
-  createWeeklySchedule,
-  updateWeeklySchedule,
-  deleteWeeklySchedule,
-  fetchScheduleExceptions,
-  createScheduleException,
-  deleteScheduleException,
-  fetchAllClassTypes,
-  fetchAllCoaches,
-  fetchAllLocations,
-} from '@/api/admin';
-import type { WeeklyScheduleItem, ScheduleExceptionItem } from '@/api/admin';
-import type { ClassType, Coach, Location } from '@/types';
+import { useWeeklySchedule } from '@/hooks/useWeeklySchedule';
+import { useScheduleExceptions } from '@/hooks/useScheduleExceptions';
+import { useClassTypes } from '@/hooks/useClassTypes';
+import { useCoaches } from '@/hooks/useCoaches';
+import { useLocations } from '@/hooks/useLocations';
+import type { WeeklyScheduleItem } from '@/api/admin';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -66,11 +58,17 @@ const emptySlotForm: SlotForm = {
 
 export default function SchedulePage() {
   const { t } = useTranslation();
-  const [schedules, setSchedules] = useState<WeeklyScheduleItem[]>([]);
-  const [exceptions, setExceptions] = useState<ScheduleExceptionItem[]>([]);
-  const [classTypes, setClassTypes] = useState<ClassType[]>([]);
-  const [coaches, setCoaches] = useState<Coach[]>([]);
-  const [locations, setLocations] = useState<Location[]>([]);
+  const {
+    data: schedules,
+    create: createSchedule,
+    update: updateSchedule,
+    remove: deleteSchedule,
+  } = useWeeklySchedule();
+  const { data: exceptions, refetch: refetchExceptions } = useScheduleExceptions();
+  const { data: classTypes } = useClassTypes();
+  const { data: coaches } = useCoaches();
+  const { data: locations } = useLocations();
+
   const [loading, setLoading] = useState(true);
   const [filterLocId, setFilterLocId] = useState('');
 
@@ -87,47 +85,29 @@ export default function SchedulePage() {
   const [exCloseTime, setExCloseTime] = useState('14:00');
   const [exReason, setExReason] = useState('');
 
+  const sched = schedules ?? [];
+  const exc = exceptions ?? [];
+  const cts = classTypes ?? [];
+  const cos = coaches ?? [];
+  const locs = locations ?? [];
+
   useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      try {
-        const [sched, exc, cts, cos, locs] = await Promise.all([
-          fetchWeeklySchedule(),
-          fetchScheduleExceptions(),
-          fetchAllClassTypes(),
-          fetchAllCoaches(),
-          fetchAllLocations(),
-        ]);
-        if (cancelled) return;
-        setSchedules(sched);
-        setExceptions(exc);
-        setClassTypes(cts);
-        setCoaches(cos);
-        setLocations(locs);
-      } catch {
-        // non-fatal
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
+    /* eslint-disable react-hooks/set-state-in-effect */
+    if (sched.length > 0 || exc.length > 0 || cts.length > 0 || cos.length > 0 || locs.length > 0) {
+      setLoading(false);
+    } else {
+      const timer = setTimeout(() => setLoading(false), 500);
+      return () => clearTimeout(timer);
     }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [sched, exc, cts, cos, locs]);
 
-  const activeLocations = locations.filter((l) => l.isActive);
+  const activeLocations = locs.filter((l) => l.isActive);
 
-  const filteredSchedules = filterLocId
-    ? schedules.filter((s) => s.locationId === filterLocId)
-    : schedules;
+  const filteredSchedules = filterLocId ? sched.filter((s) => s.locationId === filterLocId) : sched;
+  const filteredExceptions = filterLocId ? exc.filter((e) => e.locationId === filterLocId) : exc;
 
-  const filteredExceptions = filterLocId
-    ? exceptions.filter((e) => e.locationId === filterLocId)
-    : exceptions;
-
-  function getSlotForm(slot: WeeklyScheduleItem): SlotForm {
+  function getSlotForm(slot: WeeklyScheduleItem): Parameters<typeof updateSchedule>[1] {
     return {
       dayOfWeek: slot.dayOfWeek,
       classTypeId: slot.classTypeId,
@@ -155,7 +135,7 @@ export default function SchedulePage() {
     if (!creatingSlot) return;
     setSaving(true);
     try {
-      const created = await createWeeklySchedule({
+      await createSchedule({
         dayOfWeek: creatingSlot.dayOfWeek,
         classTypeId: creatingSlot.classTypeId,
         coachId: creatingSlot.coachId,
@@ -165,7 +145,6 @@ export default function SchedulePage() {
         maxCapacity: creatingSlot.maxCapacity,
         isActive: true,
       });
-      setSchedules((prev) => [...prev, created]);
       setCreatingSlot(null);
     } finally {
       setSaving(false);
@@ -177,8 +156,7 @@ export default function SchedulePage() {
     if (!editingSlot) return;
     setSaving(true);
     try {
-      const updated = await updateWeeklySchedule(editingSlot.id, getSlotForm(editingSlot));
-      setSchedules((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+      await updateSchedule(editingSlot.id, getSlotForm(editingSlot));
       setEditingSlot(null);
     } finally {
       setSaving(false);
@@ -189,8 +167,7 @@ export default function SchedulePage() {
     if (!deletingSlot) return;
     setSaving(true);
     try {
-      await deleteWeeklySchedule(deletingSlot.id);
-      setSchedules((prev) => prev.filter((s) => s.id !== deletingSlot.id));
+      await deleteSchedule(deletingSlot.id);
       setDeletingSlot(null);
     } finally {
       setSaving(false);
@@ -201,38 +178,46 @@ export default function SchedulePage() {
     e.preventDefault();
     setSaving(true);
     try {
-      const created = await createScheduleException({
-        date: exDate,
-        locationId: exLocationId || filterLocId || activeLocations[0]?.id || '',
-        isClosed: exIsClosed,
-        openTime: exIsClosed ? null : exOpenTime,
-        closeTime: exIsClosed ? null : exCloseTime,
-        reason: exReason,
+      const res = await fetch('/api/admin/schedule-exceptions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: exDate,
+          locationId: exLocationId || filterLocId || activeLocations[0]?.id || '',
+          isClosed: exIsClosed,
+          openTime: exIsClosed ? null : exOpenTime,
+          closeTime: exIsClosed ? null : exCloseTime,
+          reason: exReason,
+        }),
       });
-      setExceptions((prev) => [...prev, created]);
-      setCreatingException(false);
-      setExDate('');
-      setExReason('');
+      if (res.ok) {
+        refetchExceptions();
+        setCreatingException(false);
+        setExDate('');
+        setExReason('');
+      }
     } finally {
       setSaving(false);
     }
   }
 
   async function handleDeleteException(id: string) {
-    try {
-      await deleteScheduleException(id);
-      setExceptions((prev) => prev.filter((e) => e.id !== id));
-    } catch {
-      // non-fatal
-    }
+    await fetch(`/api/admin/schedule-exceptions/${id}`, { method: 'DELETE' });
+    refetchExceptions();
   }
 
-  if (loading) return <Spinner centered size="lg" />;
+  if (loading)
+    return (
+      <div className="space-y-4">
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+      </div>
+    );
 
   return (
     <>
       <SEO title={t('seo.adminScheduleTitle')} description={t('seo.adminScheduleDescription')} />
-
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('adminSchedule.heading')}</h1>
@@ -295,7 +280,7 @@ export default function SchedulePage() {
                     ) : (
                       <div className="space-y-0.5">
                         {slots.map((slot) => {
-                          const ct = classTypes.find((c) => c.id === slot.classTypeId);
+                          const ct = cts.find((c) => c.id === slot.classTypeId);
                           return (
                             <button
                               key={slot.id}
@@ -345,7 +330,7 @@ export default function SchedulePage() {
         ) : (
           <div className="space-y-2">
             {filteredExceptions.map((ex) => {
-              const loc = locations.find((l) => l.id === ex.locationId);
+              const loc = locs.find((l) => l.id === ex.locationId);
               return (
                 <Card key={ex.id}>
                   <div className="flex flex-wrap items-center justify-between gap-2">
@@ -390,7 +375,7 @@ export default function SchedulePage() {
               required
             >
               <option value="">{t('adminSchedule.selectClass')}</option>
-              {classTypes
+              {cts
                 .filter((c) => c.isActive)
                 .map((c) => (
                   <option key={c.id} value={c.id}>
@@ -408,7 +393,7 @@ export default function SchedulePage() {
               required
             >
               <option value="">{t('adminSchedule.selectCoach')}</option>
-              {coaches
+              {cos
                 .filter((c) => c.isActive)
                 .map((c) => (
                   <option key={c.id} value={c.id}>
@@ -495,7 +480,7 @@ export default function SchedulePage() {
               required
             >
               <option value="">{t('adminSchedule.selectClass')}</option>
-              {classTypes
+              {cts
                 .filter((c) => c.isActive)
                 .map((c) => (
                   <option key={c.id} value={c.id}>
@@ -513,7 +498,7 @@ export default function SchedulePage() {
               required
             >
               <option value="">{t('adminSchedule.selectCoach')}</option>
-              {coaches
+              {cos
                 .filter((c) => c.isActive)
                 .map((c) => (
                   <option key={c.id} value={c.id}>

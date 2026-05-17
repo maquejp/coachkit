@@ -7,7 +7,7 @@ import AdminDashboardPage from '@/admin/DashboardPage';
 import { useAuthStore } from '@/stores/auth';
 
 const server = setupServer(
-  http.get('/api/dashboard/kpis', () => {
+  http.get('/api/admin/dashboard/kpis', () => {
     return HttpResponse.json({
       success: true,
       data: {
@@ -20,7 +20,7 @@ const server = setupServer(
     });
   }),
 
-  http.get('/api/dashboard/charts', () => {
+  http.get('/api/admin/dashboard/charts', () => {
     return HttpResponse.json({
       success: true,
       data: {
@@ -40,7 +40,7 @@ const server = setupServer(
     });
   }),
 
-  http.get('/api/dashboard/occupancy', () => {
+  http.get('/api/admin/dashboard/occupancy', () => {
     return HttpResponse.json({
       success: true,
       data: {

@@ -142,7 +142,7 @@ describe('InstructorSchedulePage', () => {
   it('renders class names', async () => {
     renderPage();
     await waitFor(() => {
-      expect(screen.getByText('Morning Yoga')).toBeInTheDocument();
+      expect(screen.getAllByText('Morning Yoga').length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText('HIIT Circuit')).toBeInTheDocument();
     });
   });

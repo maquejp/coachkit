@@ -853,6 +853,18 @@
       "notFoundTitle": "Page introuvable",
       "notFoundMessage": "La page que vous recherchez n'existe pas.",
       "backHome": "Retour à l'accueil"
+    },
+    "errorBoundary": {
+      "title": "Une erreur est survenue",
+      "message": "Une erreur inattendue s'est produite dans cette section. Veuillez réessayer.",
+      "retry": "Réessayer"
+    },
+    "offlineBanner": {
+      "message": "Vous êtes actuellement hors ligne. Certaines fonctionnalités peuvent être indisponibles."
+    },
+    "emptyState": {
+      "title": "Rien ici pour le moment",
+      "message": "Aucune donnée disponible pour le moment."
     }
   }
 }

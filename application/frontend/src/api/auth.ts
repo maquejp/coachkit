@@ -23,6 +23,7 @@ export interface AuthResponse {
 }
 
 export async function loginApi(payload: LoginPayload) {
+  await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
   const { data } = await apiClient.post<AuthResponse>('/auth/login', payload);
   return data;
 }

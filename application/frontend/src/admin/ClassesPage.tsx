@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { Card } from '@/components/ui/Card';
@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { FormField } from '@/components/ui/FormField';
-import { Spinner } from '@/components/ui/Spinner';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { Badge } from '@/components/ui/Badge';
-import { fetchAllClassTypes, createClassType, updateClassType, deleteClassType } from '@/api/admin';
-import type { ClassType } from '@/api/admin';
+import { useClassTypes } from '@/hooks/useClassTypes';
+import type { ClassType } from '@/types';
 import { formatCurrency } from '@/lib/format';
 
 const emptyForm = {
@@ -24,8 +24,7 @@ const emptyForm = {
 
 export default function ClassesPage() {
   const { t } = useTranslation();
-  const [classTypes, setClassTypes] = useState<ClassType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: classTypes, loading, create, update, remove } = useClassTypes();
 
   const [editing, setEditing] = useState<ClassType | null>(null);
   const [creating, setCreating] = useState(false);
@@ -33,25 +32,6 @@ export default function ClassesPage() {
   const [saving, setSaving] = useState(false);
 
   const [form, setForm] = useState(emptyForm);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      try {
-        const cts = await fetchAllClassTypes();
-        if (!cancelled) setClassTypes(cts);
-      } catch {
-        // non-fatal
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   function openCreate() {
     setForm(emptyForm);
@@ -75,13 +55,23 @@ export default function ClassesPage() {
     e.preventDefault();
     setSaving(true);
     try {
+      const slug = form.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+      const payload = {
+        ...form,
+        slug,
+        maxCapacity: form.capacity,
+        intensityLevel: null,
+        imageUrl: null,
+        sortOrder: 0,
+      };
       if (editing) {
-        const updated = await updateClassType(editing.id, form);
-        setClassTypes((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
+        await update(editing.id, payload as Parameters<typeof update>[1]);
         setEditing(null);
       } else {
-        const created = await createClassType(form);
-        setClassTypes((prev) => [...prev, created]);
+        await create(payload as Parameters<typeof create>[0]);
         setCreating(false);
       }
     } finally {
@@ -93,20 +83,25 @@ export default function ClassesPage() {
     if (!deleting) return;
     setSaving(true);
     try {
-      await deleteClassType(deleting.id);
-      setClassTypes((prev) => prev.filter((c) => c.id !== deleting.id));
+      await remove(deleting.id);
       setDeleting(null);
     } finally {
       setSaving(false);
     }
   }
 
-  if (loading) return <Spinner centered size="lg" />;
+  if (loading)
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+      </div>
+    );
 
   return (
     <>
       <SEO title={t('seo.adminClassesTitle')} description={t('seo.adminClassesDescription')} />
-
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('adminClasses.heading')}</h1>
@@ -114,8 +109,7 @@ export default function ClassesPage() {
         </div>
         <Button onClick={openCreate}>{t('adminClasses.addClass')}</Button>
       </div>
-
-      {classTypes.length === 0 ? (
+      {!classTypes || classTypes.length === 0 ? (
         <Card>
           <div className="py-12 text-center text-sm text-gray-400">
             {t('adminClasses.noClasses')}

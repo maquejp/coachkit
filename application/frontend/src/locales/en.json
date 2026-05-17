@@ -1,6 +1,9 @@
 {
   "translation": {
     "common": {
+      "loadingError": "Failed to load data. Please try again.",
+      "saveError": "Failed to save. Please try again.",
+      "networkError": "Network error. Please check your connection.",
       "home": "Home",
       "classes": "Classes",
       "pricing": "Pricing",
@@ -224,7 +227,14 @@
       "perSession": "/session",
       "disclaimer": "Plus insurance fee where applicable.",
       "noCommitment": "No commitment",
-      "startFreeTrial": "Start Free Trial"
+      "startFreeTrial": "Start Free Trial",
+      "noPlans": "No plans available.",
+      "noPointCards": "No class packs available.",
+      "dropInPrice": "{{price}} per session",
+      "pointCards": "Class Packs",
+      "perMonth": "/month",
+      "perYear": "/year",
+      "packInfo": "{{sessions}} sessions, valid {{days}} days"
     },
     "aboutPage": {
       "heading": "About Us",
@@ -824,7 +834,12 @@
       "avgRating": "Avg Rating",
       "hoursThisWeek": "Hours This Week",
       "noClasses": "No classes scheduled.",
-      "viewSchedule": "View Full Schedule"
+      "welcome": "Welcome, {{name}}!",
+      "upcomingClasses": "Upcoming Classes",
+      "classesThisWeek": "Classes This Week",
+      "upcomingBookings": "Upcoming Bookings",
+      "noUpcoming": "No upcoming bookings.",
+      "viewSchedule": "View Schedule"
     },
     "instructorSchedule": {
       "heading": "My Schedule",
@@ -894,6 +909,18 @@
       "notFoundTitle": "Page not found",
       "notFoundMessage": "The page you are looking for does not exist.",
       "backHome": "Back to home"
+    },
+    "errorBoundary": {
+      "title": "Something went wrong",
+      "message": "An unexpected error occurred in this section. Please try again.",
+      "retry": "Retry"
+    },
+    "offlineBanner": {
+      "message": "You are currently offline. Some features may be unavailable."
+    },
+    "emptyState": {
+      "title": "Nothing here yet",
+      "message": "No data available at the moment."
     }
   }
 }

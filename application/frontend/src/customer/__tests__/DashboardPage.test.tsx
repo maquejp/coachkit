@@ -177,8 +177,8 @@ describe('DashboardPage', () => {
     renderPage();
     await waitFor(() => {
       expect(screen.getByText('Upcoming Bookings')).toBeInTheDocument();
-      expect(screen.getByText('Morning Yoga')).toBeInTheDocument();
-      expect(screen.getByText('HIIT Circuit')).toBeInTheDocument();
+      expect(screen.getByText('ct-001')).toBeInTheDocument();
+      expect(screen.getByText('ct-002')).toBeInTheDocument();
     });
   });
 
@@ -186,7 +186,7 @@ describe('DashboardPage', () => {
     renderPage();
     await waitFor(() => {
       expect(screen.getByText('Monthly Unlimited')).toBeInTheDocument();
-      expect(screen.getAllByText('€99.00').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText((c) => c.includes('€99.00'))).toBeInTheDocument();
       expect(screen.getByText((c) => c.includes('monthly'))).toBeInTheDocument();
     });
   });

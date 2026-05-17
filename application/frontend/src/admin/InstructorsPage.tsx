@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
@@ -7,50 +7,42 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { FormField } from '@/components/ui/FormField';
-import { Spinner } from '@/components/ui/Spinner';
 import { Badge } from '@/components/ui/Badge';
-import { fetchAllCoaches, createCoach, updateCoach, deleteCoach } from '@/api/admin';
-import type { Coach } from '@/api/admin';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/EmptyState';
+import { useCoaches } from '@/hooks/useCoaches';
+import type { Coach } from '@/types';
 
-const emptyForm = {
-  name: '',
-  bio: '',
-  email: '',
-  phone: '',
-  photoUrl: '',
-  isActive: true,
-};
+function CoachAvatar({ coach }: { coach: Coach }) {
+  const [imgError, setImgError] = useState(false);
+  if (coach.photoUrl && !imgError) {
+    return (
+      <img
+        src={coach.photoUrl}
+        alt={coach.name}
+        loading="lazy"
+        onError={() => setImgError(true)}
+        className="h-10 w-10 rounded-full object-cover"
+      />
+    );
+  }
+  return (
+    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-sm font-bold text-primary-700">
+      {coach.name.charAt(0)}
+    </div>
+  );
+}
+
+const emptyForm = { name: '', bio: '', email: '', phone: '', photoUrl: '', isActive: true };
 
 export default function InstructorsPage() {
   const { t } = useTranslation();
-  const [coaches, setCoaches] = useState<Coach[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: coaches, loading, create, update, remove, saving } = useCoaches();
 
   const [editing, setEditing] = useState<Coach | null>(null);
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState<Coach | null>(null);
-  const [saving, setSaving] = useState(false);
-
   const [form, setForm] = useState(emptyForm);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      try {
-        const cos = await fetchAllCoaches();
-        if (!cancelled) setCoaches(cos);
-      } catch {
-        // non-fatal
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   function openCreate() {
     setForm(emptyForm);
@@ -71,43 +63,39 @@ export default function InstructorsPage() {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    setSaving(true);
-    try {
-      if (editing) {
-        const updated = await updateCoach(editing.id, {
-          ...form,
-          phone: form.phone || null,
-          photoUrl: form.photoUrl || null,
-        });
-        setCoaches((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
-        setEditing(null);
-      } else {
-        const created = await createCoach({
-          ...form,
-          phone: form.phone || null,
-          photoUrl: form.photoUrl || null,
-        });
-        setCoaches((prev) => [...prev, created]);
-        setCreating(false);
-      }
-    } finally {
-      setSaving(false);
+    const nameParts = form.name.trim().split(/\s+/);
+    const payload = {
+      firstName: nameParts[0] || '',
+      lastName: nameParts.slice(1).join(' ') || '',
+      bio: form.bio || null,
+      email: form.email || null,
+      phone: form.phone || null,
+      photoUrl: form.photoUrl || null,
+      isActive: form.isActive,
+    };
+    if (editing) {
+      await update(editing.id, payload as Parameters<typeof update>[1]);
+      setEditing(null);
+    } else {
+      await create(payload as Parameters<typeof create>[0]);
+      setCreating(false);
     }
   }
 
   async function handleDelete() {
     if (!deleting) return;
-    setSaving(true);
-    try {
-      await deleteCoach(deleting.id);
-      setCoaches((prev) => prev.filter((c) => c.id !== deleting.id));
-      setDeleting(null);
-    } finally {
-      setSaving(false);
-    }
+    await remove(deleting.id);
+    setDeleting(null);
   }
 
-  if (loading) return <Spinner centered size="lg" />;
+  if (loading)
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+        <Skeleton variant="card" />
+      </div>
+    );
 
   return (
     <>
@@ -115,7 +103,6 @@ export default function InstructorsPage() {
         title={t('seo.adminInstructorsTitle')}
         description={t('seo.adminInstructorsDescription')}
       />
-
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('adminInstructors.heading')}</h1>
@@ -123,28 +110,18 @@ export default function InstructorsPage() {
         </div>
         <Button onClick={openCreate}>{t('adminInstructors.addInstructor')}</Button>
       </div>
-
-      {coaches.length === 0 ? (
-        <Card>
-          <div className="py-12 text-center text-sm text-gray-400">
-            {t('adminInstructors.noInstructors')}
-          </div>
-        </Card>
+      {!coaches || coaches.length === 0 ? (
+        <EmptyState message={t('adminInstructors.noInstructors')} />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {coaches.map((coach) => (
             <Card key={coach.id} hover>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-sm font-bold text-primary-700">
-                    {coach.name
-                      .split(' ')
-                      .map((s) => s[0])
-                      .join('')}
-                  </div>
+                  <CoachAvatar coach={coach} />
                   <div>
                     <Link
-                      to={'/admin/instructors/' + coach.id}
+                      to={`/admin/instructors/${coach.id}`}
                       className="font-medium text-gray-900 hover:text-primary-600"
                     >
                       {coach.name}
@@ -156,8 +133,7 @@ export default function InstructorsPage() {
                   {coach.isActive ? t('common.active') : t('common.inactive')}
                 </Badge>
               </div>
-              <p className="mt-2 line-clamp-2 text-sm text-gray-600">{coach.bio}</p>
-              {coach.phone && <p className="mt-1 text-xs text-gray-400">{coach.phone}</p>}
+              {coach.bio && <p className="mt-2 line-clamp-2 text-sm text-gray-600">{coach.bio}</p>}
               <div className="mt-3 flex gap-2 border-t border-gray-100 pt-3">
                 <Button size="sm" variant="outline" onClick={() => openEdit(coach)}>
                   {t('common.edit')}
@@ -188,38 +164,36 @@ export default function InstructorsPage() {
               required
             />
           </FormField>
-          <FormField label={t('adminInstructors.bio')} required>
+          <FormField label={t('adminInstructors.email')} required>
+            <Input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+              required
+            />
+          </FormField>
+          <FormField label={t('adminInstructors.bio')}>
             <textarea
               className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-gray-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
               rows={3}
               value={form.bio}
               onChange={(e) => setForm((p) => ({ ...p, bio: e.target.value }))}
-              required
             />
           </FormField>
           <div className="grid grid-cols-2 gap-4">
-            <FormField label={t('adminInstructors.email')} required>
-              <Input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-                required
-              />
-            </FormField>
             <FormField label={t('adminInstructors.phone')}>
               <Input
                 value={form.phone}
                 onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
               />
             </FormField>
+            <FormField label={t('adminInstructors.photoUrl')}>
+              <Input
+                value={form.photoUrl}
+                onChange={(e) => setForm((p) => ({ ...p, photoUrl: e.target.value }))}
+              />
+            </FormField>
           </div>
-          <FormField label={t('adminInstructors.photoUrl')}>
-            <Input
-              value={form.photoUrl}
-              onChange={(e) => setForm((p) => ({ ...p, photoUrl: e.target.value }))}
-              placeholder={t('adminInstructors.photoPlaceholder')}
-            />
-          </FormField>
           <FormField label={t('adminInstructors.status')}>
             <label className="flex items-center gap-2 text-sm">
               <input

@@ -1,10 +1,13 @@
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import { ToastContainer } from '@/components/ui/Toast';
+import { OfflineBanner } from '@/components/OfflineBanner';
 
 export default function AuthLayout() {
   return (
     <div className="flex min-h-screen flex-col">
+      <OfflineBanner />
       <Header />
       <div className="flex flex-1">
         <Sidebar />
@@ -12,6 +15,7 @@ export default function AuthLayout() {
           <Outlet />
         </main>
       </div>
+      <ToastContainer />
     </div>
   );
 }

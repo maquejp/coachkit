@@ -8,7 +8,10 @@ import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
 import { FormField } from '@/components/ui/FormField';
 
-import { classTypes, weeklySchedule, coaches, locations, bookings } from '@/mocks/fixtures';
+import { useClassTypes } from '@/hooks/useClassTypes';
+import { useWeeklySchedule } from '@/hooks/useWeeklySchedule';
+import { useCoaches } from '@/hooks/useCoaches';
+import { useLocations } from '@/hooks/useLocations';
 import type { ClassType, WeeklySchedule } from '@/types';
 import { trackEvent } from '@/lib/analytics';
 import { guestCheckClaimApi, guestCreateClaimApi, guestRegisterApi } from '@/api/guest';
@@ -37,6 +40,14 @@ export default function BookingPage() {
   const user = useAuthStore((s) => s.user);
   const setAuth = useAuthStore((s) => s.setAuth);
   const token = useAuthStore((s) => s.token);
+  const { data: classTypesData } = useClassTypes();
+  const { data: weeklyScheduleData } = useWeeklySchedule();
+  const { data: coachesData } = useCoaches();
+  const { data: locationsData } = useLocations();
+  const classTypes = classTypesData ?? [];
+  const weeklySchedule = weeklyScheduleData ?? [];
+  const coaches = coachesData ?? [];
+  const locations = locationsData ?? [];
 
   const DAY_LABELS: Record<number, string> = {
     1: t('bookingPage.days.monday'),
@@ -328,7 +339,7 @@ export default function BookingPage() {
                   (s) => s.classTypeId === selectedClass.id && s.dayOfWeek === day,
                 );
                 const totalCapacity = slots.reduce((sum, s) => sum + s.maxCapacity, 0);
-                const existingBookings = bookings.filter(
+                const existingBookings = [].filter(
                   (b) =>
                     b.classTypeId === selectedClass.id &&
                     b.status !== 'cancelled' &&
