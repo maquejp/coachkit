@@ -921,6 +921,12 @@
     "emptyState": {
       "title": "Nothing here yet",
       "message": "No data available at the moment."
+    },
+    "cookieConsent": {
+      "message": "We use cookies to improve your experience. By continuing, you accept our use of cookies.",
+      "accept": "Accept",
+      "decline": "Decline",
+      "privacyLink": "Privacy Policy"
     }
   }
 }
